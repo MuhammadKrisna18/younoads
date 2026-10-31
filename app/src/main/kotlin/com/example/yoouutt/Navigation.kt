@@ -1,0 +1,95 @@
+package com.example.yoouutt
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import com.example.yoouutt.ui.feed.FeedScreen
+import com.example.yoouutt.ui.history.HistoryScreen
+import com.example.yoouutt.ui.player.InAppPipPlayer
+import com.example.yoouutt.ui.player.PlayerScreen
+
+@Composable
+fun MainNavigation() {
+    val backStack = rememberNavBackStack(Main)
+    val playbackManager = YoouuttApp.instance.playbackManager
+    val currentPlayback by playbackManager.currentPlayback.collectAsStateWithLifecycle()
+    val isPlayerScreenVisible = backStack.lastOrNull() is PlayerKey
+
+    BackHandler(enabled = !isPlayerScreenVisible && currentPlayback != null) {
+        playbackManager.stop()
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            entryProvider = entryProvider {
+                entry<Main> {
+                    FeedScreen(
+                        onVideoClick = { video ->
+                            playbackManager.playVideo(video.url, video.title, video.uploaderName)
+                            backStack.add(
+                                PlayerKey(
+                                    videoUrl = video.url,
+                                    title = video.title,
+                                    uploader = video.uploaderName
+                                )
+                            )
+                        },
+                        onHistoryClick = {
+                            backStack.add(HistoryKey)
+                        }
+                    )
+                }
+                entry<HistoryKey> {
+                    HistoryScreen(
+                        onVideoClick = { url, title, uploader ->
+                            playbackManager.playVideo(url, title, uploader)
+                            backStack.add(
+                                PlayerKey(
+                                    videoUrl = url,
+                                    title = title,
+                                    uploader = uploader
+                                )
+                            )
+                        },
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+                entry<PlayerKey> { key ->
+                    PlayerScreen(
+                        videoUrl = key.videoUrl,
+                        fallbackTitle = key.title,
+                        fallbackUploader = key.uploader,
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+            }
+        )
+
+        if (!isPlayerScreenVisible && currentPlayback != null) {
+            val playback = currentPlayback
+            if (playback != null) {
+                InAppPipPlayer(
+                    playbackManager = playbackManager,
+                    onExpand = {
+                        backStack.add(
+                            PlayerKey(
+                                videoUrl = playback.videoUrl,
+                                title = playback.title,
+                                uploader = playback.uploaderName
+                            )
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
