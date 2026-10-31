@@ -1,0 +1,83 @@
+name: Auto-Check NewPipe Updates
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check latest NewPipeExtractor release
+        id: newpipe
+        run: |
+          LATEST_TAG=$(curl -s https://api.github.com/repos/TeamNewPipe/NewPipeExtractor/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "Latest NewPipeExtractor tag: $LATEST_TAG"
+          CURRENT_TAG=$(grep 'newpipeExtractor = ' gradle/libs.versions.toml | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "Current NewPipeExtractor tag: $CURRENT_TAG"
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "current_tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
+          if [ -n "$LATEST_TAG" ] && [ "$LATEST_TAG" != "$CURRENT_TAG" ]; then
+            echo "has_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_update=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update to new NewPipeExtractor version
+        if: steps.newpipe.outputs.has_update == 'true'
+        run: |
+          LATEST="${{ steps.newpipe.outputs.latest_tag }}"
+          sed -i 's/newpipeExtractor = .*/newpipeExtractor = "'"$LATEST"'"/' gradle/libs.versions.toml
+
+          CURRENT_CODE=$(grep 'versionCode = ' app/build.gradle.kts | head -n 1 | awk '{print $3}')
+          NEW_CODE=$((CURRENT_CODE + 1))
+          sed -i "s/versionCode = $CURRENT_CODE/versionCode = $NEW_CODE/" app/build.gradle.kts
+
+          CLEAN_TAG=$(echo "$LATEST" | sed 's/^v//')
+          sed -i "s/versionName = .*/versionName = \"1.$CLEAN_TAG\"/" app/build.gradle.kts
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gradle/libs.versions.toml app/build.gradle.kts
+          git commit -m "[Auto Update] Upgrade NewPipeExtractor to $LATEST"
+          git push origin main
+
+      - name: Set up JDK 17
+        if: steps.newpipe.outputs.has_update == 'true'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        if: steps.newpipe.outputs.has_update == 'true'
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        if: steps.newpipe.outputs.has_update == 'true'
+        run: ./gradlew assembleRelease
+
+      - name: Publish GitHub Release
+        if: steps.newpipe.outputs.has_update == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.${{ steps.newpipe.outputs.latest_tag }}
+          name: YounoAds v1.${{ steps.newpipe.outputs.latest_tag }}
+          body: |
+            Pembaruan otomatis YounoAds.
+            - Pembaruan library pemutar YouTube ke ${{ steps.newpipe.outputs.latest_tag }}.
+          files: app/build/outputs/apk/release/app-release.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

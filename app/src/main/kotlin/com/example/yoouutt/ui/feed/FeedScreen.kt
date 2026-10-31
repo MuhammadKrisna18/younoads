@@ -30,10 +30,16 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -43,6 +49,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.BrandLogo
+import com.example.yoouutt.ui.common.UpdateDialog
+import com.example.yoouutt.update.AppUpdateManager
+import com.example.yoouutt.update.UpdateInfo
+import kotlinx.coroutines.launch
 
 @Composable
 fun FeedScreen(
@@ -54,6 +64,49 @@ fun FeedScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val updateManager = remember { AppUpdateManager() }
+    var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
+    var downloadProgress by remember { mutableStateOf<Float?>(null) }
+
+    LaunchedEffect(Unit) {
+        val currentVersionName = try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.versionName ?: "1.0"
+        } catch (_: Exception) {
+            "1.0"
+        }
+        val update = updateManager.checkForUpdate(currentVersionName)
+        if (update != null) {
+            updateInfo = update
+        }
+    }
+
+    val activeUpdate = updateInfo
+    if (activeUpdate != null) {
+        UpdateDialog(
+            updateInfo = activeUpdate,
+            downloadProgress = downloadProgress,
+            onUpdateClick = {
+                coroutineScope.launch {
+                    downloadProgress = 0f
+                    val file = updateManager.downloadApk(activeUpdate.downloadUrl, context) { progress ->
+                        downloadProgress = progress
+                    }
+                    downloadProgress = null
+                    if (file != null) {
+                        updateInfo = null
+                        updateManager.installApk(file, context)
+                    }
+                }
+            },
+            onDismiss = {
+                updateInfo = null
+            }
+        )
+    }
 
     Scaffold(
         modifier = modifier,
