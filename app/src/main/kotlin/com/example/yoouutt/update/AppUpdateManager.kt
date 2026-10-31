@@ -136,3 +136,4 @@ class AppUpdateManager(
         return false
     }
 }
+

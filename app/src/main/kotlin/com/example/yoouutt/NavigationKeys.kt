@@ -15,3 +15,9 @@ data class PlayerKey(
     val title: String,
     val uploader: String
 ) : NavKey
+
+@Serializable
+data class ChannelKey(
+    val channelUrl: String,
+    val channelName: String
+) : NavKey

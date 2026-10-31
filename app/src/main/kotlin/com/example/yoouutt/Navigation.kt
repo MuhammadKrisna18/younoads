@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.example.yoouutt.ui.channel.ChannelScreen
 import com.example.yoouutt.ui.feed.FeedScreen
 import com.example.yoouutt.ui.history.HistoryScreen
 import com.example.yoouutt.ui.player.InAppPipPlayer
@@ -45,6 +46,9 @@ fun MainNavigation() {
                         },
                         onHistoryClick = {
                             backStack.add(HistoryKey)
+                        },
+                        onChannelClick = { url, name ->
+                            backStack.add(ChannelKey(url, name))
                         }
                     )
                 }
@@ -68,6 +72,26 @@ fun MainNavigation() {
                         videoUrl = key.videoUrl,
                         fallbackTitle = key.title,
                         fallbackUploader = key.uploader,
+                        onBack = { backStack.removeLastOrNull() },
+                        onChannelClick = { url, name ->
+                            backStack.add(ChannelKey(url, name))
+                        }
+                    )
+                }
+                entry<ChannelKey> { key ->
+                    ChannelScreen(
+                        channelUrl = key.channelUrl,
+                        channelName = key.channelName,
+                        onVideoClick = { video ->
+                            playbackManager.playVideo(video.url, video.title, video.uploaderName)
+                            backStack.add(
+                                PlayerKey(
+                                    videoUrl = video.url,
+                                    title = video.title,
+                                    uploader = video.uploaderName
+                                )
+                            )
+                        },
                         onBack = { backStack.removeLastOrNull() }
                     )
                 }

@@ -36,7 +36,8 @@ import com.example.yoouutt.data.model.VideoItem
 fun VideoCard(
     video: VideoItem,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null
 ) {
     Column(
         modifier = modifier
@@ -89,22 +90,45 @@ fun VideoCard(
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
+            val avatarModifier = if (onChannelClick != null) {
+                Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
+                        onChannelClick(targetUrl, video.uploaderName)
+                    }
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape)
+            } else {
+                Modifier
+                    .size(38.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape),
+                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape)
+            }
+
+            Box(
+                modifier = avatarModifier,
                 contentAlignment = Alignment.Center
             ) {
-                val initial = video.uploaderName.trim().firstOrNull()?.uppercase() ?: "Y"
-                Text(
-                    text = initial,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center
-                )
+                if (video.uploaderAvatarUrl.isNotBlank()) {
+                    AsyncImage(
+                        model = video.uploaderAvatarUrl,
+                        contentDescription = video.uploaderName,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                } else {
+                    val initial = video.uploaderName.trim().firstOrNull()?.uppercase() ?: "Y"
+                    Text(
+                        text = initial,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -123,13 +147,35 @@ fun VideoCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
+                val metaText = buildString {
+                    append(video.uploaderName)
+                    if (video.viewCountText.isNotBlank()) {
+                        append(" • ")
+                        append(video.viewCountText)
+                    }
+                    if (video.uploadDateText.isNotBlank()) {
+                        append(" • ")
+                        append(video.uploadDateText)
+                    }
+                }
+
+                val uploaderModifier = if (onChannelClick != null) {
+                    Modifier.clickable {
+                        val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
+                        onChannelClick(targetUrl, video.uploaderName)
+                    }
+                } else {
+                    Modifier
+                }
+
                 Text(
-                    text = video.uploaderName,
+                    text = metaText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    letterSpacing = 0.2.sp
+                    letterSpacing = 0.2.sp,
+                    modifier = uploaderModifier
                 )
             }
         }

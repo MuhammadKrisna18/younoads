@@ -58,6 +58,7 @@ import kotlinx.coroutines.launch
 fun FeedScreen(
     onVideoClick: (VideoItem) -> Unit,
     onHistoryClick: () -> Unit,
+    onChannelClick: (channelUrl: String, channelName: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FeedViewModel = viewModel()
 ) {
@@ -256,7 +257,8 @@ fun FeedScreen(
                             ) { video ->
                                 VideoCard(
                                     video = video,
-                                    onClick = { onVideoClick(video) }
+                                    onClick = { onVideoClick(video) },
+                                    onChannelClick = onChannelClick
                                 )
                             }
                         }

@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
+import coil.compose.AsyncImage
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.YoouuttApp
 import com.example.yoouutt.playback.PlaybackManager
@@ -82,6 +84,7 @@ fun PlayerScreen(
     fallbackUploader: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null,
     playbackManager: PlaybackManager = YoouuttApp.instance.playbackManager
 ) {
     val currentPlayback by playbackManager.currentPlayback.collectAsStateWithLifecycle()
@@ -445,10 +448,25 @@ fun PlayerScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    val channelRowModifier = if (onChannelClick != null) {
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable {
+                                val targetUrl = currentPlayback?.streamData?.uploaderUrl?.takeIf { it.isNotBlank() }
+                                    ?: currentUploader
+                                onChannelClick(targetUrl, currentUploader)
+                            }
+                            .padding(vertical = 4.dp)
+                    } else {
+                        Modifier.fillMaxWidth()
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = channelRowModifier
                     ) {
+                        val avatarUrl = currentPlayback?.streamData?.uploaderAvatarUrl.orEmpty()
                         Box(
                             modifier = Modifier
                                 .size(42.dp)
@@ -457,14 +475,23 @@ fun PlayerScreen(
                                 .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            val initial = currentUploader.trim().firstOrNull()?.uppercase() ?: "Y"
-                            Text(
-                                text = initial,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
-                            )
+                            if (avatarUrl.isNotBlank()) {
+                                AsyncImage(
+                                    model = avatarUrl,
+                                    contentDescription = currentUploader,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.matchParentSize()
+                                )
+                            } else {
+                                val initial = currentUploader.trim().firstOrNull()?.uppercase() ?: "Y"
+                                Text(
+                                    text = initial,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.width(14.dp))
