@@ -179,19 +179,19 @@ fun FeedScreen(
                             val isSelected = selectedCategory == category
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isSelected) Color.White else Color(0xFF272727))
+                                    .clip(RoundedCornerShape(50.dp))
+                                    .background(if (isSelected) Color.White else Color(0xFF222222))
                                     .clickable {
                                         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                         viewModel.selectCategory(category)
                                     }
-                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                    .padding(horizontal = 14.dp, vertical = 7.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = category,
                                     color = if (isSelected) Color.Black else Color.White,
-                                    fontSize = 13.sp,
+                                    fontSize = 12.5.sp,
                                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                                 )
                             }
@@ -243,7 +243,7 @@ fun FeedScreen(
                                 }
                             },
                             singleLine = true,
-                            shape = RoundedCornerShape(24.dp),
+                            shape = RoundedCornerShape(50.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = Color(0xFF1F1F1F),
                                 unfocusedContainerColor = Color(0xFF1F1F1F),

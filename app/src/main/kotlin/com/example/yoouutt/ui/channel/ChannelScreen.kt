@@ -195,7 +195,7 @@ fun ChannelScreen(
                             }
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(50.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color(0xFF1E1E1E),
                             unfocusedContainerColor = Color(0xFF1E1E1E),
@@ -330,6 +330,8 @@ private fun ChannelContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .clip(RoundedCornerShape(14.dp))
                         .aspectRatio(16f / 5f)
                         .background(Color(0xFF1F1F1F))
                 ) {

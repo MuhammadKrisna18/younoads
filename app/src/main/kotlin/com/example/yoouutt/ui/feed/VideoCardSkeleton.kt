@@ -27,6 +27,8 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(14.dp))
                 .aspectRatio(16f / 9f)
                 .shimmerEffect()
         )
@@ -34,7 +36,7 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 22.dp),
+                .padding(start = 14.dp, end = 14.dp, top = 10.dp, bottom = 20.dp),
             verticalAlignment = Alignment.Top
         ) {
             Box(
@@ -51,7 +53,7 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
                         .height(14.dp)
-                        .clip(RoundedCornerShape(3.dp))
+                        .clip(RoundedCornerShape(6.dp))
                         .shimmerEffect()
                 )
 
@@ -61,7 +63,7 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .height(14.dp)
-                        .clip(RoundedCornerShape(3.dp))
+                        .clip(RoundedCornerShape(6.dp))
                         .shimmerEffect()
                 )
 
@@ -71,7 +73,7 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth(0.4f)
                         .height(11.dp)
-                        .clip(RoundedCornerShape(3.dp))
+                        .clip(RoundedCornerShape(6.dp))
                         .shimmerEffect()
                 )
             }

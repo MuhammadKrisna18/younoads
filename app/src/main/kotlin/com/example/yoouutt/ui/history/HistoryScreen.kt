@@ -71,6 +71,10 @@ fun HistoryScreen(
     if (showClearDialog) {
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = Color(0xFF161616),
+            titleContentColor = Color.White,
+            textContentColor = Color(0xFFCCCCCC),
             title = { Text(text = "Hapus Riwayat?") },
             text = { Text(text = "Semua riwayat tontonan di HP Anda akan dihapus permanen.") },
             confirmButton = {

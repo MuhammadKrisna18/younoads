@@ -49,6 +49,8 @@ fun VideoCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(14.dp))
                 .aspectRatio(16f / 9f)
                 .background(Color(0xFF181818))
         ) {
@@ -64,14 +66,14 @@ fun VideoCard(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(end = 8.dp, bottom = 8.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(6.dp))
                         .background(Color.Black.copy(alpha = 0.82f))
-                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
                 ) {
                     Text(
                         text = video.durationText,
                         color = Color.White,
-                        fontSize = 12.sp,
+                        fontSize = 11.5.sp,
                         fontWeight = FontWeight.Medium,
                         letterSpacing = 0.4.sp
                     )
@@ -82,7 +84,7 @@ fun VideoCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, end = 4.dp, top = 12.dp, bottom = 22.dp),
+                .padding(start = 14.dp, end = 6.dp, top = 10.dp, bottom = 20.dp),
             verticalAlignment = Alignment.Top
         ) {
             Box(

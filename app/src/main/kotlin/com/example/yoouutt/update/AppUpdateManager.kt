@@ -110,6 +110,19 @@ class AppUpdateManager(
     }
 
     fun installApk(apkFile: File, context: Context) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (!context.packageManager.canRequestPackageInstalls()) {
+                val permissionIntent = Intent(
+                    android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                    android.net.Uri.parse("package:${context.packageName}")
+                ).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(permissionIntent)
+                return
+            }
+        }
+
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",

@@ -102,9 +102,9 @@ fun InAppPipPlayer(
             .offset { IntOffset(animOffsetX.value.roundToInt(), 0) }
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
-            .shadow(8.dp, RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
-            .border(BorderStroke(0.5.dp, Color(0xFF2C2C2C)), RoundedCornerShape(12.dp))
+            .shadow(8.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .border(BorderStroke(0.5.dp, Color(0xFF2C2C2C)), RoundedCornerShape(16.dp))
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onHorizontalDrag = { change, dragAmount ->

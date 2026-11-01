@@ -773,8 +773,8 @@ fun PlayerScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 14.dp, vertical = 6.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFF1F1F1F))
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color(0xFF1E1E1E))
                                 .clickable {
                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                     isDescriptionExpanded = !isDescriptionExpanded
