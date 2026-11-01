@@ -96,14 +96,21 @@ class NewPipeVideoRepository(
             streamExtractor.fetchPage()
 
             val hlsUrl = streamExtractor.hlsUrl
+            val isLive = try {
+                streamExtractor.streamType == org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM
+            } catch (_: Exception) {
+                false
+            }
+
             val progressiveStream = streamExtractor.videoStreams
                 .filter { !it.isVideoOnly() }
                 .maxByOrNull { it.height }
                 ?.content
 
             val (streamUrl, isHls) = when {
-                !hlsUrl.isNullOrBlank() -> hlsUrl to true
+                isLive && !hlsUrl.isNullOrBlank() -> hlsUrl to true
                 !progressiveStream.isNullOrBlank() -> progressiveStream to false
+                !hlsUrl.isNullOrBlank() -> hlsUrl to true
                 streamExtractor.videoStreams.isNotEmpty() -> streamExtractor.videoStreams.first().content to false
                 else -> throw IllegalStateException("No playable stream available")
             }

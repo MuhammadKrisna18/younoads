@@ -18,7 +18,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -82,6 +83,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -119,6 +121,7 @@ fun PlayerScreen(
     val isLoading by playbackManager.isLoading.collectAsStateWithLifecycle()
     val errorMessage by playbackManager.errorMessage.collectAsStateWithLifecycle()
     val isPlaying by playbackManager.isPlaying.collectAsStateWithLifecycle()
+    val isBuffering by playbackManager.isBuffering.collectAsStateWithLifecycle()
 
     val exoPlayer = playbackManager.exoPlayer
     val isInPipMode = LocalInPipMode.current
@@ -339,12 +342,20 @@ fun PlayerScreen(
                                         val duration = if (exoPlayer.duration > 0) exoPlayer.duration else Long.MAX_VALUE
                                         if (isForward) {
                                             val newPos = (currentPos + 10000L).coerceAtMost(duration)
+                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
+                                                exoPlayer.prepare()
+                                            }
                                             exoPlayer.seekTo(newPos)
+                                            exoPlayer.play()
                                             seekFeedbackIsForward = true
                                             seekFeedbackText = "+10 detik"
                                         } else {
                                             val newPos = (currentPos - 10000L).coerceAtLeast(0L)
+                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
+                                                exoPlayer.prepare()
+                                            }
                                             exoPlayer.seekTo(newPos)
+                                            exoPlayer.play()
                                             seekFeedbackIsForward = false
                                             seekFeedbackText = "-10 detik"
                                         }
@@ -402,7 +413,9 @@ fun PlayerScreen(
                                         if (exoPlayer.isPlaying) {
                                             exoPlayer.pause()
                                         } else {
-                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_ENDED) {
+                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
+                                                exoPlayer.prepare()
+                                            } else if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_ENDED) {
                                                 exoPlayer.seekTo(0L)
                                             }
                                             exoPlayer.play()
@@ -411,12 +424,20 @@ fun PlayerScreen(
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                                    contentDescription = if (isPlaying) "Pause" else "Play",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(32.dp)
-                                )
+                                if (isBuffering) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(28.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.5.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                                        contentDescription = if (isPlaying) "Pause" else "Play",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
                             }
 
                             Row(
@@ -463,6 +484,16 @@ fun PlayerScreen(
                         }
                     }
 
+                    if (isBuffering && !isLoading && !controlsVisible) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(36.dp),
+                            color = Color.White,
+                            strokeWidth = 3.dp
+                        )
+                    }
+
                     YouTubeBottomSlider(
                         currentPositionMs = currentPositionMs,
                         bufferedPositionMs = bufferedPositionMs,
@@ -474,7 +505,11 @@ fun PlayerScreen(
                             controlsLastInteractionTime = System.currentTimeMillis()
                         },
                         onSeek = { seekMs ->
+                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
+                                exoPlayer.prepare()
+                            }
                             exoPlayer.seekTo(seekMs)
+                            exoPlayer.play()
                             currentPositionMs = seekMs
                             controlsLastInteractionTime = System.currentTimeMillis()
                         },
@@ -516,6 +551,7 @@ fun PlayerScreen(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable {
                                 exoPlayer.seekTo(resumeSavedPosition)
+                                exoPlayer.play()
                                 resumeBannerVisible = false
                             }
                         )
@@ -953,35 +989,36 @@ private fun YouTubeBottomSlider(
             .height(if (isControlsVisible) 32.dp else 4.dp)
             .pointerInput(totalDuration, isControlsVisible) {
                 if (!isControlsVisible) return@pointerInput
-                detectHorizontalDragGestures(
-                    onDragStart = { offset ->
-                        isDragging = true
-                        val newProgress = (offset.x / size.width).coerceIn(0f, 1f)
-                        dragProgress = newProgress
-                        onScrubbing(true, (newProgress * totalDuration).toLong())
-                    },
-                    onDragEnd = {
-                        isDragging = false
-                        val targetMs = (dragProgress * totalDuration).toLong()
-                        onScrubbing(false, targetMs)
-                        onSeek(targetMs)
-                    },
-                    onDragCancel = {
-                        isDragging = false
-                        onScrubbing(false, currentPositionMs)
-                    },
-                    onHorizontalDrag = { _, dragAmount ->
-                        val newProgress = (dragProgress + dragAmount / size.width).coerceIn(0f, 1f)
-                        dragProgress = newProgress
-                        onScrubbing(true, (newProgress * totalDuration).toLong())
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    val width = size.width.coerceAtLeast(1)
+                    var currentX = down.position.x
+                    val initialProgress = (currentX / width).coerceIn(0f, 1f)
+
+                    isDragging = true
+                    dragProgress = initialProgress
+                    onScrubbing(true, (initialProgress * totalDuration).toLong())
+
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                        if (change.changedToUp()) {
+                            change.consume()
+                            break
+                        }
+                        if (change.position.x != currentX) {
+                            change.consume()
+                            currentX = change.position.x
+                            val newProgress = (currentX / width).coerceIn(0f, 1f)
+                            dragProgress = newProgress
+                            onScrubbing(true, (newProgress * totalDuration).toLong())
+                        }
                     }
-                )
-            }
-            .pointerInput(totalDuration, isControlsVisible) {
-                if (!isControlsVisible) return@pointerInput
-                detectTapGestures { offset ->
-                    val tapProgress = (offset.x / size.width).coerceIn(0f, 1f)
-                    val targetMs = (tapProgress * totalDuration).toLong()
+
+                    isDragging = false
+                    val finalProgress = (currentX / width).coerceIn(0f, 1f)
+                    val targetMs = (finalProgress * totalDuration).toLong()
+                    onScrubbing(false, targetMs)
                     onSeek(targetMs)
                 }
             },

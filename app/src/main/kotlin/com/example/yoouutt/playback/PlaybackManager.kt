@@ -4,8 +4,13 @@ import android.content.Context
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.NewPipeVideoRepository
@@ -47,28 +52,70 @@ class PlaybackManager(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
+    private val _isBuffering = MutableStateFlow(false)
+    val isBuffering: StateFlow<Boolean> = _isBuffering.asStateFlow()
+
     private val _resumePositionMs = MutableStateFlow<Long?>(null)
     val resumePositionMs: StateFlow<Long?> = _resumePositionMs.asStateFlow()
 
-    val exoPlayer: ExoPlayer = ExoPlayer.Builder(context)
-        .setSeekBackIncrementMs(5000L)
-        .setSeekForwardIncrementMs(5000L)
-        .build()
-        .apply {
-            playWhenReady = true
-            setWakeMode(C.WAKE_MODE_NETWORK)
-            val audioAttributes = AudioAttributes.Builder()
-                .setUsage(C.USAGE_MEDIA)
-                .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
-                .build()
-            setAudioAttributes(audioAttributes, true)
-            setHandleAudioBecomingNoisy(true)
-            addListener(object : Player.Listener {
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    _isPlaying.value = isPlaying
-                }
-            })
-        }
+    val exoPlayer: ExoPlayer = run {
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(20000)
+            .setReadTimeoutMs(20000)
+
+        val mediaSourceFactory = DefaultMediaSourceFactory(context)
+            .setDataSourceFactory(httpDataSourceFactory)
+
+        val loadControl = DefaultLoadControl.Builder()
+            .setBufferDurationsMs(
+                15000,
+                50000,
+                1500,
+                2500
+            )
+            .build()
+
+        ExoPlayer.Builder(context)
+            .setMediaSourceFactory(mediaSourceFactory)
+            .setLoadControl(loadControl)
+            .setSeekBackIncrementMs(5000L)
+            .setSeekForwardIncrementMs(5000L)
+            .build()
+            .apply {
+                playWhenReady = true
+                setWakeMode(C.WAKE_MODE_NETWORK)
+                val audioAttributes = AudioAttributes.Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+                    .build()
+                setAudioAttributes(audioAttributes, true)
+                setHandleAudioBecomingNoisy(true)
+                addListener(object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        _isPlaying.value = isPlaying
+                        if (isPlaying) {
+                            _isBuffering.value = false
+                        }
+                    }
+
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        _isBuffering.value = (playbackState == Player.STATE_BUFFERING)
+                        if (playbackState == Player.STATE_ENDED) {
+                            _isPlaying.value = false
+                            _isBuffering.value = false
+                        }
+                    }
+
+                    override fun onPlayerError(error: PlaybackException) {
+                        _isBuffering.value = false
+                        _isPlaying.value = false
+                        prepare()
+                    }
+                })
+            }
+    }
 
     init {
         scope.launch {
@@ -122,7 +169,14 @@ class PlaybackManager(
                     }
                     _resumePositionMs.value = resumePos
 
-                    val mediaItem = MediaItem.fromUri(streamData.streamUrl)
+                    val mediaItem = MediaItem.Builder()
+                        .setUri(streamData.streamUrl)
+                        .apply {
+                            if (streamData.isHls) {
+                                setMimeType(MimeTypes.APPLICATION_M3U8)
+                            }
+                        }
+                        .build()
                     exoPlayer.setMediaItem(mediaItem)
                     exoPlayer.prepare()
                     if (resumePos != null && resumePos > 0L) {
@@ -141,6 +195,11 @@ class PlaybackManager(
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
         } else {
+            if (exoPlayer.playbackState == Player.STATE_IDLE) {
+                exoPlayer.prepare()
+            } else if (exoPlayer.playbackState == Player.STATE_ENDED) {
+                exoPlayer.seekTo(0L)
+            }
             exoPlayer.play()
         }
     }
