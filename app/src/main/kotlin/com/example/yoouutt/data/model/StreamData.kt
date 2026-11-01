@@ -6,6 +6,7 @@ data class StreamData(
     val uploaderName: String,
     val uploaderUrl: String = "",
     val uploaderAvatarUrl: String = "",
+    val uploaderSubscriberCountText: String = "",
     val streamUrl: String,
     val isHls: Boolean,
     val description: String = "",

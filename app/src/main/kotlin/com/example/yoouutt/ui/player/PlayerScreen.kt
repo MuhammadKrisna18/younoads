@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -220,7 +221,8 @@ fun PlayerScreen(
         } else {
             Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .statusBarsPadding()
+                .navigationBarsPadding()
         }
 
         Column(modifier = contentModifier) {
@@ -389,7 +391,13 @@ fun PlayerScreen(
             }
 
             if (!isFullscreen) {
-                val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
                 val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
                 val streamData = currentPlayback?.streamData
 
@@ -474,30 +482,41 @@ fun PlayerScreen(
                     ) {
                         Text(
                             text = currentUploader,
-                            fontSize = 14.5.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+                        val subText = streamData?.uploaderSubscriberCountText.orEmpty()
+                        if (subText.isNotBlank()) {
+                            Text(
+                                text = subText,
+                                fontSize = 11.5.sp,
+                                color = Color(0xFFAAAAAA),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Box(
                         modifier = Modifier
+                            .height(34.dp)
                             .clip(RoundedCornerShape(50.dp))
                             .background(if (isSubscribed) Color(0xFF272727) else Color.White)
                             .clickable {
                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                 isSubscribed = !isSubscribed
                             }
-                            .padding(horizontal = 14.dp, vertical = 7.dp),
+                            .padding(horizontal = 14.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = if (isSubscribed) "Disubscribe" else "Subscribe",
-                            fontSize = 12.5.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = if (isSubscribed) Color.White else Color.Black
                         )
@@ -608,8 +627,8 @@ fun PlayerScreen(
                                 if (hasDesc) {
                                     Text(
                                         text = streamData.description,
-                                        fontSize = 12.5.sp,
-                                        lineHeight = 18.sp,
+                                        fontSize = 12.sp,
+                                        lineHeight = 17.sp,
                                         color = Color(0xFFDDDDDD),
                                         maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 2,
                                         overflow = TextOverflow.Ellipsis
@@ -617,7 +636,7 @@ fun PlayerScreen(
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = if (isDescriptionExpanded) "Sembunyikan" else "...selengkapnya",
-                                        fontSize = 12.sp,
+                                        fontSize = 11.5.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White
                                     )
@@ -651,7 +670,8 @@ fun PlayerScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }
@@ -679,22 +699,23 @@ private fun ActionPill(
 ) {
     Row(
         modifier = modifier
+            .height(34.dp)
             .clip(RoundedCornerShape(50.dp))
             .background(if (isActive) Color.White else Color(0xFF272727))
             .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
             tint = if (isActive) Color.Black else Color.White,
-            modifier = Modifier.size(17.dp)
+            modifier = Modifier.size(15.dp)
         )
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(5.dp))
         Text(
             text = label,
-            fontSize = 12.5.sp,
+            fontSize = 12.sp,
             fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
             color = if (isActive) Color.Black else Color.White
         )

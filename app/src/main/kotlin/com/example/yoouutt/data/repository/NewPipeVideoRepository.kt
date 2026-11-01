@@ -1,5 +1,6 @@
 package com.example.yoouutt.data.repository
 
+import androidx.core.text.HtmlCompat
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
@@ -11,6 +12,8 @@ import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabs
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
+import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.Locale
 
 class NewPipeVideoRepository(
@@ -58,14 +61,20 @@ class NewPipeVideoRepository(
                 topicIndex++
                 val searchExtractor = ServiceList.YouTube.getSearchExtractor(currentTopic)
                 searchExtractor.fetchPage()
-                val topicItems = searchExtractor.initialPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
-                combinedList.addAll(topicItems)
+                val searchPage = searchExtractor.initialPage
+                val searchItems = searchPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
+                combinedList.addAll(searchItems)
             } catch (_: Exception) {
             }
 
-            combinedList
-                .distinctBy { it.id }
-                .shuffled()
+            if (combinedList.isEmpty()) {
+                val searchExtractor = ServiceList.YouTube.getSearchExtractor("indonesia")
+                searchExtractor.fetchPage()
+                val fallbackItems = searchExtractor.initialPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
+                combinedList.addAll(fallbackItems)
+            }
+
+            combinedList.distinctBy { it.id }
         }
     }
 
@@ -73,9 +82,11 @@ class NewPipeVideoRepository(
         runCatching {
             val searchExtractor = ServiceList.YouTube.getSearchExtractor(query)
             searchExtractor.fetchPage()
-            searchExtractor.initialPage.items
+            val initialPage = searchExtractor.initialPage
+            initialPage.items
                 .filterIsInstance<StreamInfoItem>()
                 .map { it.toVideoItem() }
+                .distinctBy { it.id }
         }
     }
 
@@ -98,10 +109,22 @@ class NewPipeVideoRepository(
             }
 
             val bestAvatar = streamExtractor.uploaderAvatars.maxByOrNull { it.height }?.url.orEmpty()
-            val description = try { streamExtractor.description.content.orEmpty() } catch (_: Exception) { "" }
+            val rawDescription = try { streamExtractor.description.content.orEmpty() } catch (_: Exception) { "" }
+            val cleanDesc = cleanHtmlDescription(rawDescription)
             val viewCount = try { streamExtractor.viewCount } catch (_: Exception) { 0L }
             val viewText = formatViewCount(viewCount)
-            val dateText = try { streamExtractor.textualUploadDate.orEmpty() } catch (_: Exception) { "" }
+            val uploadMillis = try {
+                streamExtractor.uploadDate?.instant?.toEpochMilli()
+                    ?: streamExtractor.uploadDate?.offsetDateTime()?.toInstant()?.toEpochMilli()
+            } catch (_: Exception) {
+                null
+            }
+            val textualDate = try { streamExtractor.textualUploadDate.orEmpty() } catch (_: Exception) { "" }
+            val formattedDate = formatUploadDate(uploadMillis, textualDate)
+
+            val subscriberCount = try { streamExtractor.uploaderSubscriberCount } catch (_: Exception) { 0L }
+            val subscriberText = if (subscriberCount > 0L) formatSubscriberCount(subscriberCount) else ""
+
             val relatedItems = try {
                 streamExtractor.relatedStreams?.items
                     ?.filterIsInstance<StreamInfoItem>()
@@ -118,10 +141,11 @@ class NewPipeVideoRepository(
                 uploaderName = streamExtractor.uploaderName,
                 uploaderUrl = streamExtractor.uploaderUrl,
                 uploaderAvatarUrl = bestAvatar,
+                uploaderSubscriberCountText = subscriberText,
                 isHls = isHls,
-                description = description,
+                description = cleanDesc,
                 viewCountText = viewText,
-                uploadDateText = dateText,
+                uploadDateText = formattedDate,
                 relatedVideos = relatedItems
             )
         }
@@ -206,6 +230,7 @@ class NewPipeVideoRepository(
         val dateMillis = uploadDate?.instant?.toEpochMilli()
             ?: uploadDate?.offsetDateTime()?.toInstant()?.toEpochMilli()
             ?: parseTextualDateToMillis(textualUploadDate.orEmpty())
+        val formattedDate = formatUploadDate(dateMillis, textualUploadDate.orEmpty())
 
         return VideoItem(
             id = url.substringAfter("v=").substringBefore("&"),
@@ -219,8 +244,17 @@ class NewPipeVideoRepository(
             viewCount = viewCount,
             viewCountText = formatViewCount(viewCount),
             uploadDateMillis = dateMillis,
-            uploadDateText = textualUploadDate.orEmpty()
+            uploadDateText = formattedDate
         )
+    }
+
+    private fun cleanHtmlDescription(raw: String): String {
+        if (raw.isBlank()) return ""
+        return try {
+            HtmlCompat.fromHtml(raw, HtmlCompat.FROM_HTML_MODE_LEGACY).toString().trim()
+        } catch (_: Exception) {
+            raw.replace(Regex("<[^>]*>"), "").trim()
+        }
     }
 
     private fun formatDuration(durationSeconds: Long): String {
@@ -238,9 +272,21 @@ class NewPipeVideoRepository(
     private fun formatViewCount(views: Long): String {
         if (views <= 0) return ""
         return when {
-            views >= 1_000_000_000 -> String.format(Locale.getDefault(), "%.1f Miliar x", views / 1_000_000_000.0)
-            views >= 1_000_000 -> String.format(Locale.getDefault(), "%.1f Juta x", views / 1_000_000.0)
-            views >= 1_000 -> String.format(Locale.getDefault(), "%.1f Ribu x", views / 1_000.0)
+            views >= 1_000_000_000 -> {
+                val value = views / 1_000_000_000.0
+                if (value >= 10.0) String.format(Locale.getDefault(), "%.0f M x", value)
+                else String.format(Locale.getDefault(), "%.1f M x", value)
+            }
+            views >= 1_000_000 -> {
+                val value = views / 1_000_000.0
+                if (value >= 10.0) String.format(Locale.getDefault(), "%.0f jt x", value)
+                else String.format(Locale.getDefault(), "%.1f jt x", value)
+            }
+            views >= 1_000 -> {
+                val value = views / 1_000.0
+                if (value >= 10.0) String.format(Locale.getDefault(), "%.0f rb x", value)
+                else String.format(Locale.getDefault(), "%.1f rb x", value)
+            }
             else -> "$views x"
         }
     }
@@ -248,10 +294,94 @@ class NewPipeVideoRepository(
     private fun formatSubscriberCount(subscribers: Long): String {
         if (subscribers <= 0) return ""
         return when {
-            subscribers >= 1_000_000 -> String.format(Locale.getDefault(), "%.1f jt subscriber", subscribers / 1_000_000.0)
-            subscribers >= 1_000 -> String.format(Locale.getDefault(), "%.1f rb subscriber", subscribers / 1_000.0)
+            subscribers >= 1_000_000 -> {
+                val value = subscribers / 1_000_000.0
+                if (value >= 100.0) String.format(Locale.getDefault(), "%.0f jt subscriber", value)
+                else String.format(Locale.getDefault(), "%.1f jt subscriber", value)
+            }
+            subscribers >= 1_000 -> {
+                val value = subscribers / 1_000.0
+                if (value >= 100.0) String.format(Locale.getDefault(), "%.0f rb subscriber", value)
+                else String.format(Locale.getDefault(), "%.1f rb subscriber", value)
+            }
             else -> "$subscribers subscriber"
         }
+    }
+
+    private fun formatUploadDate(uploadDateMillis: Long?, textualDate: String?): String {
+        if (uploadDateMillis != null && uploadDateMillis > 0L) {
+            val relative = formatRelativeTime(uploadDateMillis)
+            if (relative.isNotBlank()) return relative
+        }
+
+        val rawText = textualDate.orEmpty().trim()
+        if (rawText.isBlank()) return ""
+
+        try {
+            val offsetDateTime = OffsetDateTime.parse(rawText)
+            return formatRelativeTime(offsetDateTime.toInstant().toEpochMilli())
+        } catch (_: Exception) {
+        }
+
+        try {
+            val instant = Instant.parse(rawText)
+            return formatRelativeTime(instant.toEpochMilli())
+        } catch (_: Exception) {
+        }
+
+        return translateEnglishRelativeDate(rawText)
+    }
+
+    private fun formatRelativeTime(millis: Long): String {
+        if (millis <= 0L) return ""
+        val diff = System.currentTimeMillis() - millis
+        if (diff < 0L) return "Baru saja"
+
+        val seconds = diff / 1000L
+        val minutes = seconds / 60L
+        val hours = minutes / 60L
+        val days = hours / 24L
+        val weeks = days / 7L
+        val months = days / 30L
+        val years = days / 365L
+
+        return when {
+            years > 0 -> "$years tahun lalu"
+            months > 0 -> "$months bulan lalu"
+            weeks > 0 -> "$weeks minggu lalu"
+            days > 0 -> "$days hari lalu"
+            hours > 0 -> "$hours jam lalu"
+            minutes > 0 -> "$minutes menit lalu"
+            else -> "Baru saja"
+        }
+    }
+
+    private fun translateEnglishRelativeDate(text: String): String {
+        var result = text
+        val replacements = listOf(
+            "years ago" to "tahun lalu",
+            "year ago" to "tahun lalu",
+            "months ago" to "bulan lalu",
+            "month ago" to "bulan lalu",
+            "weeks ago" to "minggu lalu",
+            "week ago" to "minggu lalu",
+            "days ago" to "hari lalu",
+            "day ago" to "hari lalu",
+            "hours ago" to "jam lalu",
+            "hour ago" to "jam lalu",
+            "minutes ago" to "menit lalu",
+            "minute ago" to "menit lalu",
+            "seconds ago" to "detik lalu",
+            "second ago" to "detik lalu",
+            "Streamed" to "Disiarkan",
+            "streamed" to "disiarkan"
+        )
+        for ((eng, id) in replacements) {
+            if (result.contains(eng, ignoreCase = true)) {
+                result = result.replace(Regex("(?i)" + Regex.escape(eng)), id)
+            }
+        }
+        return result.trim()
     }
 
     private fun parseTextualDateToMillis(text: String): Long {
