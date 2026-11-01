@@ -49,10 +49,10 @@ fun VideoCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .border(
-                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
-                    shape = RoundedCornerShape(16.dp)
+                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(12.dp)
                 )
                 .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
@@ -68,9 +68,13 @@ fun VideoCard(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color.Black.copy(alpha = 0.85f))
-                        .padding(horizontal = 7.dp, vertical = 3.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.Black.copy(alpha = 0.72f))
+                        .border(
+                            BorderStroke(0.5.dp, Color.White.copy(alpha = 0.16f)),
+                            RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.5.dp)
                 ) {
                     Text(
                         text = video.durationText,
@@ -99,13 +103,13 @@ fun VideoCard(
                         onChannelClick(targetUrl, video.uploaderName)
                     }
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape)
+                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), CircleShape)
             } else {
                 Modifier
                     .size(38.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape)
+                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), CircleShape)
             }
 
             Box(
@@ -171,10 +175,10 @@ fun VideoCard(
                 Text(
                     text = metaText,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    letterSpacing = 0.2.sp,
+                    letterSpacing = 0.1.sp,
                     modifier = uploaderModifier
                 )
             }

@@ -1,6 +1,6 @@
 package com.example.yoouutt.ui.common
 
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -23,20 +23,23 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmer_transition")
     val translateAnim = transition.animateFloat(
         initialValue = 0f,
-        targetValue = 1200f,
+        targetValue = 1400f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1100, easing = LinearEasing),
+            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "shimmer_translation"
     )
 
     val brush = Brush.linearGradient(
-        colors = listOf(baseColor, highlightColor, baseColor),
-        start = Offset(translateAnim.value - 600f, translateAnim.value - 600f),
+        colors = listOf(
+            baseColor,
+            highlightColor,
+            baseColor
+        ),
+        start = Offset(translateAnim.value - 700f, translateAnim.value - 700f),
         end = Offset(translateAnim.value, translateAnim.value)
     )
 
     background(brush)
 }
-

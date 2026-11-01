@@ -30,7 +30,7 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .shimmerEffect()
         )
 
@@ -44,7 +44,7 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(38.dp)
                     .clip(CircleShape)
                     .shimmerEffect()
             )
@@ -83,4 +83,3 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
         }
     }
 }
-

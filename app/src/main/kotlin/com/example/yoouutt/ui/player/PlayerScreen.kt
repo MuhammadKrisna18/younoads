@@ -3,10 +3,17 @@ package com.example.yoouutt.ui.player
 import android.content.Context
 import android.content.Intent
 import android.view.GestureDetector
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,10 +21,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +39,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FastForward
+import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.PictureInPictureAlt
@@ -58,10 +69,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -93,12 +106,13 @@ fun PlayerScreen(
     val resumePositionMs by playbackManager.resumePositionMs.collectAsStateWithLifecycle()
     val exoPlayer = playbackManager.exoPlayer
     val context = LocalContext.current
+    val view = LocalView.current
     val activity = remember(context) { context.findActivity() }
     val isInPip = LocalInPipMode.current
 
     var isFullscreen by remember { mutableStateOf(false) }
     var seekFeedbackText by remember { mutableStateOf<String?>(null) }
-    var seekFeedbackAlignment by remember { mutableStateOf(Alignment.Center) }
+    var seekFeedbackIsForward by remember { mutableStateOf(true) }
 
     var resumeBannerVisible by remember(videoUrl) { mutableStateOf(false) }
     var resumeBannerText by remember(videoUrl) { mutableStateOf("") }
@@ -126,7 +140,7 @@ fun PlayerScreen(
 
     LaunchedEffect(seekFeedbackText) {
         if (seekFeedbackText != null) {
-            delay(600)
+            delay(750)
             seekFeedbackText = null
         }
     }
@@ -289,17 +303,18 @@ fun PlayerScreen(
                                     toggleFullscreen()
                                 }
                                 onDoubleTapSeek = { isForward ->
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                     if (isForward) {
                                         val duration = if (exoPlayer.duration > 0) exoPlayer.duration else Long.MAX_VALUE
-                                        val newPos = (exoPlayer.currentPosition + 5000L).coerceAtMost(duration)
+                                        val newPos = (exoPlayer.currentPosition + 10000L).coerceAtMost(duration)
                                         exoPlayer.seekTo(newPos)
-                                        seekFeedbackAlignment = Alignment.CenterEnd
-                                        seekFeedbackText = "+5s"
+                                        seekFeedbackIsForward = true
+                                        seekFeedbackText = "+10 detik"
                                     } else {
-                                        val newPos = (exoPlayer.currentPosition - 5000L).coerceAtLeast(0L)
+                                        val newPos = (exoPlayer.currentPosition - 10000L).coerceAtLeast(0L)
                                         exoPlayer.seekTo(newPos)
-                                        seekFeedbackAlignment = Alignment.CenterStart
-                                        seekFeedbackText = "-5s"
+                                        seekFeedbackIsForward = false
+                                        seekFeedbackText = "-10 detik"
                                     }
                                 }
                             }
@@ -313,24 +328,11 @@ fun PlayerScreen(
                     )
                 }
 
-                if (seekFeedbackText != null) {
-                    Box(
-                        modifier = Modifier
-                            .align(seekFeedbackAlignment)
-                            .padding(horizontal = 32.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.75f))
-                            .padding(horizontal = 20.dp, vertical = 12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = seekFeedbackText.orEmpty(),
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                DoubleTapSeekFeedback(
+                    visible = seekFeedbackText != null,
+                    isForward = seekFeedbackIsForward,
+                    text = seekFeedbackText.orEmpty()
+                )
 
                 if (resumeBannerVisible) {
                     Row(
@@ -553,6 +555,70 @@ private fun ActionPill(
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface
         )
+    }
+}
+
+@Composable
+private fun BoxScope.DoubleTapSeekFeedback(
+    visible: Boolean,
+    isForward: Boolean,
+    text: String
+) {
+    androidx.compose.animation.AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(tween(100)) + scaleIn(tween(180, easing = FastOutSlowInEasing)),
+        exit = fadeOut(tween(350, easing = FastOutSlowInEasing)),
+        modifier = Modifier.align(if (isForward) Alignment.CenterEnd else Alignment.CenterStart)
+    ) {
+        val shape = if (isForward) {
+            RoundedCornerShape(topStartPercent = 100, bottomStartPercent = 100)
+        } else {
+            RoundedCornerShape(topEndPercent = 100, bottomEndPercent = 100)
+        }
+
+        val gradient = if (isForward) {
+            Brush.horizontalGradient(
+                listOf(
+                    Color.White.copy(alpha = 0.04f),
+                    Color.White.copy(alpha = 0.22f)
+                )
+            )
+        } else {
+            Brush.horizontalGradient(
+                listOf(
+                    Color.White.copy(alpha = 0.22f),
+                    Color.White.copy(alpha = 0.04f)
+                )
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.38f)
+                .clip(shape)
+                .background(gradient),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = if (isForward) Icons.Default.FastForward else Icons.Default.FastRewind,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(36.dp)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = text,
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
