@@ -16,7 +16,9 @@ sealed interface ChannelUiState {
     data class Success(
         val channel: ChannelData,
         val sortedVideos: List<VideoItem>,
-        val currentSort: ChannelSortOption
+        val currentSort: ChannelSortOption,
+        val isLoadingMore: Boolean = false,
+        val searchQuery: String = ""
     ) : ChannelUiState
     data class Error(val message: String) : ChannelUiState
 }
@@ -29,15 +31,20 @@ class ChannelViewModel(
     val uiState: StateFlow<ChannelUiState> = _uiState.asStateFlow()
 
     private var currentChannel: ChannelData? = null
+    private val allLoadedVideos = mutableListOf<VideoItem>()
     private var activeSort: ChannelSortOption = ChannelSortOption.NEWEST
+    private var currentSearchQuery = ""
+    private var isLoadingMore = false
 
     fun loadChannel(channelUrl: String) {
         viewModelScope.launch {
             _uiState.value = ChannelUiState.Loading
+            allLoadedVideos.clear()
             videoRepository.getChannelDetails(channelUrl)
                 .onSuccess { data ->
                     currentChannel = data
-                    applySort(activeSort)
+                    allLoadedVideos.addAll(data.videos)
+                    applySortAndFilter()
                 }
                 .onFailure { error ->
                     _uiState.value = ChannelUiState.Error(error.localizedMessage ?: "Gagal memuat profil channel")
@@ -45,35 +52,79 @@ class ChannelViewModel(
         }
     }
 
-    fun onSortSelected(option: ChannelSortOption) {
-        activeSort = option
-        applySort(option)
+    fun loadMore() {
+        if (isLoadingMore || currentChannel == null) return
+        isLoadingMore = true
+        updateLoadingMoreState(true)
+
+        viewModelScope.launch {
+            videoRepository.getMoreChannelVideos()
+                .onSuccess { moreVideos ->
+                    if (moreVideos.isNotEmpty()) {
+                        val newItems = moreVideos.filter { newVid -> allLoadedVideos.none { it.id == newVid.id } }
+                        allLoadedVideos.addAll(newItems)
+                    }
+                    isLoadingMore = false
+                    applySortAndFilter()
+                }
+                .onFailure {
+                    isLoadingMore = false
+                    updateLoadingMoreState(false)
+                }
+        }
     }
 
-    private fun applySort(option: ChannelSortOption) {
+    fun onSortSelected(option: ChannelSortOption) {
+        activeSort = option
+        applySortAndFilter()
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        currentSearchQuery = query
+        applySortAndFilter()
+    }
+
+    private fun updateLoadingMoreState(loading: Boolean) {
+        val current = _uiState.value
+        if (current is ChannelUiState.Success) {
+            _uiState.value = current.copy(isLoadingMore = loading)
+        }
+    }
+
+    private fun applySortAndFilter() {
         val channel = currentChannel ?: return
-        val sorted = when (option) {
+        val filtered = if (currentSearchQuery.isBlank()) {
+            allLoadedVideos
+        } else {
+            allLoadedVideos.filter {
+                it.title.contains(currentSearchQuery, ignoreCase = true)
+            }
+        }
+
+        val sorted = when (activeSort) {
             ChannelSortOption.NEWEST -> {
-                channel.videos.sortedWith(
+                filtered.sortedWith(
                     compareByDescending<VideoItem> { it.uploadDateMillis }
                         .thenByDescending { it.viewCount }
                 )
             }
             ChannelSortOption.OLDEST -> {
-                channel.videos.sortedWith(
+                filtered.sortedWith(
                     compareBy<VideoItem> { it.uploadDateMillis }
                         .thenBy { it.viewCount }
                 )
             }
             ChannelSortOption.POPULAR -> {
-                channel.videos.sortedByDescending { it.viewCount }
+                filtered.sortedByDescending { it.viewCount }
             }
         }
+
         _uiState.value = ChannelUiState.Success(
             channel = channel,
             sortedVideos = sorted,
-            currentSort = option
+            currentSort = activeSort,
+            isLoadingMore = isLoadingMore,
+            searchQuery = currentSearchQuery
         )
     }
 }
-

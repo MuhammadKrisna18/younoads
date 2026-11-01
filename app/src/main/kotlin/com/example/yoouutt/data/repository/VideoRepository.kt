@@ -9,4 +9,5 @@ interface VideoRepository {
     suspend fun searchVideos(query: String): Result<List<VideoItem>>
     suspend fun getVideoStreams(videoUrl: String): Result<StreamData>
     suspend fun getChannelDetails(channelUrl: String): Result<ChannelData>
+    suspend fun getMoreChannelVideos(): Result<List<VideoItem>>
 }

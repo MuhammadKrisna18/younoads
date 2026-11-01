@@ -6,7 +6,9 @@ import com.example.yoouutt.data.model.VideoItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.schabi.newpipe.extractor.Page
 import org.schabi.newpipe.extractor.ServiceList
+import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabs
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import java.util.Locale
@@ -15,13 +17,55 @@ class NewPipeVideoRepository(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : VideoRepository {
 
+    private val trendingTopics = listOf(
+        "trending indonesia",
+        "podcast indonesia terbaru",
+        "musik indonesia populer",
+        "video viral indonesia",
+        "stand up comedy indonesia",
+        "gaming indonesia",
+        "berita viral terkini",
+        "gadget teknologi terbaru",
+        "film pendek indonesia",
+        "vlog indonesia viral"
+    )
+    private var topicIndex = 0
+
+    private var channelTabExtractor: ChannelTabExtractor? = null
+    private var channelNextPage: Page? = null
+
     override suspend fun getTrendingVideos(): Result<List<VideoItem>> = withContext(ioDispatcher) {
         runCatching {
-            val kioskExtractor = ServiceList.YouTube.kioskList.defaultKioskExtractor
-            kioskExtractor.fetchPage()
-            kioskExtractor.initialPage.items
-                .filterIsInstance<StreamInfoItem>()
-                .map { it.toVideoItem() }
+            val combinedList = mutableListOf<VideoItem>()
+
+            try {
+                val kioskExtractor = ServiceList.YouTube.kioskList.defaultKioskExtractor
+                kioskExtractor.fetchPage()
+                val page1 = kioskExtractor.initialPage
+                combinedList.addAll(page1.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() })
+                if (page1.hasNextPage()) {
+                    try {
+                        val page2 = kioskExtractor.getPage(page1.nextPage)
+                        combinedList.addAll(page2.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() })
+                    } catch (_: Exception) {
+                    }
+                }
+            } catch (_: Exception) {
+            }
+
+            try {
+                val currentTopic = trendingTopics[topicIndex % trendingTopics.size]
+                topicIndex++
+                val searchExtractor = ServiceList.YouTube.getSearchExtractor(currentTopic)
+                searchExtractor.fetchPage()
+                val topicItems = searchExtractor.initialPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
+                combinedList.addAll(topicItems)
+            } catch (_: Exception) {
+            }
+
+            combinedList
+                .distinctBy { it.id }
+                .shuffled()
         }
     }
 
@@ -68,12 +112,12 @@ class NewPipeVideoRepository(
             }
 
             StreamData(
-                videoId = streamExtractor.id.orEmpty(),
-                title = streamExtractor.name.orEmpty(),
-                uploaderName = streamExtractor.uploaderName.orEmpty(),
-                uploaderUrl = streamExtractor.uploaderUrl.orEmpty(),
-                uploaderAvatarUrl = bestAvatar,
+                videoId = streamExtractor.id,
                 streamUrl = streamUrl,
+                title = streamExtractor.name,
+                uploaderName = streamExtractor.uploaderName,
+                uploaderUrl = streamExtractor.uploaderUrl,
+                uploaderAvatarUrl = bestAvatar,
                 isHls = isHls,
                 description = description,
                 viewCountText = viewText,
@@ -112,18 +156,24 @@ class NewPipeVideoRepository(
             if (videosTab != null) {
                 val tabExtractor = ServiceList.YouTube.getChannelTabExtractor(videosTab)
                 tabExtractor.fetchPage()
-                val initialPage = tabExtractor.initialPage
-                val pageItems = initialPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
-                videoList.addAll(pageItems)
+                var currentPage = tabExtractor.initialPage
+                val firstBatch = currentPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
+                videoList.addAll(firstBatch)
 
-                if (initialPage.hasNextPage() && videoList.size < 60) {
+                var batchCount = 1
+                while (currentPage.hasNextPage() && batchCount < 4) {
                     try {
-                        val nextPage = tabExtractor.getPage(initialPage.nextPage)
-                        val moreItems = nextPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
-                        videoList.addAll(moreItems)
+                        currentPage = tabExtractor.getPage(currentPage.nextPage)
+                        val nextBatch = currentPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
+                        videoList.addAll(nextBatch)
+                        batchCount++
                     } catch (_: Exception) {
+                        break
                     }
                 }
+
+                channelTabExtractor = tabExtractor
+                channelNextPage = if (currentPage.hasNextPage()) currentPage.nextPage else null
             }
 
             ChannelData(
@@ -136,6 +186,16 @@ class NewPipeVideoRepository(
                 isVerified = isVerified,
                 videos = videoList
             )
+        }
+    }
+
+    override suspend fun getMoreChannelVideos(): Result<List<VideoItem>> = withContext(ioDispatcher) {
+        runCatching {
+            val extractor = channelTabExtractor ?: return@runCatching emptyList()
+            val nextPage = channelNextPage ?: return@runCatching emptyList()
+            val page = extractor.getPage(nextPage)
+            channelNextPage = if (page.hasNextPage()) page.nextPage else null
+            page.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
         }
     }
 
@@ -171,43 +231,46 @@ class NewPipeVideoRepository(
         return if (hours > 0) {
             String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
         } else {
-            String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+            String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
         }
     }
 
     private fun formatViewCount(views: Long): String {
         if (views <= 0) return ""
         return when {
-            views >= 1_000_000_000 -> String.format(Locale.getDefault(), "%.1f Miliar", views / 1_000_000_000.0)
-            views >= 1_000_000 -> String.format(Locale.getDefault(), "%.1f Juta", views / 1_000_000.0)
-            views >= 1_000 -> String.format(Locale.getDefault(), "%.1f Rb", views / 1_000.0)
-            else -> "$views"
-        } + " x ditonton"
+            views >= 1_000_000_000 -> String.format(Locale.getDefault(), "%.1f Miliar x", views / 1_000_000_000.0)
+            views >= 1_000_000 -> String.format(Locale.getDefault(), "%.1f Juta x", views / 1_000_000.0)
+            views >= 1_000 -> String.format(Locale.getDefault(), "%.1f Ribu x", views / 1_000.0)
+            else -> "$views x"
+        }
     }
 
-    private fun formatSubscriberCount(count: Long): String {
-        if (count <= 0) return ""
+    private fun formatSubscriberCount(subscribers: Long): String {
+        if (subscribers <= 0) return ""
         return when {
-            count >= 1_000_000_000 -> String.format(Locale.getDefault(), "%.2f M", count / 1_000_000_000.0)
-            count >= 1_000_000 -> String.format(Locale.getDefault(), "%.1f jt", count / 1_000_000.0)
-            count >= 1_000 -> String.format(Locale.getDefault(), "%.1f rb", count / 1_000.0)
-            else -> "$count"
-        } + " subscriber"
+            subscribers >= 1_000_000 -> String.format(Locale.getDefault(), "%.1f jt subscriber", subscribers / 1_000_000.0)
+            subscribers >= 1_000 -> String.format(Locale.getDefault(), "%.1f rb subscriber", subscribers / 1_000.0)
+            else -> "$subscribers subscriber"
+        }
     }
 
     private fun parseTextualDateToMillis(text: String): Long {
         if (text.isBlank()) return 0L
-        val lower = text.lowercase()
-        val num = Regex("\\d+").find(lower)?.value?.toLongOrNull() ?: 1L
         val now = System.currentTimeMillis()
-        val dayMillis = 86_400_000L
+        val lower = text.lowercase()
+
+        val number = lower.filter { it.isDigit() }.toLongOrNull() ?: 1L
+        val oneHour = 3_600_000L
+        val oneDay = 24 * oneHour
+
         return when {
-            "year" in lower || "tahun" in lower -> now - (num * 365 * dayMillis)
-            "month" in lower || "bulan" in lower -> now - (num * 30 * dayMillis)
-            "week" in lower || "minggu" in lower -> now - (num * 7 * dayMillis)
-            "day" in lower || "hari" in lower -> now - (num * dayMillis)
-            "hour" in lower || "jam" in lower -> now - (num * 3600_000L)
-            "minute" in lower || "menit" in lower -> now - (num * 60_000L)
+            lower.contains("second") || lower.contains("detik") -> now - (number * 1000L)
+            lower.contains("minute") || lower.contains("menit") -> now - (number * 60_000L)
+            lower.contains("hour") || lower.contains("jam") -> now - (number * oneHour)
+            lower.contains("day") || lower.contains("hari") -> now - (number * oneDay)
+            lower.contains("week") || lower.contains("minggu") -> now - (number * 7 * oneDay)
+            lower.contains("month") || lower.contains("bulan") -> now - (number * 30 * oneDay)
+            lower.contains("year") || lower.contains("tahun") -> now - (number * 365 * oneDay)
             else -> now
         }
     }

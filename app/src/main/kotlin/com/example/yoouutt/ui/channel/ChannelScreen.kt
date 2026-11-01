@@ -21,12 +21,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,6 +39,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -41,6 +48,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,11 +56,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -77,39 +89,131 @@ fun ChannelScreen(
     viewModel: ChannelViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var isSearchOpen by remember { mutableStateOf(false) }
+    var inChannelQuery by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(channelUrl) {
         viewModel.loadChannel(channelUrl)
     }
 
+    LaunchedEffect(isSearchOpen) {
+        if (isSearchOpen) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Scaffold(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Black,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = channelName.ifBlank { "Channel" },
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            if (!isSearchOpen) {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = channelName.ifBlank { "Channel" },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { isSearchOpen = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Cari di channel",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Black
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
+                )
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Black)
+                        .height(56.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            isSearchOpen = false
+                            inChannelQuery = ""
+                            viewModel.onSearchQueryChanged("")
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onBackground
+                            contentDescription = "Tutup Pencarian",
+                            tint = Color.White
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
+
+                    OutlinedTextField(
+                        value = inChannelQuery,
+                        onValueChange = {
+                            inChannelQuery = it
+                            viewModel.onSearchQueryChanged(it)
+                        },
+                        placeholder = {
+                            Text(
+                                text = "Cari video di channel ini...",
+                                fontSize = 13.5.sp,
+                                color = Color(0xFF888888)
+                            )
+                        },
+                        trailingIcon = {
+                            if (inChannelQuery.isNotEmpty()) {
+                                IconButton(
+                                    onClick = {
+                                        inChannelQuery = ""
+                                        viewModel.onSearchQueryChanged("")
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Hapus",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(24.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFF1E1E1E),
+                            unfocusedContainerColor = Color(0xFF1E1E1E),
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        ),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(
+                            onSearch = { focusManager.clearFocus() }
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusRequester(focusRequester)
+                    )
+                }
+            }
         }
     ) { innerPadding ->
         PullToRefreshBox(
@@ -130,7 +234,7 @@ fun ChannelScreen(
                             modifier = Modifier
                                 .size(72.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .background(Color(0xFF222222))
                                 .align(Alignment.CenterHorizontally)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -163,8 +267,9 @@ fun ChannelScreen(
                             )
                         ) {
                             Text(
-                                text = "Coba Lagi",
-                                fontWeight = FontWeight.SemiBold
+                                text = "Retry",
+                                fontWeight = FontWeight.SemiBold,
+                                letterSpacing = 0.5.sp
                             )
                         }
                     }
@@ -175,7 +280,9 @@ fun ChannelScreen(
                         channel = state.channel,
                         videos = state.sortedVideos,
                         selectedSort = state.currentSort,
+                        isLoadingMore = state.isLoadingMore,
                         onSortChange = viewModel::onSortSelected,
+                        onLoadMore = viewModel::loadMore,
                         onVideoClick = onVideoClick
                     )
                 }
@@ -189,14 +296,33 @@ private fun ChannelContent(
     channel: ChannelData,
     videos: List<VideoItem>,
     selectedSort: ChannelSortOption,
+    isLoadingMore: Boolean,
     onSortChange: (ChannelSortOption) -> Unit,
-    onVideoClick: (VideoItem) -> Unit
+    onLoadMore: () -> Unit,
+    onVideoClick: (VideoItem) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var isDescriptionExpanded by remember { mutableStateOf(false) }
     val view = LocalView.current
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val totalItems = listState.layoutInfo.totalItemsCount
+            val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            totalItems > 0 && lastVisibleIndex >= totalItems - 4
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            onLoadMore()
+        }
+    }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 130.dp)
     ) {
         item {
@@ -238,8 +364,8 @@ private fun ChannelContent(
                     modifier = Modifier
                         .size(76.dp)
                         .clip(CircleShape)
-                        .border(BorderStroke(1.5.dp, Color.White), CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(Color(0xFF222222))
+                        .border(BorderStroke(1.dp, Color(0xFF333333)), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     if (channel.avatarUrl.isNotBlank()) {
@@ -247,7 +373,7 @@ private fun ChannelContent(
                             model = channel.avatarUrl,
                             contentDescription = channel.name,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.matchParentSize()
+                            modifier = Modifier.fillMaxSize()
                         )
                     } else {
                         val initial = channel.name.trim().firstOrNull()?.uppercase() ?: "C"
@@ -270,7 +396,8 @@ private fun ChannelContent(
                         text = channel.name,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color.White,
+                        textAlign = TextAlign.Center
                     )
                     if (channel.isVerified) {
                         Spacer(modifier = Modifier.width(6.dp))
@@ -283,19 +410,14 @@ private fun ChannelContent(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-                val subCountText = if (channel.subscriberCountText.isNotBlank()) {
-                    "${channel.subscriberCountText} • ${channel.videos.size} video"
-                } else {
-                    "${channel.videos.size} video"
+                if (channel.subscriberCountText.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = channel.subscriberCountText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFFAAAAAA)
+                    )
                 }
-
-                Text(
-                    text = subCountText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFAAAAAA)
-                )
 
                 if (channel.description.isNotBlank()) {
                     Spacer(modifier = Modifier.height(10.dp))
@@ -373,14 +495,28 @@ private fun ChannelContent(
                 items = videos,
                 key = { it.id }
             ) { video ->
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    VideoCard(
-                        video = video,
-                        onClick = { onVideoClick(video) }
-                    )
+                VideoCard(
+                    video = video,
+                    onClick = { onVideoClick(video) }
+                )
+            }
+
+            if (isLoadingMore) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = BrandRed,
+                            modifier = Modifier.size(28.dp),
+                            strokeWidth = 2.5.dp
+                        )
+                    }
                 }
             }
         }
     }
 }
-
