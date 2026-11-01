@@ -1,14 +1,13 @@
 package com.example.yoouutt.ui.feed
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,7 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,77 +45,55 @@ fun VideoCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(bottom = 20.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(12.dp))
-                .border(
-                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(Color(0xFF181818))
         ) {
             AsyncImage(
                 model = video.thumbnailUrl,
                 contentDescription = video.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.fillMaxSize()
             )
 
             if (video.durationText.isNotBlank()) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(8.dp)
+                        .padding(end = 8.dp, bottom = 8.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Black.copy(alpha = 0.72f))
-                        .border(
-                            BorderStroke(0.5.dp, Color.White.copy(alpha = 0.16f)),
-                            RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 6.dp, vertical = 2.5.dp)
+                        .background(Color.Black.copy(alpha = 0.82f))
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     Text(
                         text = video.durationText,
                         color = Color.White,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.4.sp
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(start = 12.dp, end = 4.dp, top = 12.dp, bottom = 22.dp),
             verticalAlignment = Alignment.Top
         ) {
-            val avatarModifier = if (onChannelClick != null) {
-                Modifier
-                    .size(38.dp)
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
                     .clip(CircleShape)
+                    .background(Color(0xFF272727))
                     .clickable {
                         val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
-                        onChannelClick(targetUrl, video.uploaderName)
-                    }
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), CircleShape)
-            } else {
-                Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), CircleShape)
-            }
-
-            Box(
-                modifier = avatarModifier,
+                        onChannelClick?.invoke(targetUrl, video.uploaderName)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 if (video.uploaderAvatarUrl.isNotBlank()) {
@@ -121,15 +101,15 @@ fun VideoCard(
                         model = video.uploaderAvatarUrl,
                         contentDescription = video.uploaderName,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
+                        modifier = Modifier.fillMaxSize()
                     )
                 } else {
                     val initial = video.uploaderName.trim().firstOrNull()?.uppercase() ?: "Y"
                     Text(
                         text = initial,
-                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = Color.White,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -138,13 +118,16 @@ fun VideoCard(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 4.dp)
             ) {
                 Text(
                     text = video.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    fontSize = 14.5.sp,
+                    lineHeight = 20.sp,
+                    fontWeight = FontWeight.Normal,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -163,23 +146,28 @@ fun VideoCard(
                     }
                 }
 
-                val uploaderModifier = if (onChannelClick != null) {
-                    Modifier.clickable {
-                        val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
-                        onChannelClick(targetUrl, video.uploaderName)
-                    }
-                } else {
-                    Modifier
-                }
-
                 Text(
                     text = metaText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                    color = Color(0xFFAAAAAA),
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    letterSpacing = 0.1.sp,
-                    modifier = uploaderModifier
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
+                    onChannelClick?.invoke(targetUrl, video.uploaderName)
+                },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Opsi",
+                    tint = Color(0xFFAAAAAA),
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }

@@ -158,7 +158,7 @@ fun HistoryScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp)
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 130.dp)
             ) {
                 items(
                     items = historyItems,

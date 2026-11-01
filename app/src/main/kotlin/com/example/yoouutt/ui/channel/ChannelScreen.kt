@@ -197,7 +197,7 @@ private fun ChannelContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 80.dp)
+        contentPadding = PaddingValues(bottom = 130.dp)
     ) {
         item {
             if (channel.bannerUrl.isNotBlank()) {

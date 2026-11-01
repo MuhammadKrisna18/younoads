@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,25 +41,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.PictureInPictureAlt
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -80,6 +81,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
@@ -87,12 +89,9 @@ import coil.compose.AsyncImage
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.YoouuttApp
 import com.example.yoouutt.playback.PlaybackManager
-import com.example.yoouutt.ui.common.BrandLogo
-import com.example.yoouutt.ui.common.BrandRed
 import com.example.yoouutt.ui.feed.VideoCard
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
     videoUrl: String,
@@ -100,52 +99,59 @@ fun PlayerScreen(
     fallbackUploader: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null,
-    playbackManager: PlaybackManager = YoouuttApp.instance.playbackManager
+    onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null
 ) {
+    val playbackManager: PlaybackManager = YoouuttApp.instance.playbackManager
+    val context = LocalContext.current
+    val view = LocalView.current
+    val activity = context.findActivity()
+
     val currentPlayback by playbackManager.currentPlayback.collectAsStateWithLifecycle()
     val isLoading by playbackManager.isLoading.collectAsStateWithLifecycle()
     val errorMessage by playbackManager.errorMessage.collectAsStateWithLifecycle()
-    val resumePositionMs by playbackManager.resumePositionMs.collectAsStateWithLifecycle()
+    val isPlaying by playbackManager.isPlaying.collectAsStateWithLifecycle()
+
     val exoPlayer = playbackManager.exoPlayer
-    val context = LocalContext.current
-    val view = LocalView.current
-    val activity = remember(context) { context.findActivity() }
-    val isInPip = LocalInPipMode.current
+    val isInPipMode = LocalInPipMode.current
 
     var isFullscreen by remember { mutableStateOf(false) }
+    var resumeBannerVisible by remember { mutableStateOf(false) }
+    var resumeSavedPosition by remember { mutableStateOf(0L) }
+    var isDescriptionExpanded by remember { mutableStateOf(false) }
+
+    var isLiked by remember(videoUrl) { mutableStateOf(false) }
+    var isSaved by remember(videoUrl) { mutableStateOf(false) }
+    var isSubscribed by remember(fallbackUploader) { mutableStateOf(false) }
+
     var seekFeedbackText by remember { mutableStateOf<String?>(null) }
     var seekFeedbackIsForward by remember { mutableStateOf(true) }
 
-    var resumeBannerVisible by remember(videoUrl) { mutableStateOf(false) }
-    var resumeBannerText by remember(videoUrl) { mutableStateOf("") }
-    var hasAutoResumed by remember(videoUrl) { mutableStateOf(false) }
-
-    val speeds = remember { listOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f) }
-    var speedIndex by remember { mutableIntStateOf(1) }
-    var isDescriptionExpanded by remember(videoUrl) { mutableStateOf(false) }
-
-    LaunchedEffect(videoUrl) {
-        playbackManager.playVideo(videoUrl, fallbackTitle, fallbackUploader)
-    }
-
-    LaunchedEffect(resumePositionMs) {
-        val savedPosition = resumePositionMs
-        if (savedPosition != null && savedPosition > 0L && !hasAutoResumed) {
-            resumeBannerText = "Melanjutkan dari ${formatTime(savedPosition)}"
-            resumeBannerVisible = true
-            hasAutoResumed = true
-        }
-    }
-
-    LaunchedEffect(activity) {
-        activity?.updatePipAutoEnter()
-    }
+    val speeds = remember { listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f) }
+    var speedIndex by remember { mutableIntStateOf(2) }
 
     LaunchedEffect(seekFeedbackText) {
         if (seekFeedbackText != null) {
-            delay(750)
+            delay(650)
             seekFeedbackText = null
+        }
+    }
+
+    LaunchedEffect(videoUrl) {
+        val active = currentPlayback
+        if (active == null || active.videoUrl != videoUrl) {
+            playbackManager.playVideo(videoUrl, fallbackTitle, fallbackUploader)
+        }
+    }
+
+    LaunchedEffect(videoUrl) {
+        val videoId = videoUrl.substringAfter("v=").substringBefore("&")
+        val item = YoouuttApp.instance.historyRepository.getWatchHistory(videoId)
+        val savedPos = item?.lastPlaybackPositionMs
+        if (savedPos != null && savedPos > 5000L) {
+            resumeSavedPosition = savedPos
+            resumeBannerVisible = true
+        } else {
+            resumeBannerVisible = false
         }
     }
 
@@ -156,21 +162,30 @@ fun PlayerScreen(
         }
     }
 
-    BackHandler(enabled = isFullscreen) {
-        isFullscreen = false
-        activity?.setFullscreen(false)
-    }
-
     DisposableEffect(Unit) {
         onDispose {
-            playbackManager.saveProgress()
-            if (isFullscreen) {
-                activity?.setFullscreen(false)
+            if (activity != null && isFullscreen) {
+                activity.setFullscreen(false)
             }
         }
     }
 
-    if (isInPip) {
+    BackHandler {
+        if (isFullscreen) {
+            isFullscreen = false
+            activity?.setFullscreen(false)
+        } else {
+            onBack()
+        }
+    }
+
+    val toggleFullscreen: () -> Unit = {
+        val nextState = !isFullscreen
+        isFullscreen = nextState
+        activity?.setFullscreen(nextState)
+    }
+
+    if (isInPipMode) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -184,9 +199,9 @@ fun PlayerScreen(
                         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                     }
                 },
-                update = { view ->
-                    if (view.player != exoPlayer) {
-                        view.player = exoPlayer
+                update = { pView ->
+                    if (pView.player != exoPlayer) {
+                        pView.player = exoPlayer
                     }
                 },
                 modifier = Modifier.fillMaxSize()
@@ -195,57 +210,16 @@ fun PlayerScreen(
         return
     }
 
-    val toggleFullscreen: () -> Unit = {
-        val nextState = !isFullscreen
-        isFullscreen = nextState
-        activity?.setFullscreen(nextState)
-    }
-
-    Scaffold(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            if (!isFullscreen) {
-                TopAppBar(
-                    title = { BrandLogo() },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { activity?.enterPipMode() }) {
-                            Icon(
-                                imageVector = Icons.Default.PictureInPictureAlt,
-                                contentDescription = "PiP",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                        IconButton(onClick = toggleFullscreen) {
-                            Icon(
-                                imageVector = Icons.Default.Fullscreen,
-                                contentDescription = "Fullscreen",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    )
-                )
-            }
-        }
-    ) { innerPadding ->
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
         val contentModifier = if (isFullscreen) {
             Modifier.fillMaxSize()
         } else {
             Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         }
 
@@ -323,13 +297,32 @@ fun PlayerScreen(
                                 }
                             }
                         },
-                        update = { view ->
-                            if (view.player != exoPlayer) {
-                                view.player = exoPlayer
+                        update = { pView ->
+                            if (pView.player != exoPlayer) {
+                                pView.player = exoPlayer
                             }
                         },
                         modifier = Modifier.matchParentSize()
                     )
+                }
+
+                if (!isFullscreen) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp)
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.5f))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Tutup",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
 
                 DoubleTapSeekFeedback(
@@ -353,21 +346,28 @@ fun PlayerScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = resumeBannerText,
+                            text = "Lanjutkan dari ${formatTime(resumeSavedPosition)}?",
                             color = Color.White,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "Mulai dari Awal",
-                            color = BrandRed,
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = "Ya",
+                            color = Color(0xFFE50914),
+                            style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable {
-                                exoPlayer.seekTo(0L)
+                                exoPlayer.seekTo(resumeSavedPosition)
                                 resumeBannerVisible = false
                             }
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "Batal",
+                            color = Color(0xFFAAAAAA),
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.clickable { resumeBannerVisible = false }
                         )
                     }
                 }
@@ -389,36 +389,141 @@ fun PlayerScreen(
             }
 
             if (!isFullscreen) {
+                val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
+                val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
+                val streamData = currentPlayback?.streamData
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 4.dp)
+                ) {
+                    Text(
+                        text = currentTitle,
+                        fontSize = 16.5.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 22.sp,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    if (streamData != null) {
+                        val metaLine = buildString {
+                            if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
+                            if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append(" • ")
+                            if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
+                        }
+                        if (metaLine.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = metaLine,
+                                fontSize = 12.sp,
+                                color = Color(0xFFAAAAAA)
+                            )
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val avatarUrl = streamData?.uploaderAvatarUrl.orEmpty()
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF272727))
+                            .clickable {
+                                val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
+                                onChannelClick?.invoke(targetUrl, currentUploader)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (avatarUrl.isNotBlank()) {
+                            AsyncImage(
+                                model = avatarUrl,
+                                contentDescription = currentUploader,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.matchParentSize()
+                            )
+                        } else {
+                            val initial = currentUploader.trim().firstOrNull()?.uppercase() ?: "Y"
+                            Text(
+                                text = initial,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
+                                onChannelClick?.invoke(targetUrl, currentUploader)
+                            }
+                    ) {
+                        Text(
+                            text = currentUploader,
+                            fontSize = 14.5.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(if (isSubscribed) Color(0xFF272727) else Color.White)
+                            .clickable {
+                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                isSubscribed = !isSubscribed
+                            }
+                            .padding(horizontal = 14.dp, vertical = 7.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (isSubscribed) "Disubscribe" else "Subscribe",
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isSubscribed) Color.White else Color.Black
+                        )
+                    }
+                }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     ActionPill(
-                        icon = Icons.Default.Speed,
-                        label = "${speeds[speedIndex]}x",
+                        icon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                        label = if (isLiked) "Disukai" else "Suka",
+                        isActive = isLiked,
                         onClick = {
-                            speedIndex = (speedIndex + 1) % speeds.size
-                            exoPlayer.setPlaybackSpeed(speeds[speedIndex])
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            isLiked = !isLiked
                         }
                     )
+
                     ActionPill(
-                        icon = Icons.Default.PictureInPictureAlt,
-                        label = "PiP",
-                        onClick = {
-                            activity?.enterPipMode()
-                        }
-                    )
-                    ActionPill(
-                        icon = Icons.Default.Fullscreen,
-                        label = "Layar Penuh",
-                        onClick = toggleFullscreen
-                    )
-                    ActionPill(
-                        icon = Icons.Default.Share,
+                        icon = Icons.Outlined.Share,
                         label = "Bagikan",
                         onClick = {
                             val sendIntent = Intent(Intent.ACTION_SEND).apply {
@@ -429,168 +534,124 @@ fun PlayerScreen(
                             context.startActivity(shareIntent)
                         }
                     )
+
+                    ActionPill(
+                        icon = if (isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                        label = if (isSaved) "Tersimpan" else "Simpan",
+                        isActive = isSaved,
+                        onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            isSaved = !isSaved
+                        }
+                    )
+
+                    ActionPill(
+                        icon = Icons.Default.Speed,
+                        label = "${speeds[speedIndex]}x",
+                        onClick = {
+                            speedIndex = (speedIndex + 1) % speeds.size
+                            exoPlayer.setPlaybackSpeed(speeds[speedIndex])
+                        }
+                    )
+
+                    ActionPill(
+                        icon = Icons.Default.PictureInPictureAlt,
+                        label = "PiP",
+                        onClick = {
+                            activity?.enterPipMode()
+                        }
+                    )
+
+                    ActionPill(
+                        icon = Icons.Default.Fullscreen,
+                        label = "Layar Penuh",
+                        onClick = toggleFullscreen
+                    )
                 }
 
-                val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
-                val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
+                if (streamData != null) {
+                    val hasMeta = streamData.viewCountText.isNotBlank() || streamData.uploadDateText.isNotBlank()
+                    val hasDesc = streamData.description.isNotBlank()
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        text = currentTitle,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    val channelRowModifier = if (onChannelClick != null) {
-                        Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable {
-                                val targetUrl = currentPlayback?.streamData?.uploaderUrl?.takeIf { it.isNotBlank() }
-                                    ?: currentUploader
-                                onChannelClick(targetUrl, currentUploader)
-                            }
-                            .padding(vertical = 4.dp)
-                    } else {
-                        Modifier.fillMaxWidth()
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = channelRowModifier
-                    ) {
-                        val avatarUrl = currentPlayback?.streamData?.uploaderAvatarUrl.orEmpty()
+                    if (hasMeta || hasDesc) {
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline), CircleShape),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 6.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF1F1F1F))
+                                .clickable {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    isDescriptionExpanded = !isDescriptionExpanded
+                                }
+                                .padding(12.dp)
+                                .animateContentSize()
                         ) {
-                            if (avatarUrl.isNotBlank()) {
-                                AsyncImage(
-                                    model = avatarUrl,
-                                    contentDescription = currentUploader,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.matchParentSize()
-                                )
-                            } else {
-                                val initial = currentUploader.trim().firstOrNull()?.uppercase() ?: "Y"
-                                Text(
-                                    text = initial,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(14.dp))
-
-                        Text(
-                            text = currentUploader,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-
-                    val streamData = currentPlayback?.streamData
-                    if (streamData != null) {
-                        val hasMeta = streamData.viewCountText.isNotBlank() || streamData.uploadDateText.isNotBlank()
-                        val hasDesc = streamData.description.isNotBlank()
-
-                        if (hasMeta || hasDesc) {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                                    .clickable { isDescriptionExpanded = !isDescriptionExpanded }
-                                    .padding(14.dp)
-                                    .animateContentSize()
-                            ) {
-                                Column {
-                                    if (hasMeta) {
-                                        val metaLine = buildString {
-                                            if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
-                                            if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append("  •  ")
-                                            if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
-                                        }
-                                        Text(
-                                            text = metaLine,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = Color.White
-                                        )
-                                        if (hasDesc) {
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                        }
+                            Column {
+                                if (hasMeta) {
+                                    val metaLine = buildString {
+                                        if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
+                                        if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append("   ")
+                                        if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
                                     }
-
+                                    Text(
+                                        text = metaLine,
+                                        fontSize = 12.5.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
                                     if (hasDesc) {
-                                        Text(
-                                            text = streamData.description,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color(0xFFDDDDDD),
-                                            maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 2,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
                                         Spacer(modifier = Modifier.height(6.dp))
-                                        Text(
-                                            text = if (isDescriptionExpanded) "Sembunyikan" else "...selengkapnya",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
                                     }
+                                }
+
+                                if (hasDesc) {
+                                    Text(
+                                        text = streamData.description,
+                                        fontSize = 12.5.sp,
+                                        lineHeight = 18.sp,
+                                        color = Color(0xFFDDDDDD),
+                                        maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = if (isDescriptionExpanded) "Sembunyikan" else "...selengkapnya",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
                                 }
                             }
                         }
+                    }
 
-                        val relatedVideos = streamData.relatedVideos
-                        if (relatedVideos.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(24.dp))
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
-                            Spacer(modifier = Modifier.height(18.dp))
+                    val relatedVideos = streamData.relatedVideos
+                    if (relatedVideos.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(14.dp))
 
-                            Text(
-                                text = "Video Terkait",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
+                        Text(
+                            text = "Video Terkait",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        relatedVideos.forEach { relVideo ->
+                            VideoCard(
+                                video = relVideo,
+                                onClick = {
+                                    playbackManager.playVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
+                                },
+                                onChannelClick = onChannelClick
                             )
-                            Spacer(modifier = Modifier.height(14.dp))
-
-                            relatedVideos.forEach { relVideo ->
-                                VideoCard(
-                                    video = relVideo,
-                                    onClick = {
-                                        playbackManager.playVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
-                                    },
-                                    onChannelClick = onChannelClick
-                                )
-                            }
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -613,16 +674,13 @@ private fun ActionPill(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isActive: Boolean = false
 ) {
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(50.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .border(
-                BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
-                RoundedCornerShape(50.dp)
-            )
+            .background(if (isActive) Color.White else Color(0xFF272727))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -630,15 +688,15 @@ private fun ActionPill(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(18.dp)
+            tint = if (isActive) Color.Black else Color.White,
+            modifier = Modifier.size(17.dp)
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = label,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface
+            fontSize = 12.5.sp,
+            fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
+            color = if (isActive) Color.Black else Color.White
         )
     }
 }

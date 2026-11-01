@@ -2,7 +2,9 @@ package com.example.yoouutt
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -102,45 +104,49 @@ fun MainNavigation() {
         )
 
         if (!isPlayerScreenVisible) {
-            BottomNavigationBar(
-                isHomeSelected = currentKey is Main,
-                isHistorySelected = currentKey is HistoryKey,
-                onHomeClick = {
-                    while (backStack.size > 1 && backStack.lastOrNull() !is Main) {
-                        backStack.removeLastOrNull()
-                    }
-                    if (backStack.lastOrNull() !is Main) {
-                        backStack.add(Main)
-                    }
-                },
-                onHistoryClick = {
-                    if (backStack.lastOrNull() !is HistoryKey) {
-                        if (backStack.any { it is HistoryKey }) {
-                            while (backStack.lastOrNull() !is HistoryKey && backStack.size > 1) {
-                                backStack.removeLastOrNull()
-                            }
-                        } else {
-                            backStack.add(HistoryKey)
-                        }
-                    }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
-        }
-
-        if (!isPlayerScreenVisible && currentPlayback != null) {
-            val playback = currentPlayback
-            if (playback != null) {
-                InAppPipPlayer(
-                    playbackManager = playbackManager,
-                    onExpand = {
-                        backStack.add(
-                            PlayerKey(
-                                videoUrl = playback.videoUrl,
-                                title = playback.title,
-                                uploader = playback.uploaderName
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+            ) {
+                val playback = currentPlayback
+                if (playback != null) {
+                    InAppPipPlayer(
+                        playback = playback,
+                        playbackManager = playbackManager,
+                        onExpand = {
+                            backStack.add(
+                                PlayerKey(
+                                    videoUrl = playback.videoUrl,
+                                    title = playback.title,
+                                    uploader = playback.uploaderName
+                                )
                             )
-                        )
+                        }
+                    )
+                }
+
+                BottomNavigationBar(
+                    isHomeSelected = currentKey is Main,
+                    isHistorySelected = currentKey is HistoryKey,
+                    onHomeClick = {
+                        while (backStack.size > 1 && backStack.lastOrNull() !is Main) {
+                            backStack.removeLastOrNull()
+                        }
+                        if (backStack.lastOrNull() !is Main) {
+                            backStack.add(Main)
+                        }
+                    },
+                    onHistoryClick = {
+                        if (backStack.lastOrNull() !is HistoryKey) {
+                            if (backStack.any { it is HistoryKey }) {
+                                while (backStack.lastOrNull() !is HistoryKey && backStack.size > 1) {
+                                    backStack.removeLastOrNull()
+                                }
+                            } else {
+                                backStack.add(HistoryKey)
+                            }
+                        }
                     }
                 )
             }

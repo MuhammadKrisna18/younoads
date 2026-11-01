@@ -20,15 +20,33 @@ class FeedViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _selectedCategory = MutableStateFlow("Semua")
+    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
     init {
         loadTrending()
     }
 
     fun onQueryChanged(newQuery: String) {
         _searchQuery.value = newQuery
+        if (newQuery.isBlank()) {
+            _selectedCategory.value = "Semua"
+        }
+    }
+
+    fun selectCategory(category: String) {
+        _selectedCategory.value = category
+        if (category == "Semua") {
+            _searchQuery.value = ""
+            loadTrending()
+        } else {
+            _searchQuery.value = category
+            search()
+        }
     }
 
     fun loadTrending() {
+        _selectedCategory.value = "Semua"
         _uiState.value = FeedUiState.Loading
         viewModelScope.launch {
             repository.getTrendingVideos()
@@ -60,4 +78,3 @@ class FeedViewModel(
         }
     }
 }
-

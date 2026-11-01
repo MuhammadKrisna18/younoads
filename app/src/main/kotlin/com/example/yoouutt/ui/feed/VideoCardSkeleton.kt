@@ -22,29 +22,24 @@ import com.example.yoouutt.ui.common.shimmerEffect
 @Composable
 fun VideoCardSkeleton(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 20.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(12.dp))
                 .shimmerEffect()
         )
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 22.dp),
             verticalAlignment = Alignment.Top
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(36.dp)
                     .clip(CircleShape)
                     .shimmerEffect()
             )
@@ -55,8 +50,8 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .height(16.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(3.dp))
                         .shimmerEffect()
                 )
 
@@ -64,9 +59,9 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
 
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.55f)
-                        .height(16.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .fillMaxWidth(0.6f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(3.dp))
                         .shimmerEffect()
                 )
 
@@ -74,9 +69,9 @@ fun VideoCardSkeleton(modifier: Modifier = Modifier) {
 
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.35f)
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .fillMaxWidth(0.4f)
+                        .height(11.dp)
+                        .clip(RoundedCornerShape(3.dp))
                         .shimmerEffect()
                 )
             }
