@@ -2,9 +2,7 @@ package com.example.yoouutt.ui.player
 
 import android.content.Context
 import android.content.Intent
-import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
-import android.view.MotionEvent
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
@@ -16,13 +14,17 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,7 +50,9 @@ import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PictureInPictureAlt
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.BookmarkBorder
@@ -65,16 +69,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -129,6 +137,32 @@ fun PlayerScreen(
 
     val speeds = remember { listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f) }
     var speedIndex by remember { mutableIntStateOf(2) }
+
+    var currentPositionMs by remember { mutableLongStateOf(0L) }
+    var bufferedPositionMs by remember { mutableLongStateOf(0L) }
+    var durationMs by remember { mutableLongStateOf(0L) }
+    var isScrubbing by remember { mutableStateOf(false) }
+    var scrubPositionMs by remember { mutableLongStateOf(0L) }
+    var controlsVisible by remember { mutableStateOf(false) }
+    var controlsLastInteractionTime by remember { mutableLongStateOf(0L) }
+
+    LaunchedEffect(exoPlayer) {
+        while (true) {
+            if (!isScrubbing) {
+                currentPositionMs = exoPlayer.currentPosition.coerceAtLeast(0L)
+                bufferedPositionMs = exoPlayer.bufferedPosition.coerceAtLeast(0L)
+                durationMs = if (exoPlayer.duration > 0L) exoPlayer.duration else 0L
+            }
+            delay(200)
+        }
+    }
+
+    LaunchedEffect(controlsVisible, controlsLastInteractionTime, isPlaying, isScrubbing) {
+        if (controlsVisible && isPlaying && !isScrubbing) {
+            delay(3000)
+            controlsVisible = false
+        }
+    }
 
     LaunchedEffect(seekFeedbackText) {
         if (seekFeedbackText != null) {
@@ -273,30 +307,10 @@ fun PlayerScreen(
                 } else {
                     AndroidView(
                         factory = { ctx ->
-                            DoubleTapPlayerView(ctx).apply {
+                            PlayerView(ctx).apply {
                                 player = exoPlayer
                                 layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                                useController = true
-                                setShowFastForwardButton(false)
-                                setShowRewindButton(false)
-                                setFullscreenButtonClickListener {
-                                    toggleFullscreen()
-                                }
-                                onDoubleTapSeek = { isForward ->
-                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                    if (isForward) {
-                                        val duration = if (exoPlayer.duration > 0) exoPlayer.duration else Long.MAX_VALUE
-                                        val newPos = (exoPlayer.currentPosition + 10000L).coerceAtMost(duration)
-                                        exoPlayer.seekTo(newPos)
-                                        seekFeedbackIsForward = true
-                                        seekFeedbackText = "+10 detik"
-                                    } else {
-                                        val newPos = (exoPlayer.currentPosition - 10000L).coerceAtLeast(0L)
-                                        exoPlayer.seekTo(newPos)
-                                        seekFeedbackIsForward = false
-                                        seekFeedbackText = "-10 detik"
-                                    }
-                                }
+                                useController = false
                             }
                         },
                         update = { pView ->
@@ -306,25 +320,166 @@ fun PlayerScreen(
                         },
                         modifier = Modifier.matchParentSize()
                     )
-                }
 
-                if (!isFullscreen) {
-                    IconButton(
-                        onClick = onBack,
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(8.dp)
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.5f))
+                            .matchParentSize()
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onTap = {
+                                        controlsVisible = !controlsVisible
+                                        if (controlsVisible) {
+                                            controlsLastInteractionTime = System.currentTimeMillis()
+                                        }
+                                    },
+                                    onDoubleTap = { offset ->
+                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                        val isForward = offset.x >= size.width / 2
+                                        val currentPos = exoPlayer.currentPosition
+                                        val duration = if (exoPlayer.duration > 0) exoPlayer.duration else Long.MAX_VALUE
+                                        if (isForward) {
+                                            val newPos = (currentPos + 10000L).coerceAtMost(duration)
+                                            exoPlayer.seekTo(newPos)
+                                            seekFeedbackIsForward = true
+                                            seekFeedbackText = "+10 detik"
+                                        } else {
+                                            val newPos = (currentPos - 10000L).coerceAtLeast(0L)
+                                            exoPlayer.seekTo(newPos)
+                                            seekFeedbackIsForward = false
+                                            seekFeedbackText = "-10 detik"
+                                        }
+                                    }
+                                )
+                            }
+                    )
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = controlsVisible,
+                        enter = fadeIn(tween(150)),
+                        exit = fadeOut(tween(250)),
+                        modifier = Modifier.matchParentSize()
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Tutup",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .fillMaxWidth()
+                                    .height(64.dp)
+                                    .background(
+                                        Brush.verticalGradient(
+                                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.55f))
+                                        )
+                                    )
+                            )
+
+                            IconButton(
+                                onClick = {
+                                    if (isFullscreen) toggleFullscreen() else onBack()
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(8.dp)
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black.copy(alpha = 0.5f))
+                            ) {
+                                Icon(
+                                    imageVector = if (isFullscreen) Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = if (isFullscreen) "Kembali" else "Tutup",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(54.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black.copy(alpha = 0.6f))
+                                    .clickable {
+                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                        if (exoPlayer.isPlaying) {
+                                            exoPlayer.pause()
+                                        } else {
+                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_ENDED) {
+                                                exoPlayer.seekTo(0L)
+                                            }
+                                            exoPlayer.play()
+                                        }
+                                        controlsLastInteractionTime = System.currentTimeMillis()
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                                    contentDescription = if (isPlaying) "Pause" else "Play",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .fillMaxWidth()
+                                    .padding(bottom = 14.dp, start = 12.dp, end = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val displayPos = if (isScrubbing) scrubPositionMs else currentPositionMs
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(Color.Black.copy(alpha = 0.6f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "${formatTime(displayPos)} / ${formatTime(durationMs)}",
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        toggleFullscreen()
+                                        controlsLastInteractionTime = System.currentTimeMillis()
+                                    },
+                                    modifier = Modifier
+                                        .size(34.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = 0.5f))
+                                ) {
+                                    Icon(
+                                        imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                                        contentDescription = "Layar Penuh",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
+
+                    YouTubeBottomSlider(
+                        currentPositionMs = currentPositionMs,
+                        bufferedPositionMs = bufferedPositionMs,
+                        durationMs = durationMs,
+                        isControlsVisible = controlsVisible,
+                        onScrubbing = { scrubbing, targetMs ->
+                            isScrubbing = scrubbing
+                            scrubPositionMs = targetMs
+                            controlsLastInteractionTime = System.currentTimeMillis()
+                        },
+                        onSeek = { seekMs ->
+                            exoPlayer.seekTo(seekMs)
+                            currentPositionMs = seekMs
+                            controlsLastInteractionTime = System.currentTimeMillis()
+                        },
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
                 }
 
                 DoubleTapSeekFeedback(
@@ -337,7 +492,7 @@ fun PlayerScreen(
                     Row(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(bottom = 68.dp)
+                            .padding(bottom = 54.dp)
                             .clip(RoundedCornerShape(50.dp))
                             .background(Color.Black.copy(alpha = 0.88f))
                             .border(
@@ -370,21 +525,6 @@ fun PlayerScreen(
                             color = Color(0xFFAAAAAA),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.clickable { resumeBannerVisible = false }
-                        )
-                    }
-                }
-
-                if (isFullscreen) {
-                    IconButton(
-                        onClick = toggleFullscreen,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.FullscreenExit,
-                            contentDescription = "Exit Fullscreen",
-                            tint = Color.White
                         )
                     }
                 }
@@ -786,26 +926,109 @@ private fun BoxScope.DoubleTapSeekFeedback(
     }
 }
 
-private class DoubleTapPlayerView(context: Context) : PlayerView(context) {
-    var onDoubleTapSeek: ((Boolean) -> Unit)? = null
+@Composable
+private fun YouTubeBottomSlider(
+    currentPositionMs: Long,
+    bufferedPositionMs: Long,
+    durationMs: Long,
+    isControlsVisible: Boolean,
+    onScrubbing: (Boolean, Long) -> Unit,
+    onSeek: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val totalDuration = durationMs.coerceAtLeast(1L)
+    val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
+    val bufferedProgress = (bufferedPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
 
-    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onDown(e: MotionEvent): Boolean = true
+    var isDragging by remember { mutableStateOf(false) }
+    var dragProgress by remember { mutableFloatStateOf(0f) }
 
-        override fun onDoubleTap(e: MotionEvent): Boolean {
-            val bottomThreshold = height - (70 * resources.displayMetrics.density)
-            if (isControllerFullyVisible && e.y >= bottomThreshold) {
-                return false
+    val activeProgress = if (isDragging) dragProgress else progress
+    val trackHeight = if (isControlsVisible || isDragging) 3.5.dp else 2.dp
+    val thumbRadius = if (isDragging) 7.dp else 5.5.dp
+
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(if (isControlsVisible) 32.dp else 4.dp)
+            .pointerInput(totalDuration, isControlsVisible) {
+                if (!isControlsVisible) return@pointerInput
+                detectHorizontalDragGestures(
+                    onDragStart = { offset ->
+                        isDragging = true
+                        val newProgress = (offset.x / size.width).coerceIn(0f, 1f)
+                        dragProgress = newProgress
+                        onScrubbing(true, (newProgress * totalDuration).toLong())
+                    },
+                    onDragEnd = {
+                        isDragging = false
+                        val targetMs = (dragProgress * totalDuration).toLong()
+                        onScrubbing(false, targetMs)
+                        onSeek(targetMs)
+                    },
+                    onDragCancel = {
+                        isDragging = false
+                        onScrubbing(false, currentPositionMs)
+                    },
+                    onHorizontalDrag = { _, dragAmount ->
+                        val newProgress = (dragProgress + dragAmount / size.width).coerceIn(0f, 1f)
+                        dragProgress = newProgress
+                        onScrubbing(true, (newProgress * totalDuration).toLong())
+                    }
+                )
             }
-            val isForward = e.x >= width / 2
-            onDoubleTapSeek?.invoke(isForward)
-            post { hideController() }
-            return true
-        }
-    })
+            .pointerInput(totalDuration, isControlsVisible) {
+                if (!isControlsVisible) return@pointerInput
+                detectTapGestures { offset ->
+                    val tapProgress = (offset.x / size.width).coerceIn(0f, 1f)
+                    val targetMs = (tapProgress * totalDuration).toLong()
+                    onSeek(targetMs)
+                }
+            },
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(trackHeight)
+        ) {
+            val canvasWidth = size.width
+            val canvasHeight = size.height
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        gestureDetector.onTouchEvent(ev)
-        return super.dispatchTouchEvent(ev)
+            drawLine(
+                color = Color.White.copy(alpha = 0.2f),
+                start = Offset(0f, canvasHeight / 2),
+                end = Offset(canvasWidth, canvasHeight / 2),
+                strokeWidth = canvasHeight
+            )
+
+            val bufferedX = canvasWidth * bufferedProgress
+            if (bufferedX > 0f) {
+                drawLine(
+                    color = Color.White.copy(alpha = 0.4f),
+                    start = Offset(0f, canvasHeight / 2),
+                    end = Offset(bufferedX, canvasHeight / 2),
+                    strokeWidth = canvasHeight
+                )
+            }
+
+            val playedX = canvasWidth * activeProgress
+            if (playedX > 0f) {
+                drawLine(
+                    color = Color(0xFFE50914),
+                    start = Offset(0f, canvasHeight / 2),
+                    end = Offset(playedX, canvasHeight / 2),
+                    strokeWidth = canvasHeight
+                )
+            }
+
+            if (isControlsVisible || isDragging) {
+                drawCircle(
+                    color = Color(0xFFE50914),
+                    radius = thumbRadius.toPx(),
+                    center = Offset(playedX, canvasHeight / 2)
+                )
+            }
+        }
     }
 }
