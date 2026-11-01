@@ -1,5 +1,6 @@
 package com.example.yoouutt.ui.channel
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -109,7 +112,9 @@ fun ChannelScreen(
             )
         }
     ) { innerPadding ->
-        Box(
+        PullToRefreshBox(
+            isRefreshing = uiState is ChannelUiState.Loading,
+            onRefresh = { viewModel.loadChannel(channelUrl) },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -188,10 +193,11 @@ private fun ChannelContent(
     onVideoClick: (VideoItem) -> Unit
 ) {
     var isDescriptionExpanded by remember { mutableStateOf(false) }
+    val view = LocalView.current
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 32.dp)
+        contentPadding = PaddingValues(bottom = 80.dp)
     ) {
         item {
             if (channel.bannerUrl.isNotBlank()) {
@@ -328,7 +334,10 @@ private fun ChannelContent(
                                 ),
                                 shape = RoundedCornerShape(50.dp)
                             )
-                            .clickable { onSortChange(option) }
+                            .clickable {
+                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                onSortChange(option)
+                            }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         Text(

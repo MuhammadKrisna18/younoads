@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.yoouutt.ui.channel.ChannelScreen
+import com.example.yoouutt.ui.common.BottomNavigationBar
 import com.example.yoouutt.ui.feed.FeedScreen
 import com.example.yoouutt.ui.history.HistoryScreen
 import com.example.yoouutt.ui.player.InAppPipPlayer
@@ -21,7 +23,8 @@ fun MainNavigation() {
     val backStack = rememberNavBackStack(Main)
     val playbackManager = YoouuttApp.instance.playbackManager
     val currentPlayback by playbackManager.currentPlayback.collectAsStateWithLifecycle()
-    val isPlayerScreenVisible = backStack.lastOrNull() is PlayerKey
+    val currentKey = backStack.lastOrNull()
+    val isPlayerScreenVisible = currentKey is PlayerKey
 
     BackHandler(enabled = !isPlayerScreenVisible && currentPlayback != null) {
         playbackManager.stop()
@@ -97,6 +100,33 @@ fun MainNavigation() {
                 }
             }
         )
+
+        if (!isPlayerScreenVisible) {
+            BottomNavigationBar(
+                isHomeSelected = currentKey is Main,
+                isHistorySelected = currentKey is HistoryKey,
+                onHomeClick = {
+                    while (backStack.size > 1 && backStack.lastOrNull() !is Main) {
+                        backStack.removeLastOrNull()
+                    }
+                    if (backStack.lastOrNull() !is Main) {
+                        backStack.add(Main)
+                    }
+                },
+                onHistoryClick = {
+                    if (backStack.lastOrNull() !is HistoryKey) {
+                        if (backStack.any { it is HistoryKey }) {
+                            while (backStack.lastOrNull() !is HistoryKey && backStack.size > 1) {
+                                backStack.removeLastOrNull()
+                            }
+                        } else {
+                            backStack.add(HistoryKey)
+                        }
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
 
         if (!isPlayerScreenVisible && currentPlayback != null) {
             val playback = currentPlayback

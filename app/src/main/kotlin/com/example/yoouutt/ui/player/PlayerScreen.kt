@@ -9,6 +9,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -77,6 +78,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -87,6 +89,7 @@ import com.example.yoouutt.YoouuttApp
 import com.example.yoouutt.playback.PlaybackManager
 import com.example.yoouutt.ui.common.BrandLogo
 import com.example.yoouutt.ui.common.BrandRed
+import com.example.yoouutt.ui.feed.VideoCard
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,6 +123,7 @@ fun PlayerScreen(
 
     val speeds = remember { listOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f) }
     var speedIndex by remember { mutableIntStateOf(1) }
+    var isDescriptionExpanded by remember(videoUrl) { mutableStateOf(false) }
 
     LaunchedEffect(videoUrl) {
         playbackManager.playVideo(videoUrl, fallbackTitle, fallbackUploader)
@@ -504,6 +508,87 @@ fun PlayerScreen(
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
+                    }
+
+                    val streamData = currentPlayback?.streamData
+                    if (streamData != null) {
+                        val hasMeta = streamData.viewCountText.isNotBlank() || streamData.uploadDateText.isNotBlank()
+                        val hasDesc = streamData.description.isNotBlank()
+
+                        if (hasMeta || hasDesc) {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                    .clickable { isDescriptionExpanded = !isDescriptionExpanded }
+                                    .padding(14.dp)
+                                    .animateContentSize()
+                            ) {
+                                Column {
+                                    if (hasMeta) {
+                                        val metaLine = buildString {
+                                            if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
+                                            if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append("  •  ")
+                                            if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
+                                        }
+                                        Text(
+                                            text = metaLine,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
+                                        if (hasDesc) {
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                        }
+                                    }
+
+                                    if (hasDesc) {
+                                        Text(
+                                            text = streamData.description,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFFDDDDDD),
+                                            maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = if (isDescriptionExpanded) "Sembunyikan" else "...selengkapnya",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        val relatedVideos = streamData.relatedVideos
+                        if (relatedVideos.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(24.dp))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+                            Spacer(modifier = Modifier.height(18.dp))
+
+                            Text(
+                                text = "Video Terkait",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            relatedVideos.forEach { relVideo ->
+                                VideoCard(
+                                    video = relVideo,
+                                    onClick = {
+                                        playbackManager.playVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
+                                    },
+                                    onChannelClick = onChannelClick
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -54,6 +54,18 @@ class NewPipeVideoRepository(
             }
 
             val bestAvatar = streamExtractor.uploaderAvatars.maxByOrNull { it.height }?.url.orEmpty()
+            val description = try { streamExtractor.description.content.orEmpty() } catch (_: Exception) { "" }
+            val viewCount = try { streamExtractor.viewCount } catch (_: Exception) { 0L }
+            val viewText = formatViewCount(viewCount)
+            val dateText = try { streamExtractor.textualUploadDate.orEmpty() } catch (_: Exception) { "" }
+            val relatedItems = try {
+                streamExtractor.relatedStreams?.items
+                    ?.filterIsInstance<StreamInfoItem>()
+                    ?.map { it.toVideoItem() }
+                    .orEmpty()
+            } catch (_: Exception) {
+                emptyList()
+            }
 
             StreamData(
                 videoId = streamExtractor.id.orEmpty(),
@@ -62,7 +74,11 @@ class NewPipeVideoRepository(
                 uploaderUrl = streamExtractor.uploaderUrl.orEmpty(),
                 uploaderAvatarUrl = bestAvatar,
                 streamUrl = streamUrl,
-                isHls = isHls
+                isHls = isHls,
+                description = description,
+                viewCountText = viewText,
+                uploadDateText = dateText,
+                relatedVideos = relatedItems
             )
         }
     }

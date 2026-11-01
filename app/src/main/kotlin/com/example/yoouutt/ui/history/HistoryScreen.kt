@@ -1,5 +1,6 @@
 package com.example.yoouutt.ui.history
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,7 @@ fun HistoryScreen(
 ) {
     val historyItems by viewModel.historyItems.collectAsStateWithLifecycle()
     var showClearDialog by remember { mutableStateOf(false) }
+    val view = LocalView.current
 
     if (showClearDialog) {
         AlertDialog(
@@ -73,6 +76,7 @@ fun HistoryScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         viewModel.clearAll()
                         showClearDialog = false
                     }
@@ -154,7 +158,7 @@ fun HistoryScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp)
             ) {
                 items(
                     items = historyItems,
@@ -166,6 +170,7 @@ fun HistoryScreen(
                             onVideoClick(item.videoUrl, item.title, item.uploaderName)
                         },
                         onDelete = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             viewModel.deleteItem(item.videoId)
                         }
                     )

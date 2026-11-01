@@ -7,5 +7,9 @@ data class StreamData(
     val uploaderUrl: String = "",
     val uploaderAvatarUrl: String = "",
     val streamUrl: String,
-    val isHls: Boolean
+    val isHls: Boolean,
+    val description: String = "",
+    val viewCountText: String = "",
+    val uploadDateText: String = "",
+    val relatedVideos: List<VideoItem> = emptyList()
 )
