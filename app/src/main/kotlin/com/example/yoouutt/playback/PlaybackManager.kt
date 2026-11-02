@@ -1,9 +1,13 @@
 package com.example.yoouutt.playback
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -11,6 +15,8 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.session.MediaSession
+import com.example.yoouutt.MainActivity
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.NewPipeVideoRepository
@@ -128,10 +134,29 @@ class PlaybackManager(
         }
     }
 
+    val mediaSession: MediaSession = run {
+        val sessionActivityPendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        MediaSession.Builder(context, exoPlayer)
+            .setSessionActivity(sessionActivityPendingIntent)
+            .build()
+    }
+
     fun playVideo(videoUrl: String, title: String, uploaderName: String) {
         val current = _currentPlayback.value
         if (current?.videoUrl == videoUrl && exoPlayer.playbackState != Player.STATE_IDLE) {
             return
+        }
+
+        try {
+            context.startService(Intent(context, PlaybackService::class.java))
+        } catch (_: Exception) {
         }
 
         saveProgress()
@@ -169,8 +194,23 @@ class PlaybackManager(
                     }
                     _resumePositionMs.value = resumePos
 
+                    val resolvedTitle = streamData.title.ifBlank { title }
+                    val resolvedUploader = streamData.uploaderName.ifBlank { uploaderName }
+                    val artworkUri = if (streamData.videoId.isNotBlank()) {
+                        Uri.parse("https://i.ytimg.com/vi/${streamData.videoId}/hqdefault.jpg")
+                    } else {
+                        null
+                    }
+
+                    val mediaMetadata = MediaMetadata.Builder()
+                        .setTitle(resolvedTitle)
+                        .setArtist(resolvedUploader)
+                        .setArtworkUri(artworkUri)
+                        .build()
+
                     val mediaItem = MediaItem.Builder()
                         .setUri(streamData.streamUrl)
+                        .setMediaMetadata(mediaMetadata)
                         .apply {
                             if (streamData.isHls) {
                                 setMimeType(MimeTypes.APPLICATION_M3U8)
@@ -229,6 +269,10 @@ class PlaybackManager(
 
     fun stop() {
         saveProgress()
+        try {
+            context.stopService(Intent(context, PlaybackService::class.java))
+        } catch (_: Exception) {
+        }
         exoPlayer.stop()
         exoPlayer.clearMediaItems()
         _currentPlayback.value = null
@@ -239,6 +283,14 @@ class PlaybackManager(
 
     fun release() {
         saveProgress()
+        try {
+            context.stopService(Intent(context, PlaybackService::class.java))
+        } catch (_: Exception) {
+        }
+        try {
+            mediaSession.release()
+        } catch (_: Exception) {
+        }
         exoPlayer.release()
     }
 }

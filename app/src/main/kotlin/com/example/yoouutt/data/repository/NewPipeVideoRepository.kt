@@ -1,11 +1,16 @@
 package com.example.yoouutt.data.repository
 
+import android.util.LruCache
 import androidx.core.text.HtmlCompat
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.data.model.WatchHistoryItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.Page
 import org.schabi.newpipe.extractor.ServiceList
@@ -20,6 +25,16 @@ class NewPipeVideoRepository(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : VideoRepository {
 
+    private data class ChannelPagination(
+        val extractor: ChannelTabExtractor,
+        var nextPage: Page?
+    )
+
+    private val streamCache = LruCache<String, Pair<StreamData, Long>>(25)
+    private val channelCache = LruCache<String, Pair<ChannelData, Long>>(10)
+    private val channelPaginationMap = mutableMapOf<String, ChannelPagination>()
+    private var activeChannelUrl: String? = null
+
     private val trendingTopics = listOf(
         "trending indonesia",
         "podcast indonesia terbaru",
@@ -33,9 +48,6 @@ class NewPipeVideoRepository(
         "vlog indonesia viral"
     )
     private var topicIndex = 0
-
-    private var channelTabExtractor: ChannelTabExtractor? = null
-    private var channelNextPage: Page? = null
 
     override suspend fun getTrendingVideos(): Result<List<VideoItem>> = withContext(ioDispatcher) {
         runCatching {
@@ -91,6 +103,11 @@ class NewPipeVideoRepository(
     }
 
     override suspend fun getVideoStreams(videoUrl: String): Result<StreamData> = withContext(ioDispatcher) {
+        val cached = streamCache.get(videoUrl)
+        if (cached != null && (System.currentTimeMillis() - cached.second) < 15 * 60 * 1000L) {
+            return@withContext Result.success(cached.first)
+        }
+
         runCatching {
             val streamExtractor = ServiceList.YouTube.getStreamExtractor(videoUrl)
             streamExtractor.fetchPage()
@@ -141,7 +158,7 @@ class NewPipeVideoRepository(
                 emptyList()
             }
 
-            StreamData(
+            val streamData = StreamData(
                 videoId = streamExtractor.id,
                 streamUrl = streamUrl,
                 title = streamExtractor.name,
@@ -155,19 +172,27 @@ class NewPipeVideoRepository(
                 uploadDateText = formattedDate,
                 relatedVideos = relatedItems
             )
+            streamCache.put(videoUrl, Pair(streamData, System.currentTimeMillis()))
+            streamData
         }
     }
 
     override suspend fun getChannelDetails(channelUrl: String): Result<ChannelData> = withContext(ioDispatcher) {
-        runCatching {
-            val resolvedUrl = if (channelUrl.startsWith("http://") || channelUrl.startsWith("https://")) {
-                channelUrl
-            } else if (channelUrl.startsWith("@")) {
-                "https://www.youtube.com/$channelUrl"
-            } else {
-                "https://www.youtube.com/@${channelUrl.replace(" ", "")}"
-            }
+        val resolvedUrl = if (channelUrl.startsWith("http://") || channelUrl.startsWith("https://")) {
+            channelUrl
+        } else if (channelUrl.startsWith("@")) {
+            "https://www.youtube.com/$channelUrl"
+        } else {
+            "https://www.youtube.com/@${channelUrl.replace(" ", "")}"
+        }
+        activeChannelUrl = resolvedUrl
 
+        val cached = channelCache.get(resolvedUrl)
+        if (cached != null && (System.currentTimeMillis() - cached.second) < 10 * 60 * 1000L) {
+            return@withContext Result.success(cached.first)
+        }
+
+        runCatching {
             val channelExtractor = ServiceList.YouTube.getChannelExtractor(resolvedUrl)
             channelExtractor.fetchPage()
 
@@ -203,11 +228,13 @@ class NewPipeVideoRepository(
                     }
                 }
 
-                channelTabExtractor = tabExtractor
-                channelNextPage = if (currentPage.hasNextPage()) currentPage.nextPage else null
+                channelPaginationMap[resolvedUrl] = ChannelPagination(
+                    extractor = tabExtractor,
+                    nextPage = if (currentPage.hasNextPage()) currentPage.nextPage else null
+                )
             }
 
-            ChannelData(
+            val channelData = ChannelData(
                 url = resolvedUrl,
                 name = name,
                 avatarUrl = avatar,
@@ -217,16 +244,101 @@ class NewPipeVideoRepository(
                 isVerified = isVerified,
                 videos = videoList
             )
+            channelCache.put(resolvedUrl, Pair(channelData, System.currentTimeMillis()))
+            channelData
         }
     }
 
     override suspend fun getMoreChannelVideos(): Result<List<VideoItem>> = withContext(ioDispatcher) {
         runCatching {
-            val extractor = channelTabExtractor ?: return@runCatching emptyList()
-            val nextPage = channelNextPage ?: return@runCatching emptyList()
-            val page = extractor.getPage(nextPage)
-            channelNextPage = if (page.hasNextPage()) page.nextPage else null
+            val activeUrl = activeChannelUrl ?: return@runCatching emptyList()
+            val pagination = channelPaginationMap[activeUrl] ?: return@runCatching emptyList()
+            val nextPage = pagination.nextPage ?: return@runCatching emptyList()
+            val page = pagination.extractor.getPage(nextPage)
+            pagination.nextPage = if (page.hasNextPage()) page.nextPage else null
             page.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() }
+        }
+    }
+
+    override suspend fun getSearchSuggestions(query: String): Result<List<String>> = withContext(ioDispatcher) {
+        runCatching {
+            val trimmed = query.trim()
+            if (trimmed.isBlank()) {
+                emptyList()
+            } else {
+                ServiceList.YouTube.suggestionExtractor.suggestionList(trimmed).take(10)
+            }
+        }
+    }
+
+    override suspend fun getPersonalizedFeed(watchedVideos: List<WatchHistoryItem>): Result<List<VideoItem>> = withContext(ioDispatcher) {
+        runCatching {
+            if (watchedVideos.isEmpty()) {
+                return@runCatching getTrendingVideos().getOrThrow()
+            }
+
+            coroutineScope {
+                val watchedChannels = watchedVideos
+                    .map { it.uploaderName }
+                    .filter { it.isNotBlank() }
+                    .distinct()
+                    .take(4)
+
+                val recentVideoUrls = watchedVideos
+                    .map { it.videoUrl }
+                    .filter { it.isNotBlank() }
+                    .take(3)
+
+                val relatedCandidates = mutableListOf<VideoItem>()
+                for (url in recentVideoUrls) {
+                    val cached = streamCache.get(url)?.first?.relatedVideos
+                    if (!cached.isNullOrEmpty()) {
+                        relatedCandidates.addAll(cached.take(4))
+                    }
+                }
+
+                val channelDeferreds = watchedChannels.map { channel ->
+                    async {
+                        searchVideos(channel).getOrNull().orEmpty().take(4)
+                    }
+                }
+
+                val trendingDeferred = async {
+                    getTrendingVideos().getOrNull().orEmpty()
+                }
+
+                val channelVideos = channelDeferreds.awaitAll().flatten()
+                val trendingVideos = trendingDeferred.await()
+
+                val seenIds = mutableSetOf<String>()
+                val candidateList = (relatedCandidates + channelVideos).filter { seenIds.add(it.id) }
+                val trendingList = trendingVideos.filter { seenIds.add(it.id) }
+
+                val finalFeed = mutableListOf<VideoItem>()
+                val candidateQueue = ArrayDeque(candidateList)
+                val trendingQueue = ArrayDeque(trendingList)
+
+                while (candidateQueue.isNotEmpty() || trendingQueue.isNotEmpty()) {
+                    repeat(2) {
+                        if (candidateQueue.isNotEmpty()) {
+                            finalFeed.add(candidateQueue.removeFirst())
+                        }
+                    }
+                    if (trendingQueue.isNotEmpty()) {
+                        finalFeed.add(trendingQueue.removeFirst())
+                    }
+                    if (candidateQueue.isEmpty() && trendingQueue.isNotEmpty()) {
+                        finalFeed.addAll(trendingQueue)
+                        trendingQueue.clear()
+                    }
+                }
+
+                if (finalFeed.isEmpty()) {
+                    trendingVideos
+                } else {
+                    finalFeed
+                }
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.yoouutt.ui.feed
 
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,6 +26,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.NorthWest
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -54,11 +57,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
 import com.example.yoouutt.ui.common.UpdateDialog
 import com.example.yoouutt.update.AppUpdateManager
@@ -72,26 +77,33 @@ fun FeedScreen(
     onHistoryClick: () -> Unit,
     onChannelClick: (channelUrl: String, channelName: String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: FeedViewModel = viewModel()
+    viewModel: FeedViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val view = LocalView.current
 
     var isSearchExpanded by remember { mutableStateOf(false) }
 
+    BackHandler(enabled = isSearchExpanded) {
+        isSearchExpanded = false
+        viewModel.clearSuggestions()
+        if (searchQuery.isNotEmpty()) {
+            viewModel.onQueryChanged("")
+            viewModel.loadHomeFeed()
+        }
+    }
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val updateManager = remember { AppUpdateManager() }
     var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
     var downloadProgress by remember { mutableStateOf<Float?>(null) }
-
-    val categories = remember {
-        listOf("Semua", "Musik", "Gaming", "Berita", "Podcast", "Teknologi", "Film", "Anime")
-    }
 
     LaunchedEffect(isSearchExpanded) {
         if (isSearchExpanded) {
@@ -208,9 +220,10 @@ fun FeedScreen(
                         IconButton(
                             onClick = {
                                 isSearchExpanded = false
+                                viewModel.clearSuggestions()
                                 if (searchQuery.isNotEmpty()) {
                                     viewModel.onQueryChanged("")
-                                    viewModel.loadTrending()
+                                    viewModel.loadHomeFeed()
                                 }
                             }
                         ) {
@@ -268,76 +281,145 @@ fun FeedScreen(
             }
         }
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = uiState is FeedUiState.Loading && searchQuery.isEmpty(),
-            onRefresh = viewModel::loadTrending,
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (val state = uiState) {
-                is FeedUiState.Loading -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(top = 0.dp, bottom = 130.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(4) {
-                            VideoCardSkeleton()
-                        }
+            PullToRefreshBox(
+                isRefreshing = uiState is FeedUiState.Loading && searchQuery.isEmpty(),
+                onRefresh = {
+                    when (selectedCategory) {
+                        "Semua" -> viewModel.loadHomeFeed()
+                        "Trending" -> viewModel.loadTrending()
+                        else -> viewModel.search()
                     }
-                }
-
-                is FeedUiState.Error -> {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = state.message,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Button(
-                            onClick = viewModel::loadTrending,
-                            shape = RoundedCornerShape(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Text(
-                                text = "Retry",
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = 0.5.sp
-                            )
-                        }
-                    }
-                }
-
-                is FeedUiState.Success -> {
-                    if (state.videos.isEmpty()) {
-                        Text(
-                            text = "No videos found",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    } else {
+                },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                when (val state = uiState) {
+                    is FeedUiState.Loading -> {
                         LazyColumn(
                             contentPadding = PaddingValues(top = 0.dp, bottom = 130.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(
-                                items = state.videos,
-                                key = { it.id }
-                            ) { video ->
-                                VideoCard(
-                                    video = video,
-                                    onClick = { onVideoClick(video) },
-                                    onChannelClick = onChannelClick
+                            items(4) {
+                                VideoCardSkeleton()
+                            }
+                        }
+                    }
+
+                    is FeedUiState.Error -> {
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = state.message,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Button(
+                                onClick = {
+                                    when (selectedCategory) {
+                                        "Semua" -> viewModel.loadHomeFeed()
+                                        "Trending" -> viewModel.loadTrending()
+                                        else -> viewModel.search()
+                                    }
+                                },
+                                shape = RoundedCornerShape(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            ) {
+                                Text(
+                                    text = "Retry",
+                                    fontWeight = FontWeight.SemiBold,
+                                    letterSpacing = 0.5.sp
+                                )
+                            }
+                        }
+                    }
+
+                    is FeedUiState.Success -> {
+                        if (state.videos.isEmpty()) {
+                            Text(
+                                text = "No videos found",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        } else {
+                            LazyColumn(
+                                contentPadding = PaddingValues(top = 0.dp, bottom = 130.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(
+                                    items = state.videos,
+                                    key = { it.id }
+                                ) { video ->
+                                    VideoCard(
+                                        video = video,
+                                        onClick = { onVideoClick(video) },
+                                        onChannelClick = onChannelClick
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (isSearchExpanded && searchSuggestions.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black),
+                    contentPadding = PaddingValues(top = 4.dp, bottom = 130.dp)
+                ) {
+                    items(searchSuggestions) { suggestion ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    focusManager.clearFocus()
+                                    viewModel.selectSuggestion(suggestion)
+                                }
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                                tint = Color(0xFF8E8E8E),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = suggestion,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    viewModel.onQueryChanged(suggestion)
+                                },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.NorthWest,
+                                    contentDescription = "Isi ke pencarian",
+                                    tint = Color(0xFF8E8E8E),
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
                         }

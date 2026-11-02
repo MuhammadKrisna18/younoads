@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.VideoItem
-import com.example.yoouutt.data.repository.NewPipeVideoRepository
 import com.example.yoouutt.data.repository.VideoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +23,7 @@ sealed interface ChannelUiState {
 }
 
 class ChannelViewModel(
-    private val videoRepository: VideoRepository = NewPipeVideoRepository()
+    private val videoRepository: VideoRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChannelUiState>(ChannelUiState.Loading)

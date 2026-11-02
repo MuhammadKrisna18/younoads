@@ -12,8 +12,8 @@ android {
     applicationId = "com.example.yoouutt"
     minSdk = 24
     targetSdk = 37
-    versionCode = 10
-    versionName = "1.9"
+    versionCode = 11
+    versionName = "2.0"
   }
 
   signingConfigs {
@@ -93,6 +93,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
   implementation(libs.media3.exoplayer)
+  implementation(libs.media3.session)
   implementation(libs.media3.ui)
   implementation(libs.media3.exoplayer.hls)
   implementation(libs.media3.exoplayer.dash)

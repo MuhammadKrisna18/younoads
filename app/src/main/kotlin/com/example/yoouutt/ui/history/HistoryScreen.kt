@@ -54,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.WatchHistoryItem
+import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +63,7 @@ fun HistoryScreen(
     onVideoClick: (String, String, String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HistoryViewModel = viewModel()
+    viewModel: HistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val historyItems by viewModel.historyItems.collectAsStateWithLifecycle()
     var showClearDialog by remember { mutableStateOf(false) }

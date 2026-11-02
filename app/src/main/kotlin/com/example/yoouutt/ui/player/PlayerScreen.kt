@@ -1,107 +1,60 @@
 package com.example.yoouutt.ui.player
 
-import android.content.Context
-import android.content.Intent
 import android.view.HapticFeedbackConstants
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.FastRewind
-import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.FullscreenExit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PictureInPictureAlt
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
-import coil.compose.AsyncImage
 import com.example.yoouutt.LocalInPipMode
-import com.example.yoouutt.YoouuttApp
-import com.example.yoouutt.playback.PlaybackManager
+import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.feed.VideoCard
-import kotlinx.coroutines.delay
+import com.example.yoouutt.ui.player.components.DoubleTapSeekFeedback
+import com.example.yoouutt.ui.player.components.PlayerActionPillRow
+import com.example.yoouutt.ui.player.components.PlayerChannelHeader
+import com.example.yoouutt.ui.player.components.PlayerControlsOverlay
+import com.example.yoouutt.ui.player.components.PlayerDescriptionCard
+import com.example.yoouutt.ui.player.components.YouTubeBottomSlider
 
 @Composable
 fun PlayerScreen(
@@ -110,417 +63,166 @@ fun PlayerScreen(
     fallbackUploader: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null
+    onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null,
+    viewModel: PlayerViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val playbackManager: PlaybackManager = YoouuttApp.instance.playbackManager
     val context = LocalContext.current
     val view = LocalView.current
     val activity = context.findActivity()
 
-    val currentPlayback by playbackManager.currentPlayback.collectAsStateWithLifecycle()
-    val isLoading by playbackManager.isLoading.collectAsStateWithLifecycle()
-    val errorMessage by playbackManager.errorMessage.collectAsStateWithLifecycle()
-    val isPlaying by playbackManager.isPlaying.collectAsStateWithLifecycle()
-    val isBuffering by playbackManager.isBuffering.collectAsStateWithLifecycle()
+    val currentPlayback by viewModel.currentPlayback.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
+    val isBuffering by viewModel.isBuffering.collectAsStateWithLifecycle()
+    val currentPositionMs by viewModel.currentPositionMs.collectAsStateWithLifecycle()
+    val bufferedPositionMs by viewModel.bufferedPositionMs.collectAsStateWithLifecycle()
+    val durationMs by viewModel.durationMs.collectAsStateWithLifecycle()
+    val isScrubbing by viewModel.isScrubbing.collectAsStateWithLifecycle()
+    val scrubPositionMs by viewModel.scrubPositionMs.collectAsStateWithLifecycle()
+    val controlsVisible by viewModel.controlsVisible.collectAsStateWithLifecycle()
+    val isFullscreen by viewModel.isFullscreen.collectAsStateWithLifecycle()
+    val resumeBannerVisible by viewModel.resumeBannerVisible.collectAsStateWithLifecycle()
+    val resumeSavedPosition by viewModel.resumeSavedPosition.collectAsStateWithLifecycle()
+    val isDescriptionExpanded by viewModel.isDescriptionExpanded.collectAsStateWithLifecycle()
+    val isLiked by viewModel.isLiked.collectAsStateWithLifecycle()
+    val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
+    val isSubscribed by viewModel.isSubscribed.collectAsStateWithLifecycle()
+    val speedIndex by viewModel.speedIndex.collectAsStateWithLifecycle()
+    val seekFeedback by viewModel.seekFeedback.collectAsStateWithLifecycle()
 
-    val exoPlayer = playbackManager.exoPlayer
     val isInPipMode = LocalInPipMode.current
 
-    var isFullscreen by remember { mutableStateOf(false) }
-    var resumeBannerVisible by remember { mutableStateOf(false) }
-    var resumeSavedPosition by remember { mutableStateOf(0L) }
-    var isDescriptionExpanded by remember { mutableStateOf(false) }
-
-    var isLiked by remember(videoUrl) { mutableStateOf(false) }
-    var isSaved by remember(videoUrl) { mutableStateOf(false) }
-    var isSubscribed by remember(fallbackUploader) { mutableStateOf(false) }
-
-    var seekFeedbackText by remember { mutableStateOf<String?>(null) }
-    var seekFeedbackIsForward by remember { mutableStateOf(true) }
-
-    val speeds = remember { listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f) }
-    var speedIndex by remember { mutableIntStateOf(2) }
-
-    var currentPositionMs by remember { mutableLongStateOf(0L) }
-    var bufferedPositionMs by remember { mutableLongStateOf(0L) }
-    var durationMs by remember { mutableLongStateOf(0L) }
-    var isScrubbing by remember { mutableStateOf(false) }
-    var scrubPositionMs by remember { mutableLongStateOf(0L) }
-    var controlsVisible by remember { mutableStateOf(false) }
-    var controlsLastInteractionTime by remember { mutableLongStateOf(0L) }
-
-    LaunchedEffect(exoPlayer) {
-        while (true) {
-            if (!isScrubbing) {
-                currentPositionMs = exoPlayer.currentPosition.coerceAtLeast(0L)
-                bufferedPositionMs = exoPlayer.bufferedPosition.coerceAtLeast(0L)
-                durationMs = if (exoPlayer.duration > 0L) exoPlayer.duration else 0L
-            }
-            delay(200)
-        }
-    }
-
-    LaunchedEffect(controlsVisible, controlsLastInteractionTime, isPlaying, isScrubbing) {
-        if (controlsVisible && isPlaying && !isScrubbing) {
-            delay(3000)
-            controlsVisible = false
-        }
-    }
-
-    LaunchedEffect(seekFeedbackText) {
-        if (seekFeedbackText != null) {
-            delay(650)
-            seekFeedbackText = null
-        }
-    }
-
     LaunchedEffect(videoUrl) {
-        val active = currentPlayback
-        if (active == null || active.videoUrl != videoUrl) {
-            playbackManager.playVideo(videoUrl, fallbackTitle, fallbackUploader)
-        }
+        viewModel.initVideo(videoUrl)
     }
 
-    LaunchedEffect(videoUrl) {
-        val videoId = videoUrl.substringAfter("v=").substringBefore("&")
-        val item = YoouuttApp.instance.historyRepository.getWatchHistory(videoId)
-        val savedPos = item?.lastPlaybackPositionMs
-        if (savedPos != null && savedPos > 5000L) {
-            resumeSavedPosition = savedPos
-            resumeBannerVisible = true
-        } else {
-            resumeBannerVisible = false
-        }
-    }
-
-    LaunchedEffect(resumeBannerVisible) {
-        if (resumeBannerVisible) {
-            delay(5000)
-            resumeBannerVisible = false
-        }
-    }
-
-    DisposableEffect(Unit) {
+    DisposableEffect(isFullscreen) {
+        activity?.setFullscreen(isFullscreen)
         onDispose {
-            if (activity != null && isFullscreen) {
-                activity.setFullscreen(false)
-            }
-        }
-    }
-
-    BackHandler {
-        if (isFullscreen) {
-            isFullscreen = false
             activity?.setFullscreen(false)
-        } else {
-            onBack()
         }
     }
 
-    val toggleFullscreen: () -> Unit = {
-        val nextState = !isFullscreen
-        isFullscreen = nextState
-        activity?.setFullscreen(nextState)
-    }
-
-    if (isInPipMode) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        ) {
-            AndroidView(
-                factory = { ctx ->
-                    PlayerView(ctx).apply {
-                        player = exoPlayer
-                        useController = false
-                        layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                    }
-                },
-                update = { pView ->
-                    if (pView.player != exoPlayer) {
-                        pView.player = exoPlayer
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+    LaunchedEffect(isInPipMode) {
+        if (isInPipMode) {
+            viewModel.hideControls()
         }
-        return
     }
 
-    Box(
+    BackHandler(enabled = isFullscreen) {
+        viewModel.setFullscreen(false)
+    }
+
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        val contentModifier = if (isFullscreen) {
+        val videoBoxModifier = if (isFullscreen) {
             Modifier.fillMaxSize()
         } else {
             Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .background(Color.Black)
         }
 
-        Column(modifier = contentModifier) {
-            val videoBoxModifier = if (isFullscreen) {
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Black)
-            } else {
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .background(Color.Black)
-            }
-
-            Box(modifier = videoBoxModifier) {
-                if (isLoading) {
-                    CircularProgressIndicator(
+        Box(modifier = videoBoxModifier) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            } else if (errorMessage != null) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = errorMessage.orEmpty(),
                         color = Color.White,
-                        modifier = Modifier.align(Alignment.Center)
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                } else if (errorMessage != null) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.playRelatedVideo(videoUrl, fallbackTitle, fallbackUploader) },
+                        shape = RoundedCornerShape(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        )
                     ) {
                         Text(
-                            text = errorMessage.orEmpty(),
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { playbackManager.playVideo(videoUrl, fallbackTitle, fallbackUploader) },
-                            shape = RoundedCornerShape(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = Color.Black
-                            )
-                        ) {
-                            Text(
-                                text = "Retry",
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
-                } else {
-                    AndroidView(
-                        factory = { ctx ->
-                            PlayerView(ctx).apply {
-                                player = exoPlayer
-                                layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                                useController = false
-                            }
-                        },
-                        update = { pView ->
-                            if (pView.player != exoPlayer) {
-                                pView.player = exoPlayer
-                            }
-                        },
-                        modifier = Modifier.matchParentSize()
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onTap = {
-                                        controlsVisible = !controlsVisible
-                                        if (controlsVisible) {
-                                            controlsLastInteractionTime = System.currentTimeMillis()
-                                        }
-                                    },
-                                    onDoubleTap = { offset ->
-                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                        val isForward = offset.x >= size.width / 2
-                                        val currentPos = exoPlayer.currentPosition
-                                        val duration = if (exoPlayer.duration > 0) exoPlayer.duration else Long.MAX_VALUE
-                                        if (isForward) {
-                                            val newPos = (currentPos + 10000L).coerceAtMost(duration)
-                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
-                                                exoPlayer.prepare()
-                                            }
-                                            exoPlayer.seekTo(newPos)
-                                            exoPlayer.play()
-                                            seekFeedbackIsForward = true
-                                            seekFeedbackText = "+10 detik"
-                                        } else {
-                                            val newPos = (currentPos - 10000L).coerceAtLeast(0L)
-                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
-                                                exoPlayer.prepare()
-                                            }
-                                            exoPlayer.seekTo(newPos)
-                                            exoPlayer.play()
-                                            seekFeedbackIsForward = false
-                                            seekFeedbackText = "-10 detik"
-                                        }
-                                    }
-                                )
-                            }
-                    )
-
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = controlsVisible,
-                        enter = fadeIn(tween(150)),
-                        exit = fadeOut(tween(250)),
-                        modifier = Modifier.matchParentSize()
-                    ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .fillMaxWidth()
-                                    .height(64.dp)
-                                    .background(
-                                        Brush.verticalGradient(
-                                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.55f))
-                                        )
-                                    )
-                            )
-
-                            IconButton(
-                                onClick = {
-                                    if (isFullscreen) toggleFullscreen() else onBack()
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .padding(8.dp)
-                                    .size(36.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.Black.copy(alpha = 0.5f))
-                            ) {
-                                Icon(
-                                    imageVector = if (isFullscreen) Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.KeyboardArrowDown,
-                                    contentDescription = if (isFullscreen) "Kembali" else "Tutup",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .size(54.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.Black.copy(alpha = 0.6f))
-                                    .clickable {
-                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                        if (exoPlayer.isPlaying) {
-                                            exoPlayer.pause()
-                                        } else {
-                                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
-                                                exoPlayer.prepare()
-                                            } else if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_ENDED) {
-                                                exoPlayer.seekTo(0L)
-                                            }
-                                            exoPlayer.play()
-                                        }
-                                        controlsLastInteractionTime = System.currentTimeMillis()
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isBuffering) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(28.dp),
-                                        color = Color.White,
-                                        strokeWidth = 2.5.dp
-                                    )
-                                } else {
-                                    Icon(
-                                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                                        contentDescription = if (isPlaying) "Pause" else "Play",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .fillMaxWidth()
-                                    .padding(bottom = 14.dp, start = 12.dp, end = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val displayPos = if (isScrubbing) scrubPositionMs else currentPositionMs
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .background(Color.Black.copy(alpha = 0.6f))
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = "${formatTime(displayPos)} / ${formatTime(durationMs)}",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.White
-                                    )
-                                }
-
-                                IconButton(
-                                    onClick = {
-                                        toggleFullscreen()
-                                        controlsLastInteractionTime = System.currentTimeMillis()
-                                    },
-                                    modifier = Modifier
-                                        .size(34.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Black.copy(alpha = 0.5f))
-                                ) {
-                                    Icon(
-                                        imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
-                                        contentDescription = "Layar Penuh",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    if (isBuffering && !isLoading && !controlsVisible) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(36.dp),
-                            color = Color.White,
-                            strokeWidth = 3.dp
+                            text = "Retry",
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
+                }
+            } else {
+                AndroidView(
+                    factory = { ctx ->
+                        PlayerView(ctx).apply {
+                            player = viewModel.exoPlayer
+                            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                            useController = false
+                        }
+                    },
+                    update = { pView ->
+                        if (pView.player != viewModel.exoPlayer) {
+                            pView.player = viewModel.exoPlayer
+                        }
+                    },
+                    modifier = Modifier.matchParentSize()
+                )
 
-                    YouTubeBottomSlider(
-                        currentPositionMs = currentPositionMs,
-                        bufferedPositionMs = bufferedPositionMs,
-                        durationMs = durationMs,
-                        isControlsVisible = controlsVisible,
-                        onScrubbing = { scrubbing, targetMs ->
-                            isScrubbing = scrubbing
-                            scrubPositionMs = targetMs
-                            controlsLastInteractionTime = System.currentTimeMillis()
-                        },
-                        onSeek = { seekMs ->
-                            if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
-                                exoPlayer.prepare()
-                            }
-                            exoPlayer.seekTo(seekMs)
-                            exoPlayer.play()
-                            currentPositionMs = seekMs
-                            controlsLastInteractionTime = System.currentTimeMillis()
-                        },
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = { viewModel.toggleControls() },
+                                onDoubleTap = { offset ->
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    val isForward = offset.x >= size.width / 2
+                                    viewModel.doubleTapSeek(isForward)
+                                }
+                            )
+                        }
+                )
+
+                PlayerControlsOverlay(
+                    visible = controlsVisible,
+                    isPlaying = isPlaying,
+                    isBuffering = isBuffering,
+                    isFullscreen = isFullscreen,
+                    currentPositionMs = if (isScrubbing) scrubPositionMs else currentPositionMs,
+                    durationMs = durationMs,
+                    onBackClick = {
+                        if (isFullscreen) viewModel.toggleFullscreen() else onBack()
+                    },
+                    onPlayPauseClick = viewModel::togglePlayPause,
+                    onToggleFullscreen = viewModel::toggleFullscreen
+                )
+
+                seekFeedback?.let { feedback ->
+                    DoubleTapSeekFeedback(
+                        visible = true,
+                        isForward = feedback.isForward,
+                        text = feedback.text
                     )
                 }
 
-                DoubleTapSeekFeedback(
-                    visible = seekFeedbackText != null,
-                    isForward = seekFeedbackIsForward,
-                    text = seekFeedbackText.orEmpty()
+                YouTubeBottomSlider(
+                    currentPositionMs = currentPositionMs,
+                    bufferedPositionMs = bufferedPositionMs,
+                    durationMs = durationMs,
+                    isControlsVisible = controlsVisible,
+                    onScrubbing = viewModel::onScrubbing,
+                    onSeek = viewModel::seekTo,
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
 
                 if (resumeBannerVisible) {
@@ -538,7 +240,7 @@ fun PlayerScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Lanjutkan dari ${formatTime(resumeSavedPosition)}?",
+                            text = "Lanjutkan dari ${PlayerUtils.formatTime(resumeSavedPosition)}?",
                             color = Color.White,
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium
@@ -549,31 +251,28 @@ fun PlayerScreen(
                             color = Color(0xFFE50914),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable {
-                                exoPlayer.seekTo(resumeSavedPosition)
-                                exoPlayer.play()
-                                resumeBannerVisible = false
-                            }
+                            modifier = Modifier.clickable { viewModel.applyResume() }
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Batal",
                             color = Color(0xFFAAAAAA),
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.clickable { resumeBannerVisible = false }
+                            modifier = Modifier.clickable { viewModel.dismissResume() }
                         )
                     }
                 }
             }
+        }
 
-            if (!isFullscreen) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
+        if (!isFullscreen) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
                 val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
                 val streamData = currentPlayback?.streamData
 
@@ -609,462 +308,60 @@ fun PlayerScreen(
                     }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val avatarUrl = streamData?.uploaderAvatarUrl.orEmpty()
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF272727))
-                            .clickable {
-                                val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
-                                onChannelClick?.invoke(targetUrl, currentUploader)
+                PlayerChannelHeader(
+                    uploaderName = currentUploader,
+                    streamData = streamData,
+                    isSubscribed = isSubscribed,
+                    onToggleSubscribe = viewModel::toggleSubscribe,
+                    onChannelClick = {
+                        val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
+                        onChannelClick?.invoke(targetUrl, currentUploader)
+                    }
+                )
+
+                PlayerActionPillRow(
+                    videoUrl = videoUrl,
+                    isLiked = isLiked,
+                    isSaved = isSaved,
+                    speedText = "${viewModel.speeds[speedIndex]}x",
+                    onToggleLike = viewModel::toggleLike,
+                    onToggleSave = viewModel::toggleSave,
+                    onCycleSpeed = viewModel::cyclePlaybackSpeed,
+                    onPipClick = { activity?.enterPipMode() },
+                    onToggleFullscreen = viewModel::toggleFullscreen
+                )
+
+                PlayerDescriptionCard(
+                    streamData = streamData,
+                    isExpanded = isDescriptionExpanded,
+                    onToggleExpand = viewModel::toggleDescription
+                )
+
+                val relatedVideos = streamData?.relatedVideos.orEmpty()
+                if (relatedVideos.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = "Video Terkait",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    relatedVideos.forEach { relVideo ->
+                        VideoCard(
+                            video = relVideo,
+                            onClick = {
+                                viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
                             },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (avatarUrl.isNotBlank()) {
-                            AsyncImage(
-                                model = avatarUrl,
-                                contentDescription = currentUploader,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.matchParentSize()
-                            )
-                        } else {
-                            val initial = currentUploader.trim().firstOrNull()?.uppercase() ?: "Y"
-                            Text(
-                                text = initial,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable {
-                                val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
-                                onChannelClick?.invoke(targetUrl, currentUploader)
-                            }
-                    ) {
-                        Text(
-                            text = currentUploader,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        val subText = streamData?.uploaderSubscriberCountText.orEmpty()
-                        if (subText.isNotBlank()) {
-                            Text(
-                                text = subText,
-                                fontSize = 11.5.sp,
-                                color = Color(0xFFAAAAAA),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .height(34.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSubscribed) Color(0xFF272727) else Color.White)
-                            .clickable {
-                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                isSubscribed = !isSubscribed
-                            }
-                            .padding(horizontal = 14.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = if (isSubscribed) "Disubscribe" else "Subscribe",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isSubscribed) Color.White else Color.Black
+                            onChannelClick = onChannelClick
                         )
                     }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 14.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ActionPill(
-                        icon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                        label = if (isLiked) "Disukai" else "Suka",
-                        isActive = isLiked,
-                        onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                            isLiked = !isLiked
-                        }
-                    )
-
-                    ActionPill(
-                        icon = Icons.Outlined.Share,
-                        label = "Bagikan",
-                        onClick = {
-                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                putExtra(Intent.EXTRA_TEXT, videoUrl)
-                                type = "text/plain"
-                            }
-                            val shareIntent = Intent.createChooser(sendIntent, null)
-                            context.startActivity(shareIntent)
-                        }
-                    )
-
-                    ActionPill(
-                        icon = if (isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                        label = if (isSaved) "Tersimpan" else "Simpan",
-                        isActive = isSaved,
-                        onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                            isSaved = !isSaved
-                        }
-                    )
-
-                    ActionPill(
-                        icon = Icons.Default.Speed,
-                        label = "${speeds[speedIndex]}x",
-                        onClick = {
-                            speedIndex = (speedIndex + 1) % speeds.size
-                            exoPlayer.setPlaybackSpeed(speeds[speedIndex])
-                        }
-                    )
-
-                    ActionPill(
-                        icon = Icons.Default.PictureInPictureAlt,
-                        label = "PiP",
-                        onClick = {
-                            activity?.enterPipMode()
-                        }
-                    )
-
-                    ActionPill(
-                        icon = Icons.Default.Fullscreen,
-                        label = "Layar Penuh",
-                        onClick = toggleFullscreen
-                    )
-                }
-
-                if (streamData != null) {
-                    val hasMeta = streamData.viewCountText.isNotBlank() || streamData.uploadDateText.isNotBlank()
-                    val hasDesc = streamData.description.isNotBlank()
-
-                    if (hasMeta || hasDesc) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 6.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Color(0xFF1E1E1E))
-                                .clickable {
-                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                    isDescriptionExpanded = !isDescriptionExpanded
-                                }
-                                .padding(12.dp)
-                                .animateContentSize()
-                        ) {
-                            Column {
-                                if (hasMeta) {
-                                    val metaLine = buildString {
-                                        if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
-                                        if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append("   ")
-                                        if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
-                                    }
-                                    Text(
-                                        text = metaLine,
-                                        fontSize = 12.5.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color.White
-                                    )
-                                    if (hasDesc) {
-                                        Spacer(modifier = Modifier.height(6.dp))
-                                    }
-                                }
-
-                                if (hasDesc) {
-                                    Text(
-                                        text = streamData.description,
-                                        fontSize = 12.sp,
-                                        lineHeight = 17.sp,
-                                        color = Color(0xFFDDDDDD),
-                                        maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 2,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    Text(
-                                        text = if (isDescriptionExpanded) "Sembunyikan" else "...selengkapnya",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    val relatedVideos = streamData.relatedVideos
-                    if (relatedVideos.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        Text(
-                            text = "Video Terkait",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        relatedVideos.forEach { relVideo ->
-                            VideoCard(
-                                video = relVideo,
-                                onClick = {
-                                    playbackManager.playVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
-                                },
-                                onChannelClick = onChannelClick
-                            )
-                        }
-                    }
-                }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
-        }
-    }
-}
-
-private fun formatTime(timeMs: Long): String {
-    val totalSeconds = (timeMs / 1000).coerceAtLeast(0)
-    val hours = totalSeconds / 3600
-    val minutes = (totalSeconds % 3600) / 60
-    val seconds = totalSeconds % 60
-    return if (hours > 0) {
-        String.format("%d:%02d:%02d", hours, minutes, seconds)
-    } else {
-        String.format("%02d:%02d", minutes, seconds)
-    }
-}
-
-@Composable
-private fun ActionPill(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isActive: Boolean = false
-) {
-    Row(
-        modifier = modifier
-            .height(34.dp)
-            .clip(RoundedCornerShape(50.dp))
-            .background(if (isActive) Color.White else Color(0xFF272727))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isActive) Color.Black else Color.White,
-            modifier = Modifier.size(15.dp)
-        )
-        Spacer(modifier = Modifier.width(5.dp))
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
-            color = if (isActive) Color.Black else Color.White
-        )
-    }
-}
-
-@Composable
-private fun BoxScope.DoubleTapSeekFeedback(
-    visible: Boolean,
-    isForward: Boolean,
-    text: String
-) {
-    androidx.compose.animation.AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(tween(100)) + scaleIn(tween(180, easing = FastOutSlowInEasing)),
-        exit = fadeOut(tween(350, easing = FastOutSlowInEasing)),
-        modifier = Modifier.align(if (isForward) Alignment.CenterEnd else Alignment.CenterStart)
-    ) {
-        val shape = if (isForward) {
-            RoundedCornerShape(topStartPercent = 100, bottomStartPercent = 100)
-        } else {
-            RoundedCornerShape(topEndPercent = 100, bottomEndPercent = 100)
-        }
-
-        val gradient = if (isForward) {
-            Brush.horizontalGradient(
-                listOf(
-                    Color.White.copy(alpha = 0.04f),
-                    Color.White.copy(alpha = 0.22f)
-                )
-            )
-        } else {
-            Brush.horizontalGradient(
-                listOf(
-                    Color.White.copy(alpha = 0.22f),
-                    Color.White.copy(alpha = 0.04f)
-                )
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.38f)
-                .clip(shape)
-                .background(gradient),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = if (isForward) Icons.Default.FastForward else Icons.Default.FastRewind,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(36.dp)
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = text,
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun YouTubeBottomSlider(
-    currentPositionMs: Long,
-    bufferedPositionMs: Long,
-    durationMs: Long,
-    isControlsVisible: Boolean,
-    onScrubbing: (Boolean, Long) -> Unit,
-    onSeek: (Long) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val totalDuration = durationMs.coerceAtLeast(1L)
-    val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
-    val bufferedProgress = (bufferedPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
-
-    var isDragging by remember { mutableStateOf(false) }
-    var dragProgress by remember { mutableFloatStateOf(0f) }
-
-    val activeProgress = if (isDragging) dragProgress else progress
-    val trackHeight = if (isControlsVisible || isDragging) 3.5.dp else 2.dp
-    val thumbRadius = if (isDragging) 7.dp else 5.5.dp
-
-    BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(if (isControlsVisible) 32.dp else 4.dp)
-            .pointerInput(totalDuration, isControlsVisible) {
-                if (!isControlsVisible) return@pointerInput
-                awaitEachGesture {
-                    val down = awaitFirstDown(requireUnconsumed = false)
-                    val width = size.width.coerceAtLeast(1)
-                    var currentX = down.position.x
-                    val initialProgress = (currentX / width).coerceIn(0f, 1f)
-
-                    isDragging = true
-                    dragProgress = initialProgress
-                    onScrubbing(true, (initialProgress * totalDuration).toLong())
-
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                        if (change.changedToUp()) {
-                            change.consume()
-                            break
-                        }
-                        if (change.position.x != currentX) {
-                            change.consume()
-                            currentX = change.position.x
-                            val newProgress = (currentX / width).coerceIn(0f, 1f)
-                            dragProgress = newProgress
-                            onScrubbing(true, (newProgress * totalDuration).toLong())
-                        }
-                    }
-
-                    isDragging = false
-                    val finalProgress = (currentX / width).coerceIn(0f, 1f)
-                    val targetMs = (finalProgress * totalDuration).toLong()
-                    onScrubbing(false, targetMs)
-                    onSeek(targetMs)
-                }
-            },
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(trackHeight)
-        ) {
-            val canvasWidth = size.width
-            val canvasHeight = size.height
-
-            drawLine(
-                color = Color.White.copy(alpha = 0.2f),
-                start = Offset(0f, canvasHeight / 2),
-                end = Offset(canvasWidth, canvasHeight / 2),
-                strokeWidth = canvasHeight
-            )
-
-            val bufferedX = canvasWidth * bufferedProgress
-            if (bufferedX > 0f) {
-                drawLine(
-                    color = Color.White.copy(alpha = 0.4f),
-                    start = Offset(0f, canvasHeight / 2),
-                    end = Offset(bufferedX, canvasHeight / 2),
-                    strokeWidth = canvasHeight
-                )
-            }
-
-            val playedX = canvasWidth * activeProgress
-            if (playedX > 0f) {
-                drawLine(
-                    color = Color(0xFFE50914),
-                    start = Offset(0f, canvasHeight / 2),
-                    end = Offset(playedX, canvasHeight / 2),
-                    strokeWidth = canvasHeight
-                )
-            }
-
-            if (isControlsVisible || isDragging) {
-                drawCircle(
-                    color = Color(0xFFE50914),
-                    radius = thumbRadius.toPx(),
-                    center = Offset(playedX, canvasHeight / 2)
-                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

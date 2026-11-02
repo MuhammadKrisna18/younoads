@@ -74,6 +74,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
 import com.example.yoouutt.ui.feed.VideoCard
 import com.example.yoouutt.ui.feed.VideoCardSkeleton
@@ -86,7 +87,7 @@ fun ChannelScreen(
     onVideoClick: (VideoItem) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChannelViewModel = viewModel()
+    viewModel: ChannelViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isSearchOpen by remember { mutableStateOf(false) }
