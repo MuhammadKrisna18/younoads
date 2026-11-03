@@ -49,6 +49,7 @@ import androidx.media3.ui.PlayerView
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.feed.VideoCard
+import com.example.yoouutt.ui.player.components.AmbientGlow
 import com.example.yoouutt.ui.player.components.DoubleTapSeekFeedback
 import com.example.yoouutt.ui.player.components.MinimalBottomProgressBar
 import com.example.yoouutt.ui.player.components.PlayerActionPillRow
@@ -95,6 +96,7 @@ fun PlayerScreen(
     val currentResolution by viewModel.currentResolution.collectAsStateWithLifecycle()
     val availableResolutions by viewModel.availableResolutions.collectAsStateWithLifecycle()
     val isResolutionDialogVisible by viewModel.isResolutionDialogVisible.collectAsStateWithLifecycle()
+    val isAmbientModeEnabled by viewModel.isAmbientModeEnabled.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
@@ -276,104 +278,119 @@ fun PlayerScreen(
         }
 
         if (!isFullscreen) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
             ) {
-                val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
-                val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
-                val streamData = currentPlayback?.streamData
+                if (isAmbientModeEnabled) {
+                    AmbientGlow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.TopCenter)
+                    )
+                }
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 4.dp)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        text = currentTitle,
-                        fontSize = 16.5.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        lineHeight = 22.sp,
-                        color = Color.White,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                    val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
+                    val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
+                    val streamData = currentPlayback?.streamData
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 4.dp)
+                    ) {
+                        Text(
+                            text = currentTitle,
+                            fontSize = 16.5.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            lineHeight = 22.sp,
+                            color = Color.White,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        if (streamData != null) {
+                            val metaLine = buildString {
+                                if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
+                                if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append(" • ")
+                                if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
+                            }
+                            if (metaLine.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = metaLine,
+                                    fontSize = 12.sp,
+                                    color = Color(0xFFAAAAAA)
+                                )
+                            }
+                        }
+                    }
+
+                    PlayerChannelHeader(
+                        uploaderName = currentUploader,
+                        streamData = streamData,
+                        isSubscribed = isSubscribed,
+                        onToggleSubscribe = viewModel::toggleSubscribe,
+                        onChannelClick = {
+                            val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
+                            onChannelClick?.invoke(targetUrl, currentUploader)
+                        }
                     )
 
-                    if (streamData != null) {
-                        val metaLine = buildString {
-                            if (streamData.viewCountText.isNotBlank()) append(streamData.viewCountText)
-                            if (streamData.viewCountText.isNotBlank() && streamData.uploadDateText.isNotBlank()) append(" • ")
-                            if (streamData.uploadDateText.isNotBlank()) append(streamData.uploadDateText)
-                        }
-                        if (metaLine.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = metaLine,
-                                fontSize = 12.sp,
-                                color = Color(0xFFAAAAAA)
+                    PlayerActionPillRow(
+                        videoUrl = videoUrl,
+                        isLiked = isLiked,
+                        isSaved = isSaved,
+                        speedText = "${viewModel.speeds[speedIndex]}x",
+                        resolutionText = resolutionLabel.ifBlank { "Kualitas" },
+                        isAmbientEnabled = isAmbientModeEnabled,
+                        onToggleLike = viewModel::toggleLike,
+                        onToggleSave = viewModel::toggleSave,
+                        onCycleSpeed = viewModel::cyclePlaybackSpeed,
+                        onResolutionClick = viewModel::showResolutionDialog,
+                        onToggleAmbient = viewModel::toggleAmbientMode,
+                        onPipClick = { activity?.enterPipMode() },
+                        onToggleFullscreen = viewModel::toggleFullscreen
+                    )
+
+                    PlayerDescriptionCard(
+                        streamData = streamData,
+                        isExpanded = isDescriptionExpanded,
+                        onToggleExpand = viewModel::toggleDescription
+                    )
+
+                    val relatedVideos = streamData?.relatedVideos.orEmpty()
+                    if (relatedVideos.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text(
+                            text = "Video Terkait",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        relatedVideos.forEach { relVideo ->
+                            VideoCard(
+                                video = relVideo,
+                                onClick = {
+                                    viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
+                                },
+                                onChannelClick = onChannelClick
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-
-                PlayerChannelHeader(
-                    uploaderName = currentUploader,
-                    streamData = streamData,
-                    isSubscribed = isSubscribed,
-                    onToggleSubscribe = viewModel::toggleSubscribe,
-                    onChannelClick = {
-                        val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
-                        onChannelClick?.invoke(targetUrl, currentUploader)
-                    }
-                )
-
-                PlayerActionPillRow(
-                    videoUrl = videoUrl,
-                    isLiked = isLiked,
-                    isSaved = isSaved,
-                    speedText = "${viewModel.speeds[speedIndex]}x",
-                    resolutionText = resolutionLabel.ifBlank { "Kualitas" },
-                    onToggleLike = viewModel::toggleLike,
-                    onToggleSave = viewModel::toggleSave,
-                    onCycleSpeed = viewModel::cyclePlaybackSpeed,
-                    onResolutionClick = viewModel::showResolutionDialog,
-                    onPipClick = { activity?.enterPipMode() },
-                    onToggleFullscreen = viewModel::toggleFullscreen
-                )
-
-                PlayerDescriptionCard(
-                    streamData = streamData,
-                    isExpanded = isDescriptionExpanded,
-                    onToggleExpand = viewModel::toggleDescription
-                )
-
-                val relatedVideos = streamData?.relatedVideos.orEmpty()
-                if (relatedVideos.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Text(
-                        text = "Video Terkait",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    relatedVideos.forEach { relVideo ->
-                        VideoCard(
-                            video = relVideo,
-                            onClick = {
-                                viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
-                            },
-                            onChannelClick = onChannelClick
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -382,7 +399,9 @@ fun PlayerScreen(
         ResolutionSelectionDialog(
             availableResolutions = availableResolutions,
             currentResolution = currentResolution,
+            isAmbientModeEnabled = isAmbientModeEnabled,
             onSelectResolution = viewModel::selectResolution,
+            onToggleAmbientMode = viewModel::toggleAmbientMode,
             onDismiss = viewModel::dismissResolutionDialog
         )
     }

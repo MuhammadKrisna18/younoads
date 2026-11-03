@@ -33,7 +33,7 @@ fun ActionPill(
         modifier = modifier
             .height(34.dp)
             .clip(RoundedCornerShape(50.dp))
-            .background(if (isActive) Color.White else Color(0xFF272727))
+            .background(if (isActive) Color(0xFFFF0000) else Color(0xFF272727))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -41,7 +41,7 @@ fun ActionPill(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = if (isActive) Color.Black else Color.White,
+            tint = Color.White,
             modifier = Modifier.size(15.dp)
         )
         Spacer(modifier = Modifier.width(5.dp))
@@ -49,7 +49,7 @@ fun ActionPill(
             text = label,
             fontSize = 12.sp,
             fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
-            color = if (isActive) Color.Black else Color.White
+            color = Color.White
         )
     }
 }

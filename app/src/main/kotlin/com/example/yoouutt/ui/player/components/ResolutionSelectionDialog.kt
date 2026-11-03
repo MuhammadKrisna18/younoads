@@ -18,14 +18,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,7 +47,9 @@ import com.example.yoouutt.data.model.VideoResolutionOption
 fun ResolutionSelectionDialog(
     availableResolutions: List<VideoResolutionOption>,
     currentResolution: VideoResolutionOption?,
+    isAmbientModeEnabled: Boolean = true,
     onSelectResolution: (VideoResolutionOption) -> Unit,
+    onToggleAmbientMode: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val view = LocalView.current
@@ -174,6 +180,62 @@ fun ResolutionSelectionDialog(
                             }
                         }
                     }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = Color.White.copy(alpha = 0.12f), thickness = 0.8.dp)
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            onToggleAmbientMode()
+                        }
+                        .padding(horizontal = 6.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = if (isAmbientModeEnabled) Color(0xFFFF4E45) else Color.White.copy(alpha = 0.6f),
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Column {
+                            Text(
+                                text = "Ambient Mode",
+                                fontSize = 14.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Pendaran warna dinamis di sekitar video",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.55f)
+                            )
+                        }
+                    }
+
+                    Switch(
+                        checked = isAmbientModeEnabled,
+                        onCheckedChange = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            onToggleAmbientMode()
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Color(0xFFFF4E45),
+                            uncheckedThumbColor = Color.White.copy(alpha = 0.7f),
+                            uncheckedTrackColor = Color.White.copy(alpha = 0.2f)
+                        )
+                    )
                 }
             }
         }

@@ -236,8 +236,8 @@ fun InAppPipPlayer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(2.dp),
-                color = Color(0xFFE50914),
-                trackColor = Color(0xFF333333)
+                color = Color(0xFFFF0000),
+                trackColor = Color.White.copy(alpha = 0.2f)
             )
         }
     }

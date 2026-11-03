@@ -101,7 +101,7 @@ private fun BottomNavItem(
     modifier: Modifier = Modifier
 ) {
     val contentColor by animateColorAsState(
-        targetValue = if (selected) Color.White else Color(0xFF888888),
+        targetValue = if (selected) Color(0xFFFF0000) else Color(0xFF888888),
         animationSpec = tween(durationMillis = 150),
         label = "BottomNavColor"
     )
@@ -121,7 +121,7 @@ private fun BottomNavItem(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(14.dp))
-                .background(if (selected) Color(0xFF242424) else Color.Transparent)
+                .background(if (selected) Color(0xFFFF0000).copy(alpha = 0.14f) else Color.Transparent)
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center
         ) {

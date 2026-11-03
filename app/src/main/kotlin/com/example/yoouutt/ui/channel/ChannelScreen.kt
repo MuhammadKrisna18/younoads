@@ -451,11 +451,11 @@ private fun ChannelContent(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSelected) Color.White else Color(0xFF1E1E1E))
+                            .background(if (isSelected) Color(0xFFFF0000) else Color(0xFF1E1E1E))
                             .border(
                                 border = BorderStroke(
                                     width = 0.5.dp,
-                                    color = if (isSelected) Color.White else Color(0xFF333333)
+                                    color = if (isSelected) Color(0xFFFF0000) else Color(0xFF333333)
                                 ),
                                 shape = RoundedCornerShape(50.dp)
                             )
@@ -469,7 +469,7 @@ private fun ChannelContent(
                             text = option.title,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Color.Black else Color(0xFFDDDDDD)
+                            color = Color.White
                         )
                     }
                 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.HighQuality
@@ -33,10 +34,12 @@ fun PlayerActionPillRow(
     isSaved: Boolean,
     speedText: String,
     resolutionText: String = "",
+    isAmbientEnabled: Boolean = true,
     onToggleLike: () -> Unit,
     onToggleSave: () -> Unit,
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit = {},
+    onToggleAmbient: () -> Unit = {},
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -95,6 +98,16 @@ fun PlayerActionPillRow(
                 }
             )
         }
+
+        ActionPill(
+            icon = Icons.Default.AutoAwesome,
+            label = "Ambience",
+            isActive = isAmbientEnabled,
+            onClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onToggleAmbient()
+            }
+        )
 
         ActionPill(
             icon = Icons.Default.Speed,

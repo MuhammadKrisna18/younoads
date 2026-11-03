@@ -192,7 +192,7 @@ fun FeedScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(50.dp))
-                                    .background(if (isSelected) Color.White else Color(0xFF222222))
+                                    .background(if (isSelected) Color(0xFFFF0000) else Color(0xFF222222))
                                     .clickable {
                                         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                         viewModel.selectCategory(category)
@@ -202,9 +202,9 @@ fun FeedScreen(
                             ) {
                                 Text(
                                     text = category,
-                                    color = if (isSelected) Color.Black else Color.White,
+                                    color = Color.White,
                                     fontSize = 12.5.sp,
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                 )
                             }
                         }

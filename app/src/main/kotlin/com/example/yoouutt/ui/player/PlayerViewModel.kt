@@ -38,6 +38,9 @@ class PlayerViewModel(
     private val _isResolutionDialogVisible = MutableStateFlow(false)
     val isResolutionDialogVisible: StateFlow<Boolean> = _isResolutionDialogVisible.asStateFlow()
 
+    private val _isAmbientModeEnabled = MutableStateFlow(true)
+    val isAmbientModeEnabled: StateFlow<Boolean> = _isAmbientModeEnabled.asStateFlow()
+
     private val _currentPositionMs = MutableStateFlow(0L)
     val currentPositionMs: StateFlow<Long> = _currentPositionMs.asStateFlow()
 
@@ -193,6 +196,10 @@ class PlayerViewModel(
 
     fun selectResolution(option: VideoResolutionOption) {
         playbackManager.selectResolution(option)
+    }
+
+    fun toggleAmbientMode() {
+        _isAmbientModeEnabled.value = !_isAmbientModeEnabled.value
     }
 
     fun toggleControls() {

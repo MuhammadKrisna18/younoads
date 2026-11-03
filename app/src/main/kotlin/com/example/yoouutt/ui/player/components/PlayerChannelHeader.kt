@@ -108,7 +108,7 @@ fun PlayerChannelHeader(
             modifier = Modifier
                 .height(34.dp)
                 .clip(RoundedCornerShape(50.dp))
-                .background(if (isSubscribed) Color(0xFF272727) else Color.White)
+                .background(if (isSubscribed) Color(0xFF272727) else Color(0xFFFF0000))
                 .clickable {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     onToggleSubscribe()
@@ -120,7 +120,7 @@ fun PlayerChannelHeader(
                 text = if (isSubscribed) "Disubscribe" else "Subscribe",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = if (isSubscribed) Color.White else Color.Black
+                color = Color.White
             )
         }
     }
