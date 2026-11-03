@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.yoouutt.data.model.StreamData
+import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import com.example.yoouutt.playback.ActivePlayback
 import com.example.yoouutt.playback.PlaybackManager
@@ -31,6 +32,11 @@ class PlayerViewModel(
     val isPlaying: StateFlow<Boolean> = playbackManager.isPlaying
     val isBuffering: StateFlow<Boolean> = playbackManager.isBuffering
     val exoPlayer: ExoPlayer get() = playbackManager.exoPlayer
+    val currentResolution: StateFlow<VideoResolutionOption?> = playbackManager.currentResolution
+    val availableResolutions: StateFlow<List<VideoResolutionOption>> = playbackManager.availableResolutions
+
+    private val _isResolutionDialogVisible = MutableStateFlow(false)
+    val isResolutionDialogVisible: StateFlow<Boolean> = _isResolutionDialogVisible.asStateFlow()
 
     private val _currentPositionMs = MutableStateFlow(0L)
     val currentPositionMs: StateFlow<Long> = _currentPositionMs.asStateFlow()
@@ -170,10 +176,23 @@ class PlayerViewModel(
     fun onScrubbing(scrubbing: Boolean, targetMs: Long) {
         _isScrubbing.value = scrubbing
         _scrubPositionMs.value = targetMs
-        if (!scrubbing) {
-            seekTo(targetMs)
+        if (scrubbing) {
+            controlsTimeoutJob?.cancel()
+        } else {
+            resetControlsTimeout()
         }
-        resetControlsTimeout()
+    }
+
+    fun showResolutionDialog() {
+        _isResolutionDialogVisible.value = true
+    }
+
+    fun dismissResolutionDialog() {
+        _isResolutionDialogVisible.value = false
+    }
+
+    fun selectResolution(option: VideoResolutionOption) {
+        playbackManager.selectResolution(option)
     }
 
     fun toggleControls() {

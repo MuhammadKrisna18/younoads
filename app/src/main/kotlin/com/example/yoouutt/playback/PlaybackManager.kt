@@ -15,9 +15,12 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.data.model.StreamData
+import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.NewPipeVideoRepository
 import com.example.yoouutt.data.repository.VideoRepository
@@ -63,6 +66,12 @@ class PlaybackManager(
 
     private val _resumePositionMs = MutableStateFlow<Long?>(null)
     val resumePositionMs: StateFlow<Long?> = _resumePositionMs.asStateFlow()
+
+    private val _currentResolution = MutableStateFlow<VideoResolutionOption?>(null)
+    val currentResolution: StateFlow<VideoResolutionOption?> = _currentResolution.asStateFlow()
+
+    private val _availableResolutions = MutableStateFlow<List<VideoResolutionOption>>(emptyList())
+    val availableResolutions: StateFlow<List<VideoResolutionOption>> = _availableResolutions.asStateFlow()
 
     val exoPlayer: ExoPlayer = run {
         val httpDataSourceFactory = DefaultHttpDataSource.Factory()
@@ -182,6 +191,10 @@ class PlaybackManager(
                         videoId = streamData.videoId,
                         streamData = streamData
                     )
+                    _availableResolutions.value = streamData.availableResolutions
+                    val initialResolution = streamData.selectedResolution
+                        ?: streamData.availableResolutions.firstOrNull()
+                    _currentResolution.value = initialResolution
                     _isLoading.value = false
 
                     val history = historyRepository.getWatchHistory(streamData.videoId)
@@ -208,16 +221,8 @@ class PlaybackManager(
                         .setArtworkUri(artworkUri)
                         .build()
 
-                    val mediaItem = MediaItem.Builder()
-                        .setUri(streamData.streamUrl)
-                        .setMediaMetadata(mediaMetadata)
-                        .apply {
-                            if (streamData.isHls) {
-                                setMimeType(MimeTypes.APPLICATION_M3U8)
-                            }
-                        }
-                        .build()
-                    exoPlayer.setMediaItem(mediaItem)
+                    val mediaSource = createMediaSource(initialResolution, mediaMetadata)
+                    exoPlayer.setMediaSource(mediaSource)
                     exoPlayer.prepare()
                     if (resumePos != null && resumePos > 0L) {
                         exoPlayer.seekTo(resumePos)
@@ -267,6 +272,84 @@ class PlaybackManager(
         }
     }
 
+    private fun createMediaSource(
+        resolution: VideoResolutionOption?,
+        mediaMetadata: MediaMetadata
+    ): MediaSource {
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(20000)
+            .setReadTimeoutMs(20000)
+
+        val defaultFactory = DefaultMediaSourceFactory(context).setDataSourceFactory(httpDataSourceFactory)
+
+        if (resolution == null) {
+            val fallbackItem = MediaItem.Builder().setMediaMetadata(mediaMetadata).build()
+            return defaultFactory.createMediaSource(fallbackItem)
+        }
+
+        return if (resolution.isHls) {
+            val mediaItem = MediaItem.Builder()
+                .setUri(resolution.videoUrl)
+                .setMimeType(MimeTypes.APPLICATION_M3U8)
+                .setMediaMetadata(mediaMetadata)
+                .build()
+            defaultFactory.createMediaSource(mediaItem)
+        } else if (resolution.isVideoOnly && !resolution.audioUrl.isNullOrBlank()) {
+            val videoItem = MediaItem.Builder()
+                .setUri(resolution.videoUrl)
+                .setMediaMetadata(mediaMetadata)
+                .build()
+            val audioItem = MediaItem.Builder()
+                .setUri(resolution.audioUrl)
+                .build()
+            val videoSource = defaultFactory.createMediaSource(videoItem)
+            val audioSource = defaultFactory.createMediaSource(audioItem)
+            MergingMediaSource(true, true, videoSource, audioSource)
+        } else {
+            val mediaItem = MediaItem.Builder()
+                .setUri(resolution.videoUrl)
+                .setMediaMetadata(mediaMetadata)
+                .build()
+            defaultFactory.createMediaSource(mediaItem)
+        }
+    }
+
+    fun selectResolution(option: VideoResolutionOption) {
+        val current = _currentPlayback.value ?: return
+        val streamData = current.streamData ?: return
+        if (_currentResolution.value == option) return
+
+        val currentPos = exoPlayer.currentPosition
+        val wasPlaying = exoPlayer.isPlaying
+        _currentResolution.value = option
+
+        val resolvedTitle = streamData.title.ifBlank { current.title }
+        val resolvedUploader = streamData.uploaderName.ifBlank { current.uploaderName }
+        val artworkUri = if (streamData.videoId.isNotBlank()) {
+            Uri.parse("https://i.ytimg.com/vi/${streamData.videoId}/hqdefault.jpg")
+        } else {
+            null
+        }
+
+        val mediaMetadata = MediaMetadata.Builder()
+            .setTitle(resolvedTitle)
+            .setArtist(resolvedUploader)
+            .setArtworkUri(artworkUri)
+            .build()
+
+        val source = createMediaSource(option, mediaMetadata)
+        exoPlayer.setMediaSource(source)
+        exoPlayer.prepare()
+        if (currentPos > 0L) {
+            exoPlayer.seekTo(currentPos)
+        }
+        if (wasPlaying) {
+            exoPlayer.play()
+        }
+    }
+
     fun stop() {
         saveProgress()
         try {
@@ -276,6 +359,8 @@ class PlaybackManager(
         exoPlayer.stop()
         exoPlayer.clearMediaItems()
         _currentPlayback.value = null
+        _currentResolution.value = null
+        _availableResolutions.value = emptyList()
         _isLoading.value = false
         _errorMessage.value = null
         _resumePositionMs.value = null

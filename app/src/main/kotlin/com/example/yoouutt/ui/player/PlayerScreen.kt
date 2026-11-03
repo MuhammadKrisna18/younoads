@@ -50,10 +50,12 @@ import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.feed.VideoCard
 import com.example.yoouutt.ui.player.components.DoubleTapSeekFeedback
+import com.example.yoouutt.ui.player.components.MinimalBottomProgressBar
 import com.example.yoouutt.ui.player.components.PlayerActionPillRow
 import com.example.yoouutt.ui.player.components.PlayerChannelHeader
 import com.example.yoouutt.ui.player.components.PlayerControlsOverlay
 import com.example.yoouutt.ui.player.components.PlayerDescriptionCard
+import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
 import com.example.yoouutt.ui.player.components.YouTubeBottomSlider
 
 @Composable
@@ -90,6 +92,10 @@ fun PlayerScreen(
     val isSubscribed by viewModel.isSubscribed.collectAsStateWithLifecycle()
     val speedIndex by viewModel.speedIndex.collectAsStateWithLifecycle()
     val seekFeedback by viewModel.seekFeedback.collectAsStateWithLifecycle()
+    val currentResolution by viewModel.currentResolution.collectAsStateWithLifecycle()
+    val availableResolutions by viewModel.availableResolutions.collectAsStateWithLifecycle()
+    val isResolutionDialogVisible by viewModel.isResolutionDialogVisible.collectAsStateWithLifecycle()
+    val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
 
@@ -199,12 +205,17 @@ fun PlayerScreen(
                     isBuffering = isBuffering,
                     isFullscreen = isFullscreen,
                     currentPositionMs = if (isScrubbing) scrubPositionMs else currentPositionMs,
+                    bufferedPositionMs = bufferedPositionMs,
                     durationMs = durationMs,
+                    currentResolutionText = resolutionLabel,
                     onBackClick = {
                         if (isFullscreen) viewModel.toggleFullscreen() else onBack()
                     },
                     onPlayPauseClick = viewModel::togglePlayPause,
-                    onToggleFullscreen = viewModel::toggleFullscreen
+                    onToggleFullscreen = viewModel::toggleFullscreen,
+                    onResolutionClick = viewModel::showResolutionDialog,
+                    onScrubbing = viewModel::onScrubbing,
+                    onSeek = viewModel::seekTo
                 )
 
                 seekFeedback?.let { feedback ->
@@ -215,15 +226,14 @@ fun PlayerScreen(
                     )
                 }
 
-                YouTubeBottomSlider(
-                    currentPositionMs = currentPositionMs,
-                    bufferedPositionMs = bufferedPositionMs,
-                    durationMs = durationMs,
-                    isControlsVisible = controlsVisible,
-                    onScrubbing = viewModel::onScrubbing,
-                    onSeek = viewModel::seekTo,
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                )
+                if (!controlsVisible && !isInPipMode) {
+                    MinimalBottomProgressBar(
+                        currentPositionMs = currentPositionMs,
+                        bufferedPositionMs = bufferedPositionMs,
+                        durationMs = durationMs,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
 
                 if (resumeBannerVisible) {
                     Row(
@@ -324,9 +334,11 @@ fun PlayerScreen(
                     isLiked = isLiked,
                     isSaved = isSaved,
                     speedText = "${viewModel.speeds[speedIndex]}x",
+                    resolutionText = resolutionLabel.ifBlank { "Kualitas" },
                     onToggleLike = viewModel::toggleLike,
                     onToggleSave = viewModel::toggleSave,
                     onCycleSpeed = viewModel::cyclePlaybackSpeed,
+                    onResolutionClick = viewModel::showResolutionDialog,
                     onPipClick = { activity?.enterPipMode() },
                     onToggleFullscreen = viewModel::toggleFullscreen
                 )
@@ -364,5 +376,14 @@ fun PlayerScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
+    }
+
+    if (isResolutionDialogVisible) {
+        ResolutionSelectionDialog(
+            availableResolutions = availableResolutions,
+            currentResolution = currentResolution,
+            onSelectResolution = viewModel::selectResolution,
+            onDismiss = viewModel::dismissResolutionDialog
+        )
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ThumbUp
@@ -31,9 +32,11 @@ fun PlayerActionPillRow(
     isLiked: Boolean,
     isSaved: Boolean,
     speedText: String,
+    resolutionText: String = "",
     onToggleLike: () -> Unit,
     onToggleSave: () -> Unit,
     onCycleSpeed: () -> Unit,
+    onResolutionClick: () -> Unit = {},
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -82,6 +85,17 @@ fun PlayerActionPillRow(
             }
         )
 
+        if (resolutionText.isNotBlank()) {
+            ActionPill(
+                icon = Icons.Default.HighQuality,
+                label = resolutionText,
+                onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    onResolutionClick()
+                }
+            )
+        }
+
         ActionPill(
             icon = Icons.Default.Speed,
             label = speedText,
@@ -101,4 +115,3 @@ fun PlayerActionPillRow(
         )
     }
 }
-

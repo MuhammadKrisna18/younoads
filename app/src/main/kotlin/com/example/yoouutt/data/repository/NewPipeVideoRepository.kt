@@ -5,6 +5,7 @@ import androidx.core.text.HtmlCompat
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.model.WatchHistoryItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -119,18 +120,96 @@ class NewPipeVideoRepository(
                 false
             }
 
-            val progressiveStream = streamExtractor.videoStreams
-                .filter { !it.isVideoOnly() }
-                .maxByOrNull { it.height }
-                ?.content
+            val audioStreams = try { streamExtractor.audioStreams } catch (_: Exception) { emptyList() }
+            val bestAudioStream = audioStreams
+                .filter { !it.content.isNullOrBlank() }
+                .maxWithOrNull(
+                    compareBy<org.schabi.newpipe.extractor.stream.AudioStream> { it.format == org.schabi.newpipe.extractor.MediaFormat.M4A }
+                        .thenBy { it.averageBitrate.takeIf { b -> b > 0 } ?: it.bitrate }
+                )
+            val bestAudioUrl = bestAudioStream?.content
 
-            val (streamUrl, isHls) = when {
-                isLive && !hlsUrl.isNullOrBlank() -> hlsUrl to true
-                !progressiveStream.isNullOrBlank() -> progressiveStream to false
-                !hlsUrl.isNullOrBlank() -> hlsUrl to true
-                streamExtractor.videoStreams.isNotEmpty() -> streamExtractor.videoStreams.first().content to false
+            val videoStreams = try { streamExtractor.videoStreams } catch (_: Exception) { emptyList() }
+            val videoOnlyStreams = try { streamExtractor.videoOnlyStreams } catch (_: Exception) { emptyList() }
+
+            val progressiveOptions = videoStreams
+                .filter { !it.isVideoOnly() && !it.content.isNullOrBlank() }
+                .map {
+                    VideoResolutionOption(
+                        label = it.getResolution().takeIf { res -> res.isNotBlank() } ?: "${it.height}p",
+                        height = it.height,
+                        videoUrl = it.content,
+                        isVideoOnly = false,
+                        audioUrl = null,
+                        isHls = false,
+                        format = it.format?.name.orEmpty()
+                    )
+                }
+
+            val videoOnlyOptions = if (!bestAudioUrl.isNullOrBlank()) {
+                videoOnlyStreams
+                    .filter { !it.content.isNullOrBlank() }
+                    .map {
+                        VideoResolutionOption(
+                            label = it.getResolution().takeIf { res -> res.isNotBlank() } ?: "${it.height}p",
+                            height = it.height,
+                            videoUrl = it.content,
+                            isVideoOnly = true,
+                            audioUrl = bestAudioUrl,
+                            isHls = false,
+                            format = it.format?.name.orEmpty()
+                        )
+                    }
+            } else {
+                emptyList()
+            }
+
+            val availableResolutions = if (isLive && !hlsUrl.isNullOrBlank()) {
+                listOf(
+                    VideoResolutionOption(
+                        label = "Live",
+                        height = 720,
+                        videoUrl = hlsUrl,
+                        isVideoOnly = false,
+                        audioUrl = null,
+                        isHls = true
+                    )
+                )
+            } else {
+                (progressiveOptions + videoOnlyOptions)
+                    .groupBy { it.height }
+                    .mapNotNull { (_, options) ->
+                        options.maxWithOrNull(
+                            compareBy<VideoResolutionOption> { !it.isVideoOnly }
+                                .thenBy { it.format.equals("MPEG_4", ignoreCase = true) }
+                        )
+                    }
+                    .sortedByDescending { it.height }
+            }
+
+            val fallbackStreamUrl = when {
+                isLive && !hlsUrl.isNullOrBlank() -> hlsUrl
+                progressiveOptions.isNotEmpty() -> progressiveOptions.first().videoUrl
+                !hlsUrl.isNullOrBlank() -> hlsUrl
+                videoStreams.isNotEmpty() -> videoStreams.first().content
+                videoOnlyStreams.isNotEmpty() -> videoOnlyStreams.first().content
                 else -> throw IllegalStateException("No playable stream available")
             }
+
+            val selectedResolution = availableResolutions.firstOrNull { it.height == 720 }
+                ?: availableResolutions.firstOrNull { it.height == 1080 }
+                ?: availableResolutions.firstOrNull()
+                ?: VideoResolutionOption(
+                    label = if (isLive) "Live" else "Auto",
+                    height = 720,
+                    videoUrl = fallbackStreamUrl,
+                    isVideoOnly = false,
+                    audioUrl = null,
+                    isHls = isLive && !hlsUrl.isNullOrBlank()
+                )
+
+            val streamUrl = selectedResolution.videoUrl
+            val isHls = selectedResolution.isHls
 
             val bestAvatar = streamExtractor.uploaderAvatars.maxByOrNull { it.height }?.url.orEmpty()
             val rawDescription = try { streamExtractor.description.content.orEmpty() } catch (_: Exception) { "" }
@@ -170,7 +249,9 @@ class NewPipeVideoRepository(
                 description = cleanDesc,
                 viewCountText = viewText,
                 uploadDateText = formattedDate,
-                relatedVideos = relatedItems
+                relatedVideos = relatedItems,
+                availableResolutions = availableResolutions,
+                selectedResolution = selectedResolution
             )
             streamCache.put(videoUrl, Pair(streamData, System.currentTimeMillis()))
             streamData

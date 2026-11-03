@@ -1,11 +1,19 @@
 package com.example.yoouutt.ui.player.components
 
+import android.view.HapticFeedbackConstants
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -14,22 +22,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.yoouutt.ui.player.PlayerUtils
+import kotlin.math.roundToInt
 
 @Composable
-fun YouTubeBottomSlider(
+fun InteractiveSeekBar(
     currentPositionMs: Long,
     bufferedPositionMs: Long,
     durationMs: Long,
-    isControlsVisible: Boolean,
     onScrubbing: (Boolean, Long) -> Unit,
     onSeek: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val view = LocalView.current
+    val density = LocalDensity.current
+
     val totalDuration = durationMs.coerceAtLeast(1L)
     val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
     val bufferedProgress = (bufferedPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
@@ -38,24 +57,30 @@ fun YouTubeBottomSlider(
     var dragProgress by remember { mutableFloatStateOf(0f) }
 
     val activeProgress = if (isDragging) dragProgress else progress
-    val trackHeight = if (isControlsVisible || isDragging) 3.5.dp else 2.dp
-    val thumbRadius = if (isDragging) 7.dp else 5.5.dp
+    val animatedTrackHeight by animateDpAsState(
+        targetValue = if (isDragging) 5.dp else 3.5.dp,
+        label = "trackHeight"
+    )
+    val animatedThumbRadius by animateDpAsState(
+        targetValue = if (isDragging) 8.5.dp else 6.dp,
+        label = "thumbRadius"
+    )
 
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .height(if (isControlsVisible) 32.dp else 4.dp)
-            .pointerInput(totalDuration, isControlsVisible) {
-                if (!isControlsVisible) return@pointerInput
+            .height(36.dp)
+            .pointerInput(totalDuration) {
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     val width = size.width.coerceAtLeast(1)
                     var currentX = down.position.x
-                    val initialProgress = (currentX / width).coerceIn(0f, 1f)
+                    var currentProgress = (currentX / width).coerceIn(0f, 1f)
 
+                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                     isDragging = true
-                    dragProgress = initialProgress
-                    onScrubbing(true, (initialProgress * totalDuration).toLong())
+                    dragProgress = currentProgress
+                    onScrubbing(true, (currentProgress * totalDuration).toLong())
 
                     while (true) {
                         val event = awaitPointerEvent()
@@ -67,64 +92,186 @@ fun YouTubeBottomSlider(
                         if (change.position.x != currentX) {
                             change.consume()
                             currentX = change.position.x
-                            val newProgress = (currentX / width).coerceIn(0f, 1f)
-                            dragProgress = newProgress
-                            onScrubbing(true, (newProgress * totalDuration).toLong())
+                            currentProgress = (currentX / width).coerceIn(0f, 1f)
+                            dragProgress = currentProgress
+                            onScrubbing(true, (currentProgress * totalDuration).toLong())
                         }
                     }
 
                     isDragging = false
                     val finalProgress = (currentX / width).coerceIn(0f, 1f)
                     val targetMs = (finalProgress * totalDuration).toLong()
-                    onScrubbing(false, targetMs)
                     onSeek(targetMs)
+                    onScrubbing(false, targetMs)
                 }
             },
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.CenterStart
     ) {
+        val totalWidthPx = constraints.maxWidth.toFloat().coerceAtLeast(1f)
+
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(trackHeight)
+                .height(36.dp)
         ) {
             val canvasWidth = size.width
-            val canvasHeight = size.height
+            val centerY = size.height / 2f
+            val trackStroke = animatedTrackHeight.toPx()
 
+            // 1. Unplayed background track
             drawLine(
-                color = Color.White.copy(alpha = 0.2f),
-                start = Offset(0f, canvasHeight / 2),
-                end = Offset(canvasWidth, canvasHeight / 2),
-                strokeWidth = canvasHeight
+                color = Color.White.copy(alpha = 0.25f),
+                start = Offset(0f, centerY),
+                end = Offset(canvasWidth, centerY),
+                strokeWidth = trackStroke,
+                cap = StrokeCap.Round
             )
 
+            // 2. Buffered progress track
             val bufferedX = canvasWidth * bufferedProgress
             if (bufferedX > 0f) {
                 drawLine(
-                    color = Color.White.copy(alpha = 0.4f),
-                    start = Offset(0f, canvasHeight / 2),
-                    end = Offset(bufferedX, canvasHeight / 2),
-                    strokeWidth = canvasHeight
+                    color = Color.White.copy(alpha = 0.45f),
+                    start = Offset(0f, centerY),
+                    end = Offset(bufferedX, centerY),
+                    strokeWidth = trackStroke,
+                    cap = StrokeCap.Round
                 )
             }
 
+            // 3. Played progress track (YouTube Red)
             val playedX = canvasWidth * activeProgress
             if (playedX > 0f) {
                 drawLine(
-                    color = Color(0xFFE50914),
-                    start = Offset(0f, canvasHeight / 2),
-                    end = Offset(playedX, canvasHeight / 2),
-                    strokeWidth = canvasHeight
+                    color = Color(0xFFFF0000),
+                    start = Offset(0f, centerY),
+                    end = Offset(playedX, centerY),
+                    strokeWidth = trackStroke,
+                    cap = StrokeCap.Round
                 )
             }
 
-            if (isControlsVisible || isDragging) {
+            // 4. Thumb circle
+            drawCircle(
+                color = Color(0xFFFF0000),
+                radius = animatedThumbRadius.toPx(),
+                center = Offset(playedX, centerY)
+            )
+
+            // 5. Thumb inner dot while dragging
+            if (isDragging) {
                 drawCircle(
-                    color = Color(0xFFE50914),
-                    radius = thumbRadius.toPx(),
-                    center = Offset(playedX, canvasHeight / 2)
+                    color = Color.White,
+                    radius = (animatedThumbRadius * 0.45f).toPx(),
+                    center = Offset(playedX, centerY)
+                )
+            }
+        }
+
+        // Floating time badge above the thumb while scrubbing
+        if (isDragging) {
+            val scrubMs = (dragProgress * totalDuration).toLong()
+            val timeText = PlayerUtils.formatTime(scrubMs)
+            val badgeWidthApprox = with(density) { 56.dp.toPx() }
+            val thumbX = totalWidthPx * dragProgress
+            val badgeOffsetX = (thumbX - badgeWidthApprox / 2f)
+                .coerceIn(0f, (totalWidthPx - badgeWidthApprox).coerceAtLeast(0f))
+
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(badgeOffsetX.roundToInt(), -40) }
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color.Black.copy(alpha = 0.85f))
+                    .padding(horizontal = 8.dp, vertical = 3.dp)
+            ) {
+                Text(
+                    text = timeText,
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
     }
 }
 
+@Composable
+fun MinimalBottomProgressBar(
+    currentPositionMs: Long,
+    bufferedPositionMs: Long,
+    durationMs: Long,
+    modifier: Modifier = Modifier
+) {
+    val totalDuration = durationMs.coerceAtLeast(1L)
+    val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
+    val bufferedProgress = (bufferedPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
+
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(2.5.dp)
+    ) {
+        val canvasWidth = size.width
+        val centerY = size.height / 2f
+        val stroke = size.height
+
+        // Unplayed
+        drawLine(
+            color = Color.White.copy(alpha = 0.2f),
+            start = Offset(0f, centerY),
+            end = Offset(canvasWidth, centerY),
+            strokeWidth = stroke
+        )
+
+        // Buffered
+        val bufferedX = canvasWidth * bufferedProgress
+        if (bufferedX > 0f) {
+            drawLine(
+                color = Color.White.copy(alpha = 0.4f),
+                start = Offset(0f, centerY),
+                end = Offset(bufferedX, centerY),
+                strokeWidth = stroke
+            )
+        }
+
+        // Played
+        val playedX = canvasWidth * progress
+        if (playedX > 0f) {
+            drawLine(
+                color = Color(0xFFFF0000),
+                start = Offset(0f, centerY),
+                end = Offset(playedX, centerY),
+                strokeWidth = stroke
+            )
+        }
+    }
+}
+
+@Composable
+fun YouTubeBottomSlider(
+    currentPositionMs: Long,
+    bufferedPositionMs: Long,
+    durationMs: Long,
+    isControlsVisible: Boolean,
+    onScrubbing: (Boolean, Long) -> Unit,
+    onSeek: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (isControlsVisible) {
+        InteractiveSeekBar(
+            currentPositionMs = currentPositionMs,
+            bufferedPositionMs = bufferedPositionMs,
+            durationMs = durationMs,
+            onScrubbing = onScrubbing,
+            onSeek = onSeek,
+            modifier = modifier
+        )
+    } else {
+        MinimalBottomProgressBar(
+            currentPositionMs = currentPositionMs,
+            bufferedPositionMs = bufferedPositionMs,
+            durationMs = durationMs,
+            modifier = modifier
+        )
+    }
+}

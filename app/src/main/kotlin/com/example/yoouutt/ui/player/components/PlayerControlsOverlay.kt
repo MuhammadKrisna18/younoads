@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,10 +49,15 @@ fun BoxScope.PlayerControlsOverlay(
     isBuffering: Boolean,
     isFullscreen: Boolean,
     currentPositionMs: Long,
+    bufferedPositionMs: Long,
     durationMs: Long,
+    currentResolutionText: String,
     onBackClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
+    onResolutionClick: () -> Unit,
+    onScrubbing: (Boolean, Long) -> Unit,
+    onSeek: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -62,18 +69,32 @@ fun BoxScope.PlayerControlsOverlay(
         modifier = modifier.matchParentSize()
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Gradient backgrounds for top and bottom controls
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.TopCenter)
                     .fillMaxWidth()
-                    .height(64.dp)
+                    .height(60.dp)
                     .background(
                         Brush.verticalGradient(
-                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.55f))
+                            listOf(Color.Black.copy(alpha = 0.55f), Color.Transparent)
                         )
                     )
             )
 
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(84.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                        )
+                    )
+            )
+
+            // Top-left: Back / Minimize button
             IconButton(
                 onClick = onBackClick,
                 modifier = Modifier
@@ -91,6 +112,30 @@ fun BoxScope.PlayerControlsOverlay(
                 )
             }
 
+            // Top-right: Quick Quality Settings button
+            if (currentResolutionText.isNotBlank()) {
+                IconButton(
+                    onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        onResolutionClick()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.5f))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Kualitas Video",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            // Center: Play / Pause button
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -119,41 +164,98 @@ fun BoxScope.PlayerControlsOverlay(
                 }
             }
 
-            Row(
+            // Bottom controls: Interactive Seekbar + (Time & Quality/Fullscreen row)
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(bottom = 14.dp, start = 12.dp, end = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(bottom = 6.dp)
             ) {
-                Box(
+                // Interactive Seekbar
+                InteractiveSeekBar(
+                    currentPositionMs = currentPositionMs,
+                    bufferedPositionMs = bufferedPositionMs,
+                    durationMs = durationMs,
+                    onScrubbing = onScrubbing,
+                    onSeek = onSeek,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Black.copy(alpha = 0.6f))
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = "${PlayerUtils.formatTime(currentPositionMs)} / ${PlayerUtils.formatTime(durationMs)}",
-                        fontSize = 11.5.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                )
 
-                IconButton(
-                    onClick = onToggleFullscreen,
+                // Bottom row: Time on left, Resolution badge & Fullscreen on right
+                Row(
                     modifier = Modifier
-                        .size(34.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.5f))
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
-                        contentDescription = "Layar Penuh",
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color.Black.copy(alpha = 0.6f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "${PlayerUtils.formatTime(currentPositionMs)} / ${PlayerUtils.formatTime(durationMs)}",
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (currentResolutionText.isNotBlank()) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color.Black.copy(alpha = 0.5f))
+                                    .clickable {
+                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                        onResolutionClick()
+                                    }
+                                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = "Kualitas Video",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Text(
+                                        text = currentResolutionText,
+                                        color = Color.White,
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            }
+                        }
+
+                        IconButton(
+                            onClick = onToggleFullscreen,
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .background(Color.Black.copy(alpha = 0.5f))
+                        ) {
+                            Icon(
+                                imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                                contentDescription = "Layar Penuh",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -169,4 +271,3 @@ fun BoxScope.PlayerControlsOverlay(
         )
     }
 }
-
