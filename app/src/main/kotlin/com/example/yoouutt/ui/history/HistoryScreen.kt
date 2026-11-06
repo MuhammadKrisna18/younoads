@@ -56,6 +56,7 @@ import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
+import com.example.yoouutt.util.TextFormatters
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -247,7 +248,7 @@ private fun HistoryItemRow(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Lanjut: ${formatTime(item.lastPlaybackPositionMs)}",
+                text = "Lanjut: ${TextFormatters.formatTimeMs(item.lastPlaybackPositionMs)}",
                 style = MaterialTheme.typography.labelSmall,
                 color = BrandRed,
                 fontWeight = FontWeight.Medium
@@ -261,18 +262,6 @@ private fun HistoryItemRow(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    }
-}
-
-private fun formatTime(timeMs: Long): String {
-    val totalSeconds = (timeMs / 1000).coerceAtLeast(0)
-    val hours = totalSeconds / 3600
-    val minutes = (totalSeconds % 3600) / 60
-    val seconds = totalSeconds % 60
-    return if (hours > 0) {
-        String.format("%d:%02d:%02d", hours, minutes, seconds)
-    } else {
-        String.format("%02d:%02d", minutes, seconds)
     }
 }
 
