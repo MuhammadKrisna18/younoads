@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.example.yoouutt.ui.animation.YouTubeScreenTransitions
 import com.example.yoouutt.ui.channel.ChannelScreen
 import com.example.yoouutt.ui.common.BottomNavigationBar
 import com.example.yoouutt.ui.feed.FeedScreen
@@ -36,6 +37,7 @@ fun MainNavigation() {
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
+            transitionSpec = YouTubeScreenTransitions.appTransitionSpec,
             entryProvider = entryProvider {
                 entry<Main> {
                     FeedScreen(

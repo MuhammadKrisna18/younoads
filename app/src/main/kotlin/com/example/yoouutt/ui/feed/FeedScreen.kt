@@ -2,6 +2,12 @@ package com.example.yoouutt.ui.feed
 
 import android.view.HapticFeedbackConstants
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -174,145 +180,156 @@ fun FeedScreen(
                     .background(Color.Black)
                     .statusBarsPadding()
             ) {
-                if (!isSearchExpanded) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        BrandLogo()
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(
-                            onClick = {
-                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                isSearchExpanded = true
-                                isSearchOverlayVisible = true
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(categories) { category ->
-                            val isSelected = selectedCategory == category
-                            Box(
+                AnimatedContent(
+                    targetState = isSearchExpanded,
+                    transitionSpec = {
+                        fadeIn(tween(180, easing = FastOutSlowInEasing)) togetherWith
+                        fadeOut(tween(120, easing = FastOutSlowInEasing))
+                    },
+                    label = "searchBarTransition"
+                ) { expanded ->
+                    if (!expanded) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Row(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(50.dp))
-                                    .background(if (isSelected) Color(0xFFFF0000) else Color(0xFF222222))
-                                    .clickable {
-                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                        viewModel.selectCategory(category)
-                                    }
-                                    .padding(horizontal = 14.dp, vertical = 7.dp),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = category,
-                                    color = Color.White,
-                                    fontSize = 12.5.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            onClick = {
-                                if (isSearchOverlayVisible && searchQuery.isNotBlank()) {
-                                    focusManager.clearFocus()
-                                    isSearchOverlayVisible = false
-                                } else {
-                                    isSearchExpanded = false
-                                    isSearchOverlayVisible = false
-                                    viewModel.clearSuggestions()
-                                    if (searchQuery.isNotEmpty()) {
-                                        viewModel.onQueryChanged("")
-                                        viewModel.loadHomeFeed()
+                                BrandLogo()
+                                Spacer(modifier = Modifier.weight(1f))
+                                IconButton(
+                                    onClick = {
+                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                        isSearchExpanded = true
+                                        isSearchOverlayVisible = true
                                     }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = "Search",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                 }
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Kembali",
-                                tint = Color.White
-                            )
-                        }
 
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { query ->
-                                viewModel.onQueryChanged(query)
-                                isSearchOverlayVisible = true
-                            },
-                            placeholder = {
-                                Text(
-                                    text = "Search YouTube...",
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF8E8E8E)
-                                )
-                            },
-                            trailingIcon = {
-                                if (searchQuery.isNotEmpty()) {
-                                    IconButton(
-                                        onClick = {
-                                            viewModel.onQueryChanged("")
-                                            isSearchOverlayVisible = true
-                                        }
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(categories) { category ->
+                                    val isSelected = selectedCategory == category
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(50.dp))
+                                            .background(if (isSelected) Color(0xFFFF0000) else Color(0xFF222222))
+                                            .clickable {
+                                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                                viewModel.selectCategory(category)
+                                            }
+                                            .padding(horizontal = 14.dp, vertical = 7.dp),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "Hapus",
-                                            tint = Color.White
+                                        Text(
+                                            text = category,
+                                            color = Color.White,
+                                            fontSize = 12.5.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                         )
                                     }
                                 }
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(50.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF1F1F1F),
-                                unfocusedContainerColor = Color(0xFF1F1F1F),
-                                focusedBorderColor = Color.Transparent,
-                                unfocusedBorderColor = Color.Transparent,
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            ),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(
-                                onSearch = {
-                                    focusManager.clearFocus()
-                                    isSearchOverlayVisible = false
-                                    viewModel.search()
-                                }
-                            ),
+                            }
+                        }
+                    } else {
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .focusRequester(focusRequester)
-                                .onFocusChanged { focusState ->
-                                    if (focusState.isFocused) {
-                                        isSearchOverlayVisible = true
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    if (isSearchOverlayVisible && searchQuery.isNotBlank()) {
+                                        focusManager.clearFocus()
+                                        isSearchOverlayVisible = false
+                                    } else {
+                                        isSearchExpanded = false
+                                        isSearchOverlayVisible = false
+                                        viewModel.clearSuggestions()
+                                        if (searchQuery.isNotEmpty()) {
+                                            viewModel.onQueryChanged("")
+                                            viewModel.loadHomeFeed()
+                                        }
                                     }
                                 }
-                        )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Kembali",
+                                    tint = Color.White
+                                )
+                            }
+
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { query ->
+                                    viewModel.onQueryChanged(query)
+                                    isSearchOverlayVisible = true
+                                },
+                                placeholder = {
+                                    Text(
+                                        text = "Search YouTube...",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF8E8E8E)
+                                    )
+                                },
+                                trailingIcon = {
+                                    if (searchQuery.isNotEmpty()) {
+                                        IconButton(
+                                            onClick = {
+                                                viewModel.onQueryChanged("")
+                                                isSearchOverlayVisible = true
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Clear,
+                                                contentDescription = "Hapus",
+                                                tint = Color.White
+                                            )
+                                        }
+                                    }
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(50.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFF1F1F1F),
+                                    unfocusedContainerColor = Color(0xFF1F1F1F),
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White
+                                ),
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                                keyboardActions = KeyboardActions(
+                                    onSearch = {
+                                        focusManager.clearFocus()
+                                        isSearchOverlayVisible = false
+                                        viewModel.search()
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .focusRequester(focusRequester)
+                                    .onFocusChanged { focusState ->
+                                        if (focusState.isFocused) {
+                                            isSearchOverlayVisible = true
+                                        }
+                                    }
+                            )
+                        }
                     }
                 }
             }

@@ -1,6 +1,8 @@
 package com.example.yoouutt.ui.player.components
 
-import android.view.HapticFeedbackConstants
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,12 +18,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.StreamData
+import com.example.yoouutt.ui.animation.bounceClick
 
 @Composable
 fun PlayerChannelHeader(
@@ -39,9 +42,14 @@ fun PlayerChannelHeader(
     onChannelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val view = LocalView.current
     val avatarUrl = streamData?.uploaderAvatarUrl.orEmpty()
     val subText = streamData?.uploaderSubscriberCountText.orEmpty()
+
+    val animatedSubColor by animateColorAsState(
+        targetValue = if (isSubscribed) Color(0xFF272727) else Color(0xFFFF0000),
+        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+        label = "subBgColor"
+    )
 
     Row(
         modifier = modifier
@@ -106,13 +114,10 @@ fun PlayerChannelHeader(
 
         Box(
             modifier = Modifier
+                .bounceClick(onClick = onToggleSubscribe)
                 .height(34.dp)
                 .clip(RoundedCornerShape(50.dp))
-                .background(if (isSubscribed) Color(0xFF272727) else Color(0xFFFF0000))
-                .clickable {
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                    onToggleSubscribe()
-                }
+                .background(animatedSubColor)
                 .padding(horizontal = 14.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -125,4 +130,3 @@ fun PlayerChannelHeader(
         }
     }
 }
-
