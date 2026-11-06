@@ -4,18 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.data.model.WatchHistoryItem
+import com.example.yoouutt.data.repository.SearchHistoryRepository
 import com.example.yoouutt.data.repository.VideoRepository
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class FeedViewModel(
     private val repository: VideoRepository,
-    private val historyRepository: WatchHistoryRepository
+    private val historyRepository: WatchHistoryRepository,
+    private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
     private val defaultCategories = listOf("Musik", "Gaming", "Berita", "Podcast", "Teknologi", "Film", "Anime")
@@ -34,6 +38,9 @@ class FeedViewModel(
 
     private val _searchSuggestions = MutableStateFlow<List<String>>(emptyList())
     val searchSuggestions: StateFlow<List<String>> = _searchSuggestions.asStateFlow()
+
+    val searchHistory: StateFlow<List<String>> = searchHistoryRepository.getSearchHistory()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private var currentHistory: List<WatchHistoryItem> = emptyList()
     private var suggestionJob: Job? = null
@@ -82,7 +89,7 @@ class FeedViewModel(
         suggestionJob?.cancel()
         _searchQuery.value = suggestion
         _searchSuggestions.value = emptyList()
-        search()
+        search(suggestion)
     }
 
     fun clearSuggestions() {
@@ -103,7 +110,7 @@ class FeedViewModel(
             }
             else -> {
                 _searchQuery.value = category
-                search()
+                search(category)
             }
         }
     }
@@ -140,13 +147,20 @@ class FeedViewModel(
         }
     }
 
-    fun search() {
+    fun search(targetQuery: String? = null) {
         suggestionJob?.cancel()
         _searchSuggestions.value = emptyList()
-        val query = _searchQuery.value.trim()
+        val query = (targetQuery ?: _searchQuery.value).trim()
+        if (targetQuery != null) {
+            _searchQuery.value = query
+        }
         if (query.isBlank()) {
             loadHomeFeed()
             return
+        }
+
+        viewModelScope.launch {
+            searchHistoryRepository.saveSearchQuery(query)
         }
 
         _uiState.value = FeedUiState.Loading
@@ -158,6 +172,18 @@ class FeedViewModel(
                 .onFailure { throwable ->
                     _uiState.value = FeedUiState.Error(throwable.localizedMessage ?: "Pencarian gagal")
                 }
+        }
+    }
+
+    fun deleteSearchHistory(query: String) {
+        viewModelScope.launch {
+            searchHistoryRepository.deleteSearchQuery(query)
+        }
+    }
+
+    fun clearAllSearchHistory() {
+        viewModelScope.launch {
+            searchHistoryRepository.clearAllSearchHistory()
         }
     }
 }

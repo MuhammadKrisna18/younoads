@@ -15,7 +15,11 @@ object AppViewModelProvider {
             val container = YoouuttApp.instance.container
             return when {
                 modelClass.isAssignableFrom(FeedViewModel::class.java) ->
-                    FeedViewModel(container.videoRepository, container.historyRepository) as T
+                    FeedViewModel(
+                        container.videoRepository,
+                        container.historyRepository,
+                        container.searchHistoryRepository
+                    ) as T
                 modelClass.isAssignableFrom(ChannelViewModel::class.java) ->
                     ChannelViewModel(container.videoRepository) as T
                 modelClass.isAssignableFrom(HistoryViewModel::class.java) ->

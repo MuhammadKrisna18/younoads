@@ -26,8 +26,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.NorthWest
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +41,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -65,6 +70,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
+import com.example.yoouutt.ui.common.BrandRed
 import com.example.yoouutt.ui.common.UpdateDialog
 import com.example.yoouutt.update.AppUpdateManager
 import com.example.yoouutt.update.UpdateInfo
@@ -84,18 +90,27 @@ fun FeedScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
+    val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val view = LocalView.current
 
     var isSearchExpanded by remember { mutableStateOf(false) }
+    var isSearchOverlayVisible by remember { mutableStateOf(false) }
+    var showClearHistoryDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = isSearchExpanded) {
-        isSearchExpanded = false
-        viewModel.clearSuggestions()
-        if (searchQuery.isNotEmpty()) {
-            viewModel.onQueryChanged("")
-            viewModel.loadHomeFeed()
+        if (isSearchOverlayVisible && searchQuery.isNotBlank()) {
+            focusManager.clearFocus()
+            isSearchOverlayVisible = false
+        } else {
+            isSearchExpanded = false
+            isSearchOverlayVisible = false
+            viewModel.clearSuggestions()
+            if (searchQuery.isNotEmpty()) {
+                viewModel.onQueryChanged("")
+                viewModel.loadHomeFeed()
+            }
         }
     }
 
@@ -107,6 +122,7 @@ fun FeedScreen(
 
     LaunchedEffect(isSearchExpanded) {
         if (isSearchExpanded) {
+            isSearchOverlayVisible = true
             focusRequester.requestFocus()
         }
     }
@@ -172,6 +188,7 @@ fun FeedScreen(
                             onClick = {
                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                 isSearchExpanded = true
+                                isSearchOverlayVisible = true
                             }
                         ) {
                             Icon(
@@ -219,11 +236,17 @@ fun FeedScreen(
                     ) {
                         IconButton(
                             onClick = {
-                                isSearchExpanded = false
-                                viewModel.clearSuggestions()
-                                if (searchQuery.isNotEmpty()) {
-                                    viewModel.onQueryChanged("")
-                                    viewModel.loadHomeFeed()
+                                if (isSearchOverlayVisible && searchQuery.isNotBlank()) {
+                                    focusManager.clearFocus()
+                                    isSearchOverlayVisible = false
+                                } else {
+                                    isSearchExpanded = false
+                                    isSearchOverlayVisible = false
+                                    viewModel.clearSuggestions()
+                                    if (searchQuery.isNotEmpty()) {
+                                        viewModel.onQueryChanged("")
+                                        viewModel.loadHomeFeed()
+                                    }
                                 }
                             }
                         ) {
@@ -236,7 +259,10 @@ fun FeedScreen(
 
                         OutlinedTextField(
                             value = searchQuery,
-                            onValueChange = viewModel::onQueryChanged,
+                            onValueChange = { query ->
+                                viewModel.onQueryChanged(query)
+                                isSearchOverlayVisible = true
+                            },
                             placeholder = {
                                 Text(
                                     text = "Search YouTube...",
@@ -246,7 +272,12 @@ fun FeedScreen(
                             },
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { viewModel.onQueryChanged("") }) {
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.onQueryChanged("")
+                                            isSearchOverlayVisible = true
+                                        }
+                                    ) {
                                         Icon(
                                             imageVector = Icons.Default.Clear,
                                             contentDescription = "Hapus",
@@ -269,12 +300,18 @@ fun FeedScreen(
                             keyboardActions = KeyboardActions(
                                 onSearch = {
                                     focusManager.clearFocus()
+                                    isSearchOverlayVisible = false
                                     viewModel.search()
                                 }
                             ),
                             modifier = Modifier
                                 .weight(1f)
                                 .focusRequester(focusRequester)
+                                .onFocusChanged { focusState ->
+                                    if (focusState.isFocused) {
+                                        isSearchOverlayVisible = true
+                                    }
+                                }
                         )
                     }
                 }
@@ -374,23 +411,133 @@ fun FeedScreen(
                 }
             }
 
-            if (isSearchExpanded && searchSuggestions.isNotEmpty()) {
+            if (isSearchExpanded && isSearchOverlayVisible) {
+                val trimmedQuery = searchQuery.trim()
+                val matchingHistory = remember(trimmedQuery, searchHistory) {
+                    if (trimmedQuery.isBlank()) {
+                        searchHistory
+                    } else {
+                        searchHistory.filter { it.contains(trimmedQuery, ignoreCase = true) }
+                    }
+                }
+                val nonHistorySuggestions = remember(searchSuggestions, matchingHistory) {
+                    searchSuggestions.filter { s -> matchingHistory.none { it.equals(s, ignoreCase = true) } }
+                }
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black),
                     contentPadding = PaddingValues(top = 4.dp, bottom = 130.dp)
                 ) {
-                    items(searchSuggestions) { suggestion ->
+                    if (trimmedQuery.isBlank() && matchingHistory.isNotEmpty()) {
+                        item(key = "header_history") {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Riwayat Pencarian",
+                                    color = Color(0xFFAAAAAA),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = "Hapus Semua",
+                                    color = BrandRed,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .clickable {
+                                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                            showClearHistoryDialog = true
+                                        }
+                                        .padding(horizontal = 6.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    items(
+                        items = matchingHistory,
+                        key = { "hist_$it" }
+                    ) { historyItem ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                     focusManager.clearFocus()
+                                    isSearchOverlayVisible = false
+                                    viewModel.selectSuggestion(historyItem)
+                                }
+                                .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.History,
+                                contentDescription = "Riwayat",
+                                tint = Color(0xFFAAAAAA),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = historyItem,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    viewModel.onQueryChanged(historyItem)
+                                },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.NorthWest,
+                                    contentDescription = "Isi ke pencarian",
+                                    tint = Color(0xFF8E8E8E),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    viewModel.deleteSearchHistory(historyItem)
+                                },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Hapus riwayat",
+                                    tint = Color(0xFF8E8E8E),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    items(
+                        items = nonHistorySuggestions,
+                        key = { "sug_$it" }
+                    ) { suggestion ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    focusManager.clearFocus()
+                                    isSearchOverlayVisible = false
                                     viewModel.selectSuggestion(suggestion)
                                 }
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -413,7 +560,7 @@ fun FeedScreen(
                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                     viewModel.onQueryChanged(suggestion)
                                 },
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(36.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.NorthWest,
@@ -424,8 +571,86 @@ fun FeedScreen(
                             }
                         }
                     }
+
+                    if (trimmedQuery.isBlank() && matchingHistory.isEmpty()) {
+                        item(key = "empty_history") {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 90.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.History,
+                                    contentDescription = null,
+                                    tint = Color(0xFF444444),
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    text = "Belum ada riwayat pencarian",
+                                    color = Color(0xFF888888),
+                                    fontSize = 14.5.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Pencarian Anda akan otomatis tersimpan di sini",
+                                    color = Color(0xFF555555),
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    if (showClearHistoryDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearHistoryDialog = false },
+            containerColor = Color(0xFF1E1E1E),
+            title = {
+                Text(
+                    text = "Hapus riwayat pencarian?",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp
+                )
+            },
+            text = {
+                Text(
+                    text = "Semua riwayat pencarian Anda akan dihapus secara permanen.",
+                    color = Color(0xFFAAAAAA),
+                    fontSize = 14.sp
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        viewModel.clearAllSearchHistory()
+                        showClearHistoryDialog = false
+                    }
+                ) {
+                    Text(
+                        text = "Hapus",
+                        color = BrandRed,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showClearHistoryDialog = false }
+                ) {
+                    Text(
+                        text = "Batal",
+                        color = Color.White
+                    )
+                }
+            }
+        )
     }
 }
