@@ -25,7 +25,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.WatchHistoryItem
+import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
 
@@ -70,30 +70,14 @@ fun HistoryScreen(
     val view = LocalView.current
 
     if (showClearDialog) {
-        AlertDialog(
-            onDismissRequest = { showClearDialog = false },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = Color(0xFF161616),
-            titleContentColor = Color.White,
-            textContentColor = Color(0xFFCCCCCC),
-            title = { Text(text = "Hapus Riwayat?") },
-            text = { Text(text = "Semua riwayat tontonan di HP Anda akan dihapus permanen.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        viewModel.clearAll()
-                        showClearDialog = false
-                    }
-                ) {
-                    Text(text = "Hapus", color = BrandRed)
-                }
+        AppConfirmDialog(
+            title = "Hapus Riwayat?",
+            message = "Semua riwayat tontonan di HP Anda akan dihapus permanen.",
+            onConfirm = {
+                viewModel.clearAll()
+                showClearDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showClearDialog = false }) {
-                    Text(text = "Batal")
-                }
-            }
+            onDismiss = { showClearDialog = false }
         )
     }
 

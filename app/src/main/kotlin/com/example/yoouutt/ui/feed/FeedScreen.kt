@@ -36,7 +36,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.NorthWest
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,7 +46,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,6 +72,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
 import com.example.yoouutt.ui.common.BrandRed
@@ -625,49 +624,14 @@ fun FeedScreen(
     }
 
     if (showClearHistoryDialog) {
-        AlertDialog(
-            onDismissRequest = { showClearHistoryDialog = false },
-            containerColor = Color(0xFF1E1E1E),
-            title = {
-                Text(
-                    text = "Hapus riwayat pencarian?",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 17.sp
-                )
+        AppConfirmDialog(
+            title = "Hapus riwayat pencarian?",
+            message = "Semua riwayat pencarian Anda akan dihapus secara permanen.",
+            onConfirm = {
+                viewModel.clearAllSearchHistory()
+                showClearHistoryDialog = false
             },
-            text = {
-                Text(
-                    text = "Semua riwayat pencarian Anda akan dihapus secara permanen.",
-                    color = Color(0xFFAAAAAA),
-                    fontSize = 14.sp
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        viewModel.clearAllSearchHistory()
-                        showClearHistoryDialog = false
-                    }
-                ) {
-                    Text(
-                        text = "Hapus",
-                        color = BrandRed,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showClearHistoryDialog = false }
-                ) {
-                    Text(
-                        text = "Batal",
-                        color = Color.White
-                    )
-                }
-            }
+            onDismiss = { showClearHistoryDialog = false }
         )
     }
 }
