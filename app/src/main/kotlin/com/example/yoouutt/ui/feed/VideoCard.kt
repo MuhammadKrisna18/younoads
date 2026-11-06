@@ -1,5 +1,6 @@
 package com.example.yoouutt.ui.feed
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,11 +22,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.ui.common.VideoOptionsBottomSheet
 
 @Composable
 fun VideoCard(
@@ -41,6 +48,9 @@ fun VideoCard(
     modifier: Modifier = Modifier,
     onChannelClick: ((channelUrl: String, channelName: String) -> Unit)? = null
 ) {
+    val view = LocalView.current
+    var showOptionsSheet by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -160,18 +170,26 @@ fun VideoCard(
 
             IconButton(
                 onClick = {
-                    val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
-                    onChannelClick?.invoke(targetUrl, video.uploaderName)
+                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    showOptionsSheet = true
                 },
                 modifier = Modifier.size(36.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Opsi",
+                    contentDescription = "Opsi Video",
                     tint = Color(0xFFAAAAAA),
                     modifier = Modifier.size(18.dp)
                 )
             }
         }
+    }
+
+    if (showOptionsSheet) {
+        VideoOptionsBottomSheet(
+            video = video,
+            onDismiss = { showOptionsSheet = false },
+            onChannelClick = onChannelClick
+        )
     }
 }

@@ -2,11 +2,15 @@ package com.example.yoouutt.ui.player
 
 import android.app.Activity
 import android.app.PictureInPictureParams
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.util.Rational
+import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -64,5 +68,82 @@ object PlayerUtils {
             String.format("%02d:%02d", minutes, seconds)
         }
     }
-}
 
+    fun extractVideoId(urlOrId: String): String {
+        val trimmed = urlOrId.trim()
+        if (trimmed.isEmpty()) return ""
+
+        // Already 11-char ID
+        if (trimmed.length == 11 && trimmed.matches(Regex("^[a-zA-Z0-9_-]{11}$"))) {
+            return trimmed
+        }
+
+        // Standard watch URL: v=([a-zA-Z0-9_-]{11})
+        val vMatch = Regex("[?&]v=([a-zA-Z0-9_-]{11})").find(trimmed)
+        if (vMatch != null) {
+            return vMatch.groupValues[1]
+        }
+
+        // youtu.be/([a-zA-Z0-9_-]{11})
+        val shortMatch = Regex("youtu\\.be/([a-zA-Z0-9_-]{11})").find(trimmed)
+        if (shortMatch != null) {
+            return shortMatch.groupValues[1]
+        }
+
+        // shorts/([a-zA-Z0-9_-]{11})
+        val shortsMatch = Regex("shorts/([a-zA-Z0-9_-]{11})").find(trimmed)
+        if (shortsMatch != null) {
+            return shortsMatch.groupValues[1]
+        }
+
+        // embed/([a-zA-Z0-9_-]{11})
+        val embedMatch = Regex("embed/([a-zA-Z0-9_-]{11})").find(trimmed)
+        if (embedMatch != null) {
+            return embedMatch.groupValues[1]
+        }
+
+        // Fallback: match first 11-character alphanumeric token
+        val genericMatch = Regex("([a-zA-Z0-9_-]{11})").find(trimmed)
+        return genericMatch?.groupValues?.get(1) ?: trimmed
+    }
+
+    fun formatShortUrl(urlOrId: String, timestampSeconds: Long? = null): String {
+        val videoId = extractVideoId(urlOrId)
+        val baseUrl = if (videoId.isNotBlank() && videoId.length == 11) {
+            "https://youtu.be/$videoId"
+        } else if (urlOrId.startsWith("http://") || urlOrId.startsWith("https://")) {
+            urlOrId
+        } else {
+            "https://youtu.be/$urlOrId"
+        }
+
+        return if (timestampSeconds != null && timestampSeconds > 0) {
+            if (baseUrl.contains("?")) "$baseUrl&t=${timestampSeconds}s" else "$baseUrl?t=${timestampSeconds}s"
+        } else {
+            baseUrl
+        }
+    }
+
+    fun copyToClipboard(context: Context, text: String, message: String = "Tautan berhasil disalin") {
+        try {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            val clip = ClipData.newPlainText("YouTube Link", text)
+            clipboard?.setPrimaryClip(clip)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        } catch (_: Exception) {
+            Toast.makeText(context, "Gagal menyalin tautan", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun shareText(context: Context, text: String, title: String = "Bagikan Video") {
+        try {
+            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                putExtra(Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, title)
+            context.startActivity(shareIntent)
+        } catch (_: Exception) {
+        }
+    }
+}

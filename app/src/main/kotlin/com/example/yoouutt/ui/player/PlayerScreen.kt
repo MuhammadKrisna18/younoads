@@ -31,6 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +60,7 @@ import com.example.yoouutt.ui.player.components.PlayerChannelHeader
 import com.example.yoouutt.ui.player.components.PlayerControlsOverlay
 import com.example.yoouutt.ui.player.components.PlayerDescriptionCard
 import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
+import com.example.yoouutt.ui.player.components.ShareBottomSheet
 import com.example.yoouutt.ui.player.components.YouTubeBottomSlider
 
 @Composable
@@ -100,6 +104,7 @@ fun PlayerScreen(
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
+    var isShareSheetVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(videoUrl) {
         viewModel.initVideo(videoUrl)
@@ -351,6 +356,11 @@ fun PlayerScreen(
                         resolutionText = resolutionLabel.ifBlank { "Kualitas" },
                         isAmbientEnabled = isAmbientModeEnabled,
                         onToggleLike = viewModel::toggleLike,
+                        onShareClick = { isShareSheetVisible = true },
+                        onCopyLinkClick = {
+                            val shortUrl = PlayerUtils.formatShortUrl(videoUrl)
+                            PlayerUtils.copyToClipboard(context, shortUrl, "Tautan berhasil disalin")
+                        },
                         onToggleSave = viewModel::toggleSave,
                         onCycleSpeed = viewModel::cyclePlaybackSpeed,
                         onResolutionClick = viewModel::showResolutionDialog,
@@ -403,6 +413,18 @@ fun PlayerScreen(
             onSelectResolution = viewModel::selectResolution,
             onToggleAmbientMode = viewModel::toggleAmbientMode,
             onDismiss = viewModel::dismissResolutionDialog
+        )
+    }
+
+    if (isShareSheetVisible) {
+        val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
+        val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
+        ShareBottomSheet(
+            videoUrl = videoUrl,
+            videoTitle = currentTitle,
+            uploaderName = currentUploader,
+            currentPositionMs = currentPositionMs,
+            onDismiss = { isShareSheetVisible = false }
         )
     }
 }

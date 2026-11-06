@@ -1,7 +1,5 @@
 package com.example.yoouutt.ui.player.components
 
-import android.content.Context
-import android.content.Intent
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -18,12 +16,12 @@ import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 
@@ -36,6 +34,8 @@ fun PlayerActionPillRow(
     resolutionText: String = "",
     isAmbientEnabled: Boolean = true,
     onToggleLike: () -> Unit,
+    onShareClick: () -> Unit,
+    onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit = {},
@@ -44,7 +44,6 @@ fun PlayerActionPillRow(
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val view = LocalView.current
 
     Row(
@@ -69,12 +68,17 @@ fun PlayerActionPillRow(
             icon = Icons.Outlined.Share,
             label = "Bagikan",
             onClick = {
-                val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                    putExtra(Intent.EXTRA_TEXT, videoUrl)
-                    type = "text/plain"
-                }
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                context.startActivity(shareIntent)
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onShareClick()
+            }
+        )
+
+        ActionPill(
+            icon = Icons.Outlined.ContentCopy,
+            label = "Salin",
+            onClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onCopyLinkClick()
             }
         )
 
