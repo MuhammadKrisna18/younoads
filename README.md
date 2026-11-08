@@ -84,6 +84,12 @@ Aplikasi akan secara otomatis memberi tahu Anda jika tersedia versi terbaru deng
 
 ---
 
-## 📄 Catatan & Penafian
+## 📄 Catatan & Penafian (Disclaimer)
 
-YounoAds dikembangkan sebagai proyek pemutar media independen untuk memberikan kenyamanan dan aksesibilitas menonton video yang ramah pengguna di perangkat Android. Seluruh hak cipta konten video dan audio sepenuhnya milik masing-masing pembuat konten dan platform aslinya.
+YounoAds dikembangkan secara independen sebagai proyek portofolio pribadi dan media pembelajaran eksplorasi teknologi Android modern (*non-commercial portfolio project*).
+
+- **Non-Komersial:** Aplikasi ini 100% gratis, tidak menjual layanan, tidak meminta donasi, dan tidak memonetisasi konten dalam bentuk apa pun.
+- **Independen:** Aplikasi ini tidak berafiliasi, didukung, atau memiliki hubungan resmi dengan Google LLC maupun YouTube.
+- **Hak Cipta:** Seluruh hak cipta, merek dagang, konten video, audio, dan metadata sepenuhnya adalah milik masing-masing pembuat konten (kreator) dan platform penyedia aslinya.
+- **Tujuan Penggunaan:** Ditujukan untuk penggunaan pribadi, keluarga, dan lingkaran pengujian terbatas sebagai bahan evaluasi pengembangan aplikasi.
+
