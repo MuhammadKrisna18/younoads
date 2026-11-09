@@ -1,95 +1,182 @@
-# 🎬 YounoAds
+# YounoAds
 
-> **Nonton Video Favorit Tanpa Gangguan Iklan, Nyaman, dan Bebas Kapan Saja.**
-
----
-
-## 📖 Tentang YounoAds
-
-**YounoAds** adalah aplikasi pemutar video modern untuk Android yang dirancang khusus untuk memberikan pengalaman menonton video terbaik tanpa gangguan. Sering kesal karena video yang Anda tonton terpotong iklan tiba-tiba di tengah cerita atau lagu favorit terhenti? YounoAds hadir sebagai solusi sederhana, cepat, dan ringan.
-
-Aplikasi ini tidak memerlukan login akun ataupun langganan berbayar. Cukup buka aplikasi, cari video yang Anda sukai, dan nikmati tontonan dengan lancar!
+> Pemutar Video Android Modern Bebas Iklan dengan Efisiensi Rekomposisi Tinggi dan Pemutaran Latar Belakang.
 
 ---
 
-## ✨ Fitur-Fitur Unggulan
+## Ringkasan Proyek
 
-### 🚫 1. Bebas Iklan Video Sepenuhnya
-Nikmati semua video dari awal hingga akhir tanpa jeda iklan video yang mengganggu. Anda bisa menikmati musik, podcast, tutorial, maupun hiburan lainnya secara utuh dan nyaman.
+YounoAds adalah aplikasi pemutar video native Android yang dikembangkan sebagai proyek portofolio rekayasa perangkat lunak mobile. Aplikasi ini berfokus pada performa tinggi, efisiensi sumber daya, antarmuka modern berbasis Jetpack Compose, serta kenyamanan menonton tanpa jeda iklan video.
 
-### 🎧 2. Putar di Latar Belakang (Layar Mati Tetap Bersuara)
-Ingin mendengarkan musik atau podcast saat sedang berolahraga, menyetir, atau sebelum tidur? Video akan tetap berputar suaranya meskipun layar ponsel dimatikan atau saat Anda sedang membuka aplikasi lain (seperti WhatsApp, Instagram, atau browser).
-
-### 🪟 3. Layar Mengambang (Picture-in-Picture / PiP)
-Tetap bisa menonton video dalam ukuran jendela kecil yang melayang di layar ponsel Anda sambil membalas pesan obrolan atau membaca berita. Ukuran jendela video dapat digeser ke sudut layar mana saja sesuai kenyamanan Anda.
-
-### 🌈 4. Efek Lampu Bioskop (Ambient Glow)
-Menghadirkan sensasi menonton seperti di bioskop atau televisi modern. Layar pemutar video memancarkan bias cahaya lembut yang warnanya mengikuti alur adegan video yang sedang diputar, membuat pengalaman menonton terasa lebih hidup dan menyenangkan.
-
-### 👆 5. Kontrol Sentuh Mudah & Cepat
-- **Ketuk Dua Kali (Double Tap):** Ketuk layar sebelah kanan untuk melompat maju 10 detik, atau sebelah kiri untuk memundurkan video 10 detik.
-- **Pengatur Durasi Video (Slider):** Geser garis waktu video dengan halus untuk menuju ke bagian video yang Anda inginkan.
-- **Sentuhan Halus (Bounce Effect):** Setiap tombol dan menu memberikan respons membal yang nyaman dan interaktif saat disentuh.
-
-### 🔍 6. Pencarian Cerdas & Riwayat Pencarian
-- Temukan video, musik, atau kreator favorit Anda dengan cepat melalui kolom pencarian.
-- Kata kunci yang pernah Anda cari akan otomatis tersimpan rapi untuk memudahkan pencarian berikutnya.
-- Privasi Anda tetap terjaga: riwayat pencarian dapat dihapus satu per satu atau dibersihkan sekaligus dengan sekali tekan.
-
-### ⏱️ 7. Riwayat Tontonan & Lanjutkan Otomatis
-- Semua video yang pernah Anda tonton akan tercatat di menu **Riwayat**.
-- Tidak perlu khawatir lupa bagian mana yang sedang ditonton—aplikasi secara otomatis mengingat menit dan detik terakhir saat Anda menonton, sehingga Anda bisa langsung melanjutkannya kapan saja.
-- Anda juga bebas menghapus riwayat tontonan kapan pun diinginkan.
-
-### 📺 8. Jelajahi Saluran Kreator (Channel)
-Lihat profil lengkap kreator konten kesayangan Anda, mulai dari foto profil, sampul saluran, hingga daftar video mereka yang bisa diurutkan dari video paling baru, paling populer, maupun yang paling awal dirilis.
-
-### 🔗 9. Bagikan Video di Menit Tertentu
-Menemukan momen lucu atau penting di tengah video? Anda bisa membagikan tautan video tersebut ke teman atau keluarga langsung tepat di menit dan detik adegan tersebut berlangsung.
-
-### 📶 10. Pengaturan Kualitas Video Fleksibel
-Pilih kualitas tampilan video sesuai dengan kecepatan internet dan kuota data Anda, mulai dari resolusi hemat kuota hingga kualitas gambar jernih berdefinisi tinggi (HD). Anda juga dapat mengatur kecepatan pemutaran video (lebih lambat atau lebih cepat).
-
-### 🌙 11. Desain Gelap yang Ramah di Mata
-Mengusung tema gelap (*Dark Theme*) elegan dengan kombinasi warna khas merah dan hitam. Desain ini tidak hanya terlihat keren, tetapi juga membuat mata tidak cepat lelah saat menonton di tempat redup serta membantu menghemat pemakaian baterai ponsel.
-
-### 🔄 12. Pembaruan Otomatis (In-App Update)
-Aplikasi akan secara otomatis memberi tahu Anda jika tersedia versi terbaru dengan fitur atau perbaikan yang lebih segar. Anda dapat memperbarui aplikasi langsung dari dalam aplikasi dengan mudah.
+Aplikasi dirancang agar dapat langsung beroperasi tanpa mewajibkan autentikasi akun Google atau langganan berbayar, menjaga privasi pengguna tetap berada di level perangkat lokal (on-device).
 
 ---
 
-## 🚀 Cara Memasang Aplikasi
+## Fitur Pengguna
 
-1. Unduh file aplikasi (**APK**) versi terbaru dari halaman rilis resmi.
-2. Buka file APK yang telah diunduh di ponsel Android Anda.
-3. Jika muncul permintaan izin untuk memasang dari sumber tidak dikenal (*Install unknown apps*), pilih **Izinkan** / **Allow**.
-4. Tekan **Pasang** (*Install*) dan tunggu beberapa saat hingga selesai.
-5. Buka **YounoAds** dan selamat menikmati video favorit tanpa iklan!
+### 1. Pemutaran Video Bebas Iklan
+Menyajikan konten video secara langsung dari awal hingga akhir tanpa interupsi jeda iklan video, baik untuk video berdurasi pendek maupun panjang.
+
+### 2. Pemutaran Latar Belakang (Background Playback)
+Audio video tetap berjalan secara berkelanjutan ketika layar ponsel dimatikan atau saat pengguna beralih ke aplikasi lain (seperti aplikasi perpesanan atau peramban). Terintegrasi dengan kontrol media di notification shade dan lockscreen.
+
+### 3. Jendela Mengambang (In-App & System Picture-in-Picture)
+- **In-App Floating Player**: Mini player mengambang di dalam aplikasi dengan kontrol gestur halus, memungkinkan navigasi feed sambil tetap menonton video.
+- **System PiP**: Mendukung mode Picture-in-Picture native Android saat keluar dari aplikasi.
+
+### 4. Efek Pencahayaan Ambient (Ambient Glow)
+Menghadirkan bias cahaya adaptif di sekeliling pemutar video yang selaras dengan palet warna frame video yang sedang aktif, memberikan pengalaman menonton yang imersif.
+
+### 5. Kontrol Interaktif dan Gestur
+- **Double-Tap to Seek**: Ketuk ganda di sisi kanan atau kiri pemutar untuk melompat maju atau mundur 10 detik dengan feedback haptik instan.
+- **Interactive Scrubber**: Kontrol garis waktu video presisi dengan visual thumb yang responsif.
+- **Feedback Haptik & Animasi Membal**: Responsivitas taktil pada tombol aksi, navigasi, dan kontrol.
+
+### 6. Pencarian Cerdas & Riwayat Lokal
+Pencarian video dan saluran dengan riwayat kata kunci lokal. Riwayat pencarian dapat dikelola atau dihapus kapan saja secara mandiri oleh pengguna.
+
+### 7. Riwayat Tontonan & Auto Resume
+Menyimpan riwayat video yang ditonton ke dalam basis data lokal dengan posisi detik terakhir, memungkinkan pengguna melanjutkan tontonan kapan saja dengan satu ketukan.
+
+### 8. Halaman Saluran Kreator
+Menampilkan profil kreator, banner saluran, serta daftar video yang dapat diurutkan berdasarkan tanggal terbaru atau popularitas.
+
+### 9. Pembagian Tautan di Menit Tertentu
+Mendukung penyalinan dan pembagian tautan video dengan parameter stempel waktu (timestamp) spesifik (`?t=XXs`).
+
+### 10. Konfigurasi Resolusi dan Kecepatan Pemutaran
+Pilihan resolusi adaptif (mulai dari resolusi hemat kuota hingga Full HD) dan pengatur kecepatan pemutaran (0.25x hingga 2.0x).
+
+### 11. Desain Tema Gelap AMOLED
+Tampilan gelap murni (Pure Dark AMOLED) dengan aksen merah YouTubeRed standar, hemat konsumsi daya layar OLED dan nyaman di mata pada kondisi pencahayaan rendah.
+
+### 12. Pembaruan Aplikasi Mandiri (In-App Updater)
+Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan antarmuka unduh dan pasang langsung.
 
 ---
 
-## ❓ Pertanyaan yang Sering Diajukan (FAQ)
+## Informasi & Spesifikasi Teknis
 
-**T: Apakah saya perlu login akun Google atau YouTube?**  
-*J:* Tidak perlu. YounoAds dapat langsung digunakan tanpa memerlukan akun apa pun. Ini juga menjaga kerahasiaan riwayat dan privasi Anda di perangkat.
+### Arsitektur Sistem
 
-**T: Apakah aplikasi ini berbayar atau ada biaya langganan?**  
-*J:* Tidak. Aplikasi ini gratis untuk digunakan dan tidak memungut biaya langganan apa pun.
+Proyek ini menerapkan prinsip Clean Architecture yang dipadukan dengan pola arsitektur **MVVM (Model-View-ViewModel)** dan paradigma **Unidirectional Data Flow (UDF)**:
 
-**T: Di mana riwayat pencarian dan tontonan saya disimpan?**  
-*J:* Semua data riwayat tontonan dan pencarian tersimpan secara lokal dan aman di dalam ponsel Anda sendiri, bukan di server luar. Anda memiliki kendali penuh untuk menghapusnya kapan saja.
+1. **Presentation Layer (UI)**:
+   - Dibangun sepenuhnya secara deklaratif menggunakan **Jetpack Compose**.
+   - Mengonsumsi data reaktif melalui `StateFlow` dari ViewModel dengan siklus hidup terkelola (`collectAsStateWithLifecycle`).
+   - Menerapkan modularisasi komponen reusable (Pill Buttons, Dialogs, Sliders, Glow Panels).
 
-**T: Bagaimana cara memperbarui ke versi terbaru?**  
-*J:* Setiap kali pengembang merilis pembaruan, jendela notifikasi pembaruan akan otomatis muncul saat Anda membuka aplikasi. Anda cukup menekan tombol perbarui untuk mengunduh versi terbaru.
+2. **Domain & ViewModel Layer**:
+   - Menangani logika bisnis, manajemen status pemutaran ExoPlayer, navigasi state, dan sinkronisasi durasi/posisi tontonan.
+   - Mengisolasi penanganan mutasi data dari representasi visual.
+
+3. **Data Layer**:
+   - **Local Storage**: Basis data SQLite lokal menggunakan **Room Database** untuk persistence riwayat tontonan, video tersimpan, dan riwayat pencarian.
+   - **Extractor Engine**: Menggunakan **NewPipeExtractor** untuk parsing metadata video, aliran stream audio/video, feed saluran, dan saran pencarian tanpa API keys eksternal.
 
 ---
 
-## 📄 Catatan & Penafian (Disclaimer)
+### Tech Stack & Dependensi Utama
 
-YounoAds dikembangkan secara independen sebagai proyek portofolio pribadi dan media pembelajaran eksplorasi teknologi Android modern (*non-commercial portfolio project*).
+| Kategori | Teknologi / Pustaka |
+| :--- | :--- |
+| Bahasa Pemrograman | Kotlin 2.0+ (JVM 17 Target) |
+| UI Framework | Jetpack Compose, Material 3, Accompanist System UI Controller |
+| Player Engine | AndroidX Media3 (ExoPlayer 1.3.1) & MediaSession |
+| Concurrency | Kotlin Coroutines & Asynchronous Flow (`StateFlow`, `SharedFlow`) |
+| Local Database | AndroidX Room 2.6.1 (SQLite ORM) |
+| Image Loading | Coil Compose 2.6.0 |
+| Metadata Extraction | NewPipeExtractor 0.27.0 |
+| Dependency Management | Gradle Kotlin DSL dengan Version Catalog / Plugins Modern |
+| Build Tooling | Android Gradle Plugin 8.3+, R8 / ProGuard Optimization |
 
-- **Non-Komersial:** Aplikasi ini 100% gratis, tidak menjual layanan, tidak meminta donasi, dan tidak memonetisasi konten dalam bentuk apa pun.
-- **Independen:** Aplikasi ini tidak berafiliasi, didukung, atau memiliki hubungan resmi dengan Google LLC maupun YouTube.
-- **Hak Cipta:** Seluruh hak cipta, merek dagang, konten video, audio, dan metadata sepenuhnya adalah milik masing-masing pembuat konten (kreator) dan platform penyedia aslinya.
-- **Tujuan Penggunaan:** Ditujukan untuk penggunaan pribadi, keluarga, dan lingkaran pengujian terbatas sebagai bahan evaluasi pengembangan aplikasi.
+---
 
+### Sorotan Implementasi Rekayasa (Engineering Highlights)
+
+#### 1. Isolasi Rekomposisi & Lazy Virtualization
+- **State Isolation**: Pembaruan posisi waktu pemutar (`currentPositionMs`) yang berdetak dengan interval 100-200 milidetik diisolasi secara ketat ke dalam sub-komponen `VideoPlayerSection`. Hal ini mencegah rekomposisi massal yang tidak perlu pada metadata video, tombol aksi, dan daftar video terkait.
+- **Virtualisasi LazyColumn**: Daftar rekomendasi video terkait menggunakan `LazyColumn` dengan kunci stabil (`key = item.url`), memangkas alokasi memori dan menjaga rendering tetap mulus pada 60/120 FPS.
+
+#### 2. In-App Floating PiP dengan Animasi Fisik
+Mini-player di dalam aplikasi memanfaatkan `pointerInput` untuk mendeteksi gestur drag horizontal dan vertikal. Nilai perpindahan dianimasikan secara mulus menggunakan `androidx.compose.animation.core.Animatable`. Ditambahkan kurva fading transparansi (`graphicsLayer { alpha }`) berbasis jarak geser untuk memberikan efek pelepasan (dismiss) yang natural.
+
+#### 3. Auto-Fullscreen & Sensor Immersive Mode
+Deteksi orientasi perangkat fisik secara dinamis melalui `LocalConfiguration.current.orientation`. Saat perangkat diputar ke mode landscape, tampilan video otomatis meluas ke seluruh layar (`Modifier.fillMaxSize()`) dan mengaktifkan mode imersif (`WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE`). Handler tombol kembali dan tombol keluar layar penuh mengembalikan orientasi ke mode potret tanpa mengunci sensor fisik sistem.
+
+#### 4. Background Playback via MediaSessionService
+Playback audio di latar belakang dikelola menggunakan service foreground yang terikat pada `MediaSessionService`. Layanan ini menangani kontrol hardware (tombol headset, Bluetooth audio, keyboard media keys) dan mempertahankan sesi saat aplikasi berada dalam keadaan paused atau stopped.
+
+#### 5. Keamanan Data & Manajemen Duplikasi
+Input pencarian dan caching saran pencarian difilter secara ketat dengan operator deduplikasi (`.distinct()`), mencegah exception kunci duplikat pada komponen Compose (`IllegalArgumentException: Key already exists`).
+
+#### 6. Pipeline CI/CD Otomatis
+- **Release Automation** (`build-release.yml`): Setiap push tag versi (`v*`) secara otomatis memicu kompilasi release APK ter-sign di runner Ubuntu GitHub Actions dan mempublikasikan file binary APK ke GitHub Releases.
+- **Upstream Engine Checker** (`auto-check-newpipe.yml`): Pengecekan otomatis berkala terhadap update NewPipeExtractor di upstream repository untuk menjaga kompatibilitas parsing terhadap perubahan YouTube backend.
+
+---
+
+## Struktur Direktori Proyek
+
+```
+app/src/main/kotlin/com/example/yoouutt/
+|-- data/
+|   |-- db/              # Room Database, DAO entities (History, Saved, Search)
+|   |-- model/           # Data classes & domain models (StreamData, VideoItem)
+|   |-- repository/      # Abstraksi repositori data & integrasi NewPipe
+|-- service/             # AndroidX Media3 Player Service & Background playback
+|-- ui/
+|   |-- channel/         # Tampilan profil saluran & video kreator
+|   |-- common/          # Komponen UI global (AppConfirmDialog, ViewModels)
+|   |-- feed/            # Tampilan beranda & daftar video
+|   |-- history/         # Tampilan riwayat tontonan & aksi kelola
+|   |-- navigation/      # Navigasi bottom bar & routing Compose
+|   |-- player/          # Tampilan utama pemutar video
+|   |   |-- components/  # Sub-komponen (ControlsOverlay, Scrubber, AmbientGlow)
+|   |-- search/          # Antarmuka pencarian & saran kata kunci
+|   |-- theme/           # Tema Material 3, Warna (YouTubeRed), Tipografi
+|-- util/                # Format teks, helper orientasi, parser URL
+```
+
+---
+
+## Persyaratan Sistem
+
+- **Sistem Operasi Minimum**: Android 7.0 (API Level 24)
+- **Target SDK**: Android 14+ (API Level 37)
+- **Arsitektur CPU**: armeabi-v7a, arm64-v8a, x86, x86_64
+- **Koneksi Jaringan**: Akses internet untuk streaming video
+
+---
+
+## Cara Memasang Aplikasi
+
+1. Unduh file rilis APK terbaru (`app-release.apk`) dari tab Releases di repositori GitHub ini.
+2. Buka file APK yang telah diunduh pada perangkat Android Anda.
+3. Berikan izin pemasangan dari sumber tidak dikenal (*Install unknown apps*) jika diminta oleh sistem.
+4. Pilih **Pasang** (*Install*) dan tunggu proses pemasangan hingga selesai.
+5. Buka **YounoAds** untuk mulai menggunakan aplikasi.
+
+---
+
+## Pertanyaan yang Sering Diajukan (FAQ)
+
+**Apakah aplikasi ini memerlukan login akun Google?**  
+Tidak. YounoAds dapat digunakan langsung tanpa login akun apa pun. Tidak ada data akun atau kredensial yang diminta atau disimpan.
+
+**Di mana riwayat dan preferensi pengguna disimpan?**  
+Seluruh data (riwayat tontonan, riwayat pencarian, dan video tersimpan) disimpan secara lokal di perangkat Anda menggunakan Room Database. Data tidak pernah dikirimkan ke server eksternal.
+
+**Bagaimana cara memperbarui aplikasi?**  
+Aplikasi memiliki fitur pengecekan versi otomatis. Ketika versi baru dirilis, dialog notifikasi pembaruan akan muncul di dalam aplikasi dengan opsi unduh dan pasang langsung.
+
+---
+
+## Penafian (Disclaimer)
+
+YounoAds dikembangkan semata-mata sebagai proyek portofolio pribadi, media riset rekayasa sistem Android native, dan eksplorasi implementasi arsitektur modern (*non-commercial portfolio project*).
+
+- **Non-Komersial**: Aplikasi ini sepenuhnya gratis, tidak memuat sistem langganan berbayar, tidak menjual produk, tidak memungut biaya, dan tidak memonetisasi konten dalam bentuk apa pun.
+- **Independen**: Proyek ini bersifat independen dan tidak memiliki keterikatan resmi, afiliasi, kemitraan, atau dukungan dari Google LLC maupun YouTube.
+- **Hak Cipta**: Seluruh hak cipta, merek dagang, konten audio-visual, dan metadata yang ditampilkan adalah hak milik sah dari masing-masing kreator konten dan penyedia platform asal.
+- **Tujuan Penggunaan**: Diperuntukkan secara terbatas untuk evaluasi teknis, portofolio pribadi pengembang, dan penggunaan oleh lingkaran keluarga serta rekan terdekat.
