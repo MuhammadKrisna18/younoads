@@ -57,6 +57,17 @@ fun Activity.setFullscreen(enabled: Boolean) {
     }
 }
 
+fun Activity.setImmersiveMode(enabled: Boolean) {
+    val window = this.window
+    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+    if (enabled) {
+        insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        insetsController.hide(WindowInsetsCompat.Type.systemBars())
+    } else {
+        insetsController.show(WindowInsetsCompat.Type.systemBars())
+    }
+}
+
 object PlayerUtils {
     fun formatTime(timeMs: Long): String = TextFormatters.formatTimeMs(timeMs)
 
@@ -64,36 +75,30 @@ object PlayerUtils {
         val trimmed = urlOrId.trim()
         if (trimmed.isEmpty()) return ""
 
-        // Already 11-char ID
         if (trimmed.length == 11 && trimmed.matches(Regex("^[a-zA-Z0-9_-]{11}$"))) {
             return trimmed
         }
 
-        // Standard watch URL: v=([a-zA-Z0-9_-]{11})
         val vMatch = Regex("[?&]v=([a-zA-Z0-9_-]{11})").find(trimmed)
         if (vMatch != null) {
             return vMatch.groupValues[1]
         }
 
-        // youtu.be/([a-zA-Z0-9_-]{11})
         val shortMatch = Regex("youtu\\.be/([a-zA-Z0-9_-]{11})").find(trimmed)
         if (shortMatch != null) {
             return shortMatch.groupValues[1]
         }
 
-        // shorts/([a-zA-Z0-9_-]{11})
         val shortsMatch = Regex("shorts/([a-zA-Z0-9_-]{11})").find(trimmed)
         if (shortsMatch != null) {
             return shortsMatch.groupValues[1]
         }
 
-        // embed/([a-zA-Z0-9_-]{11})
         val embedMatch = Regex("embed/([a-zA-Z0-9_-]{11})").find(trimmed)
         if (embedMatch != null) {
             return embedMatch.groupValues[1]
         }
 
-        // Fallback: match first 11-character alphanumeric token
         val genericMatch = Regex("([a-zA-Z0-9_-]{11})").find(trimmed)
         return genericMatch?.groupValues?.get(1) ?: trimmed
     }

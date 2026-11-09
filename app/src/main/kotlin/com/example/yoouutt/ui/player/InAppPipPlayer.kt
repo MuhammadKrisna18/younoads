@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -98,9 +99,12 @@ fun InAppPipPlayer(
         }
     }
 
+    val currentAlpha = (1f - (abs(animOffsetX.value) / (screenWidthPx * 0.45f))).coerceIn(0f, 1f)
+
     Surface(
         modifier = modifier
             .offset { IntOffset(animOffsetX.value.roundToInt(), 0) }
+            .graphicsLayer { alpha = currentAlpha }
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .shadow(8.dp, RoundedCornerShape(16.dp))

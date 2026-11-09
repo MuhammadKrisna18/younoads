@@ -1,5 +1,7 @@
 package com.example.yoouutt.ui.player
 
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.view.HapticFeedbackConstants
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -77,9 +80,12 @@ fun PlayerScreen(
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()
+    val configuration = LocalConfiguration.current
+    val isDeviceLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val currentPlayback by viewModel.currentPlayback.collectAsStateWithLifecycle()
     val isFullscreen by viewModel.isFullscreen.collectAsStateWithLifecycle()
+    val isEffectiveFullscreen = isFullscreen || isDeviceLandscape
     val isDescriptionExpanded by viewModel.isDescriptionExpanded.collectAsStateWithLifecycle()
     val isLiked by viewModel.isLiked.collectAsStateWithLifecycle()
     val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
@@ -98,10 +104,20 @@ fun PlayerScreen(
         viewModel.initVideo(videoUrl)
     }
 
-    DisposableEffect(isFullscreen) {
-        activity?.setFullscreen(isFullscreen)
+    DisposableEffect(isFullscreen, isDeviceLandscape) {
+        if (isFullscreen) {
+            activity?.setFullscreen(true)
+        } else {
+            activity?.setImmersiveMode(isDeviceLandscape)
+        }
         onDispose {
             activity?.setFullscreen(false)
+        }
+    }
+
+    LaunchedEffect(isDeviceLandscape) {
+        if (!isDeviceLandscape && !isFullscreen) {
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
     }
 
@@ -111,8 +127,19 @@ fun PlayerScreen(
         }
     }
 
-    BackHandler(enabled = isFullscreen) {
-        viewModel.setFullscreen(false)
+    val handleToggleFullscreen: () -> Unit = {
+        if (isEffectiveFullscreen) {
+            if (isDeviceLandscape) {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+            viewModel.setFullscreen(false)
+        } else {
+            viewModel.setFullscreen(true)
+        }
+    }
+
+    BackHandler(enabled = isEffectiveFullscreen) {
+        handleToggleFullscreen()
     }
 
     Column(
@@ -120,7 +147,7 @@ fun PlayerScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        val videoBoxModifier = if (isFullscreen) {
+        val videoBoxModifier = if (isEffectiveFullscreen) {
             Modifier.fillMaxSize()
         } else {
             Modifier
@@ -134,14 +161,15 @@ fun PlayerScreen(
             videoUrl = videoUrl,
             fallbackTitle = fallbackTitle,
             fallbackUploader = fallbackUploader,
-            isFullscreen = isFullscreen,
+            isFullscreen = isEffectiveFullscreen,
             isInPipMode = isInPipMode,
             resolutionLabel = resolutionLabel,
             onBack = onBack,
+            onToggleFullscreen = handleToggleFullscreen,
             modifier = videoBoxModifier
         )
 
-        if (!isFullscreen) {
+        if (!isEffectiveFullscreen) {
             val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
             val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
             val streamData = currentPlayback?.streamData
@@ -169,7 +197,7 @@ fun PlayerScreen(
                 onResolutionClick = viewModel::showResolutionDialog,
                 onToggleAmbient = viewModel::toggleAmbientMode,
                 onPipClick = { activity?.enterPipMode() },
-                onToggleFullscreen = viewModel::toggleFullscreen,
+                onToggleFullscreen = handleToggleFullscreen,
                 onToggleSubscribe = viewModel::toggleSubscribe,
                 onToggleDescription = viewModel::toggleDescription,
                 onChannelClick = onChannelClick,
@@ -217,6 +245,7 @@ private fun VideoPlayerSection(
     isInPipMode: Boolean,
     resolutionLabel: String,
     onBack: () -> Unit,
+    onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -309,10 +338,10 @@ private fun VideoPlayerSection(
                 durationMs = durationMs,
                 currentResolutionText = resolutionLabel,
                 onBackClick = {
-                    if (isFullscreen) viewModel.toggleFullscreen() else onBack()
+                    if (isFullscreen) onToggleFullscreen() else onBack()
                 },
                 onPlayPauseClick = viewModel::togglePlayPause,
-                onToggleFullscreen = viewModel::toggleFullscreen,
+                onToggleFullscreen = onToggleFullscreen,
                 onResolutionClick = viewModel::showResolutionDialog,
                 onScrubbing = viewModel::onScrubbing,
                 onSeek = viewModel::seekTo
