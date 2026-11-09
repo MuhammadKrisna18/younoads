@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -431,19 +432,22 @@ fun FeedScreen(
                 val trimmedQuery = searchQuery.trim()
                 val matchingHistory = remember(trimmedQuery, searchHistory) {
                     if (trimmedQuery.isBlank()) {
-                        searchHistory
+                        searchHistory.distinct()
                     } else {
-                        searchHistory.filter { it.contains(trimmedQuery, ignoreCase = true) }
+                        searchHistory.filter { it.contains(trimmedQuery, ignoreCase = true) }.distinct()
                     }
                 }
                 val nonHistorySuggestions = remember(searchSuggestions, matchingHistory) {
-                    searchSuggestions.filter { s -> matchingHistory.none { it.equals(s, ignoreCase = true) } }
+                    searchSuggestions
+                        .filter { s -> matchingHistory.none { it.equals(s, ignoreCase = true) } }
+                        .distinct()
                 }
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black),
+                        .background(Color.Black)
+                        .imePadding(),
                     contentPadding = PaddingValues(top = 4.dp, bottom = 130.dp)
                 ) {
                     if (trimmedQuery.isBlank() && matchingHistory.isNotEmpty()) {
