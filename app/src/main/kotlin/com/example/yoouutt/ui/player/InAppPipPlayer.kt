@@ -63,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
 import com.example.yoouutt.playback.ActivePlayback
 import com.example.yoouutt.playback.PlaybackManager
+import com.example.yoouutt.ui.theme.YouTubeRed
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -236,7 +237,7 @@ fun InAppPipPlayer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(2.dp),
-                color = Color(0xFFFF0000),
+                color = YouTubeRed,
                 trackColor = Color.White.copy(alpha = 0.2f)
             )
         }

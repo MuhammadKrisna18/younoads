@@ -63,6 +63,7 @@ import com.example.yoouutt.ui.player.components.PlayerControlsOverlay
 import com.example.yoouutt.ui.player.components.PlayerDescriptionCard
 import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
 import com.example.yoouutt.ui.player.components.ShareBottomSheet
+import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun PlayerScreen(
@@ -357,7 +358,7 @@ private fun VideoPlayerSection(
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Ya",
-                        color = Color(0xFFE50914),
+                        color = YouTubeRed,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.clickable { viewModel.applyResume() }

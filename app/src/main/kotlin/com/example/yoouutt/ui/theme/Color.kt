@@ -2,6 +2,8 @@ package com.example.yoouutt.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val YouTubeRed = Color(0xFFFF0000)
+
 val PureBlack = Color(0xFF000000)
 val DarkBackground = Color(0xFF0A0A0A)
 val DarkSurface = Color(0xFF141414)

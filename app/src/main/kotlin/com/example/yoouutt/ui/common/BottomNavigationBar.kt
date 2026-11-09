@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun BottomNavigationBar(
@@ -101,7 +102,7 @@ private fun BottomNavItem(
     modifier: Modifier = Modifier
 ) {
     val contentColor by animateColorAsState(
-        targetValue = if (selected) Color(0xFFFF0000) else Color(0xFF888888),
+        targetValue = if (selected) YouTubeRed else Color(0xFF888888),
         animationSpec = tween(durationMillis = 150),
         label = "BottomNavColor"
     )
@@ -121,7 +122,7 @@ private fun BottomNavItem(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(14.dp))
-                .background(if (selected) Color(0xFFFF0000).copy(alpha = 0.14f) else Color.Transparent)
+                .background(if (selected) YouTubeRed.copy(alpha = 0.14f) else Color.Transparent)
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center
         ) {

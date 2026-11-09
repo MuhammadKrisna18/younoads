@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.ui.animation.bounceClick
+import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun PlayerChannelHeader(
@@ -46,7 +47,7 @@ fun PlayerChannelHeader(
     val subText = streamData?.uploaderSubscriberCountText.orEmpty()
 
     val animatedSubColor by animateColorAsState(
-        targetValue = if (isSubscribed) Color(0xFF272727) else Color(0xFFFF0000),
+        targetValue = if (isSubscribed) Color(0xFF272727) else YouTubeRed,
         animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
         label = "subBgColor"
     )

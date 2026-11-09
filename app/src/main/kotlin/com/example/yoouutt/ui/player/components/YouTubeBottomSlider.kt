@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.player.PlayerUtils
+import com.example.yoouutt.ui.theme.YouTubeRed
 import kotlin.math.roundToInt
 
 @Composable
@@ -118,7 +119,6 @@ fun InteractiveSeekBar(
             val centerY = size.height / 2f
             val trackStroke = animatedTrackHeight.toPx()
 
-            // 1. Unplayed background track
             drawLine(
                 color = Color.White.copy(alpha = 0.25f),
                 start = Offset(0f, centerY),
@@ -127,7 +127,6 @@ fun InteractiveSeekBar(
                 cap = StrokeCap.Round
             )
 
-            // 2. Buffered progress track
             val bufferedX = canvasWidth * bufferedProgress
             if (bufferedX > 0f) {
                 drawLine(
@@ -139,11 +138,10 @@ fun InteractiveSeekBar(
                 )
             }
 
-            // 3. Played progress track (YouTube Red)
             val playedX = canvasWidth * activeProgress
             if (playedX > 0f) {
                 drawLine(
-                    color = Color(0xFFFF0000),
+                    color = YouTubeRed,
                     start = Offset(0f, centerY),
                     end = Offset(playedX, centerY),
                     strokeWidth = trackStroke,
@@ -151,14 +149,12 @@ fun InteractiveSeekBar(
                 )
             }
 
-            // 4. Thumb circle
             drawCircle(
-                color = Color(0xFFFF0000),
+                color = YouTubeRed,
                 radius = animatedThumbRadius.toPx(),
                 center = Offset(playedX, centerY)
             )
 
-            // 5. Thumb inner dot while dragging
             if (isDragging) {
                 drawCircle(
                     color = Color.White,
@@ -168,7 +164,6 @@ fun InteractiveSeekBar(
             }
         }
 
-        // Floating time badge above the thumb while scrubbing
         if (isDragging) {
             val scrubMs = (dragProgress * totalDuration).toLong()
             val timeText = PlayerUtils.formatTime(scrubMs)
@@ -215,7 +210,6 @@ fun MinimalBottomProgressBar(
         val centerY = size.height / 2f
         val stroke = size.height
 
-        // Unplayed
         drawLine(
             color = Color.White.copy(alpha = 0.2f),
             start = Offset(0f, centerY),
@@ -223,7 +217,6 @@ fun MinimalBottomProgressBar(
             strokeWidth = stroke
         )
 
-        // Buffered
         val bufferedX = canvasWidth * bufferedProgress
         if (bufferedX > 0f) {
             drawLine(
@@ -234,11 +227,10 @@ fun MinimalBottomProgressBar(
             )
         }
 
-        // Played
         val playedX = canvasWidth * progress
         if (playedX > 0f) {
             drawLine(
-                color = Color(0xFFFF0000),
+                color = YouTubeRed,
                 start = Offset(0f, centerY),
                 end = Offset(playedX, centerY),
                 strokeWidth = stroke

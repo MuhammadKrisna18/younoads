@@ -76,6 +76,7 @@ import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
+import com.example.yoouutt.ui.theme.YouTubeRed
 import com.example.yoouutt.ui.feed.VideoCard
 import com.example.yoouutt.ui.feed.VideoCardSkeleton
 
@@ -451,11 +452,11 @@ private fun ChannelContent(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSelected) Color(0xFFFF0000) else Color(0xFF1E1E1E))
+                            .background(if (isSelected) YouTubeRed else Color(0xFF1E1E1E))
                             .border(
                                 border = BorderStroke(
                                     width = 0.5.dp,
-                                    color = if (isSelected) Color(0xFFFF0000) else Color(0xFF333333)
+                                    color = if (isSelected) YouTubeRed else Color(0xFF333333)
                                 ),
                                 shape = RoundedCornerShape(50.dp)
                             )

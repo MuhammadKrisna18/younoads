@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.animation.bounceClick
+import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun ActionPill(
@@ -34,7 +35,7 @@ fun ActionPill(
     isActive: Boolean = false
 ) {
     val animatedBgColor by animateColorAsState(
-        targetValue = if (isActive) Color(0xFFFF0000) else Color(0xFF272727),
+        targetValue = if (isActive) YouTubeRed else Color(0xFF272727),
         animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
         label = "pillBgColor"
     )

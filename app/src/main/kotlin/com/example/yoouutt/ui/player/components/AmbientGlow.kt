@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun AmbientGlow(
@@ -41,7 +42,7 @@ fun AmbientGlow(
         label = "pulseFactor"
     )
 
-    val pureRed = Color(0xFFFF0000)
+    val pureRed = YouTubeRed
     val deepRed = Color(0xFFCC0000)
 
     Box(

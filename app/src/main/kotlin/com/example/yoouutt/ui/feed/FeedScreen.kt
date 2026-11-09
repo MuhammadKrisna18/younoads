@@ -77,6 +77,7 @@ import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
 import com.example.yoouutt.ui.common.BrandRed
+import com.example.yoouutt.ui.theme.YouTubeRed
 import com.example.yoouutt.ui.common.UpdateDialog
 import com.example.yoouutt.update.AppUpdateManager
 import com.example.yoouutt.update.UpdateInfo
@@ -224,7 +225,7 @@ fun FeedScreen(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(50.dp))
-                                            .background(if (isSelected) Color(0xFFFF0000) else Color(0xFF222222))
+                                            .background(if (isSelected) YouTubeRed else Color(0xFF222222))
                                             .clickable {
                                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                                 viewModel.selectCategory(category)
