@@ -2,6 +2,8 @@ package com.example.yoouutt.data.repository
 
 import android.util.LruCache
 import com.example.yoouutt.data.model.ChannelData
+import com.example.yoouutt.data.model.PlaylistData
+import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.data.model.VideoResolutionOption
@@ -16,6 +18,7 @@ import org.schabi.newpipe.extractor.Page
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabs
+import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import com.example.yoouutt.util.TextFormatters
 
@@ -30,6 +33,8 @@ class NewPipeVideoRepository(
 
     private val streamCache = LruCache<String, Pair<StreamData, Long>>(25)
     private val channelCache = LruCache<String, Pair<ChannelData, Long>>(10)
+    private val channelPlaylistsCache = LruCache<String, Pair<List<PlaylistItem>, Long>>(15)
+    private val playlistCache = LruCache<String, Pair<PlaylistData, Long>>(15)
     private val channelPaginationMap = mutableMapOf<String, ChannelPagination>()
     private var activeChannelUrl: String? = null
 
@@ -338,6 +343,126 @@ class NewPipeVideoRepository(
         }
     }
 
+    override suspend fun getChannelPlaylists(channelUrl: String): Result<List<PlaylistItem>> = withContext(ioDispatcher) {
+        val resolvedUrl = if (channelUrl.startsWith("http://") || channelUrl.startsWith("https://")) {
+            channelUrl
+        } else if (channelUrl.startsWith("@")) {
+            "https://www.youtube.com/$channelUrl"
+        } else {
+            "https://www.youtube.com/@${channelUrl.replace(" ", "")}"
+        }
+
+        val cached = channelPlaylistsCache.get(resolvedUrl)
+        if (cached != null && (System.currentTimeMillis() - cached.second) < 10 * 60 * 1000L) {
+            return@withContext Result.success(cached.first)
+        }
+
+        runCatching {
+            val channelExtractor = ServiceList.YouTube.getChannelExtractor(resolvedUrl)
+            channelExtractor.fetchPage()
+
+            val tabs = channelExtractor.tabs
+            val playlistsTab = tabs.find {
+                it.contentFilters.contains(ChannelTabs.PLAYLISTS) || it.url.contains("playlists")
+            }
+
+            if (playlistsTab == null) {
+                return@runCatching emptyList()
+            }
+
+            val tabExtractor = ServiceList.YouTube.getChannelTabExtractor(playlistsTab)
+            tabExtractor.fetchPage()
+
+            val playlistList = mutableListOf<PlaylistItem>()
+            var currentPage = tabExtractor.initialPage
+            val firstBatch = currentPage.items.filterIsInstance<PlaylistInfoItem>().map { it.toPlaylistItem() }
+            playlistList.addAll(firstBatch)
+
+            var batchCount = 1
+            while (currentPage.hasNextPage() && batchCount < 4) {
+                try {
+                    currentPage = tabExtractor.getPage(currentPage.nextPage)
+                    val nextBatch = currentPage.items.filterIsInstance<PlaylistInfoItem>().map { it.toPlaylistItem() }
+                    playlistList.addAll(nextBatch)
+                    batchCount++
+                } catch (_: Exception) {
+                    break
+                }
+            }
+
+            val resultList = playlistList.distinctBy { it.id }
+            channelPlaylistsCache.put(resolvedUrl, Pair(resultList, System.currentTimeMillis()))
+            resultList
+        }
+    }
+
+    override suspend fun getPlaylistDetails(playlistUrl: String): Result<PlaylistData> = withContext(ioDispatcher) {
+        val resolvedUrl = if (playlistUrl.startsWith("http://") || playlistUrl.startsWith("https://")) {
+            playlistUrl
+        } else {
+            "https://www.youtube.com/playlist?list=$playlistUrl"
+        }
+
+        val cached = playlistCache.get(resolvedUrl)
+        if (cached != null && (System.currentTimeMillis() - cached.second) < 10 * 60 * 1000L) {
+            return@withContext Result.success(cached.first)
+        }
+
+        runCatching {
+            val playlistExtractor = ServiceList.YouTube.getPlaylistExtractor(resolvedUrl)
+            playlistExtractor.fetchPage()
+
+            val id = playlistExtractor.id.orEmpty().ifEmpty {
+                resolvedUrl.substringAfter("list=").substringBefore("&")
+            }
+            val title = playlistExtractor.name.orEmpty()
+            val uploaderName = playlistExtractor.uploaderName.orEmpty()
+            val uploaderAvatarUrl = try {
+                playlistExtractor.uploaderAvatars.maxByOrNull { it.height }?.url.orEmpty()
+            } catch (_: Exception) {
+                ""
+            }
+            val thumbnailUrl = try {
+                playlistExtractor.thumbnails.maxByOrNull { it.height }?.url.orEmpty()
+            } catch (_: Exception) {
+                ""
+            }
+            val streamCount = try {
+                playlistExtractor.streamCount
+            } catch (_: Exception) {
+                0L
+            }
+
+            val videoList = mutableListOf<VideoItem>()
+            var currentPage = playlistExtractor.initialPage
+            videoList.addAll(currentPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() })
+
+            var batchCount = 1
+            while (currentPage.hasNextPage() && batchCount < 5) {
+                try {
+                    currentPage = playlistExtractor.getPage(currentPage.nextPage)
+                    videoList.addAll(currentPage.items.filterIsInstance<StreamInfoItem>().map { it.toVideoItem() })
+                    batchCount++
+                } catch (_: Exception) {
+                    break
+                }
+            }
+
+            val playlistData = PlaylistData(
+                id = id,
+                url = resolvedUrl,
+                title = title,
+                uploaderName = uploaderName,
+                uploaderAvatarUrl = uploaderAvatarUrl,
+                thumbnailUrl = thumbnailUrl,
+                streamCount = if (streamCount > 0L) streamCount else videoList.size.toLong(),
+                videos = videoList.distinctBy { it.id }
+            )
+            playlistCache.put(resolvedUrl, Pair(playlistData, System.currentTimeMillis()))
+            playlistData
+        }
+    }
+
     override suspend fun getSearchSuggestions(query: String): Result<List<String>> = withContext(ioDispatcher) {
         runCatching {
             val trimmed = query.trim()
@@ -442,6 +567,23 @@ class NewPipeVideoRepository(
             viewCountText = TextFormatters.formatViewCount(viewCount),
             uploadDateMillis = dateMillis,
             uploadDateText = formattedDate
+        )
+    }
+
+    private fun PlaylistInfoItem.toPlaylistItem(): PlaylistItem {
+        val bestThumbnail = try {
+            thumbnails.maxByOrNull { it.height }?.url.orEmpty()
+        } catch (_: Exception) {
+            ""
+        }
+        val cleanId = url.substringAfter("list=").substringBefore("&")
+        return PlaylistItem(
+            id = cleanId.ifEmpty { url },
+            url = url,
+            title = name.orEmpty(),
+            thumbnailUrl = bestThumbnail,
+            uploaderName = uploaderName.orEmpty(),
+            streamCount = streamCount
         )
     }
 }
