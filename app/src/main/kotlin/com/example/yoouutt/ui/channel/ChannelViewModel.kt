@@ -3,6 +3,7 @@ package com.example.yoouutt.ui.channel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yoouutt.data.model.ChannelData
+import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.data.repository.VideoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,10 @@ sealed interface ChannelUiState {
         val sortedVideos: List<VideoItem>,
         val currentSort: ChannelSortOption,
         val isLoadingMore: Boolean = false,
-        val searchQuery: String = ""
+        val searchQuery: String = "",
+        val currentTab: ChannelTab = ChannelTab.VIDEOS,
+        val playlists: List<PlaylistItem> = emptyList(),
+        val isPlaylistsLoading: Boolean = false
     ) : ChannelUiState
     data class Error(val message: String) : ChannelUiState
 }
@@ -30,12 +34,22 @@ class ChannelViewModel(
     val uiState: StateFlow<ChannelUiState> = _uiState.asStateFlow()
 
     private var currentChannel: ChannelData? = null
+    private var currentChannelUrl: String = ""
     private val allLoadedVideos = mutableListOf<VideoItem>()
+    private val allLoadedPlaylists = mutableListOf<PlaylistItem>()
+    private var isPlaylistsLoaded = false
+    private var isPlaylistsLoading = false
     private var activeSort: ChannelSortOption = ChannelSortOption.NEWEST
+    private var activeTab: ChannelTab = ChannelTab.VIDEOS
     private var currentSearchQuery = ""
     private var isLoadingMore = false
 
     fun loadChannel(channelUrl: String) {
+        currentChannelUrl = channelUrl
+        activeTab = ChannelTab.VIDEOS
+        isPlaylistsLoaded = false
+        isPlaylistsLoading = false
+        allLoadedPlaylists.clear()
         viewModelScope.launch {
             _uiState.value = ChannelUiState.Loading
             allLoadedVideos.clear()
@@ -51,8 +65,39 @@ class ChannelViewModel(
         }
     }
 
+    fun onTabSelected(tab: ChannelTab) {
+        if (activeTab == tab) return
+        activeTab = tab
+        applySortAndFilter()
+
+        if (tab == ChannelTab.PLAYLISTS && !isPlaylistsLoaded && !isPlaylistsLoading) {
+            loadPlaylists()
+        }
+    }
+
+    private fun loadPlaylists() {
+        if (currentChannelUrl.isBlank()) return
+        isPlaylistsLoading = true
+        applySortAndFilter()
+
+        viewModelScope.launch {
+            videoRepository.getChannelPlaylists(currentChannelUrl)
+                .onSuccess { playlists ->
+                    allLoadedPlaylists.clear()
+                    allLoadedPlaylists.addAll(playlists)
+                    isPlaylistsLoaded = true
+                    isPlaylistsLoading = false
+                    applySortAndFilter()
+                }
+                .onFailure {
+                    isPlaylistsLoading = false
+                    applySortAndFilter()
+                }
+        }
+    }
+
     fun loadMore() {
-        if (isLoadingMore || currentChannel == null) return
+        if (activeTab != ChannelTab.VIDEOS || isLoadingMore || currentChannel == null) return
         isLoadingMore = true
         updateLoadingMoreState(true)
 
@@ -92,7 +137,7 @@ class ChannelViewModel(
 
     private fun applySortAndFilter() {
         val channel = currentChannel ?: return
-        val filtered = if (currentSearchQuery.isBlank()) {
+        val filteredVideos = if (currentSearchQuery.isBlank()) {
             allLoadedVideos
         } else {
             allLoadedVideos.filter {
@@ -100,30 +145,41 @@ class ChannelViewModel(
             }
         }
 
-        val sorted = when (activeSort) {
+        val sortedVideos = when (activeSort) {
             ChannelSortOption.NEWEST -> {
-                filtered.sortedWith(
+                filteredVideos.sortedWith(
                     compareByDescending<VideoItem> { it.uploadDateMillis }
                         .thenByDescending { it.viewCount }
                 )
             }
             ChannelSortOption.OLDEST -> {
-                filtered.sortedWith(
+                filteredVideos.sortedWith(
                     compareBy<VideoItem> { it.uploadDateMillis }
                         .thenBy { it.viewCount }
                 )
             }
             ChannelSortOption.POPULAR -> {
-                filtered.sortedByDescending { it.viewCount }
+                filteredVideos.sortedByDescending { it.viewCount }
+            }
+        }
+
+        val filteredPlaylists = if (currentSearchQuery.isBlank()) {
+            allLoadedPlaylists
+        } else {
+            allLoadedPlaylists.filter {
+                it.title.contains(currentSearchQuery, ignoreCase = true)
             }
         }
 
         _uiState.value = ChannelUiState.Success(
             channel = channel,
-            sortedVideos = sorted,
+            sortedVideos = sortedVideos,
             currentSort = activeSort,
             isLoadingMore = isLoadingMore,
-            searchQuery = currentSearchQuery
+            searchQuery = currentSearchQuery,
+            currentTab = activeTab,
+            playlists = filteredPlaylists,
+            isPlaylistsLoading = isPlaylistsLoading
         )
     }
 }

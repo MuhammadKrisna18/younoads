@@ -73,6 +73,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.ChannelData
+import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
@@ -88,6 +89,7 @@ fun ChannelScreen(
     onVideoClick: (VideoItem) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onPlaylistClick: ((playlistUrl: String, playlistTitle: String) -> Unit)? = null,
     viewModel: ChannelViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -282,10 +284,15 @@ fun ChannelScreen(
                         channel = state.channel,
                         videos = state.sortedVideos,
                         selectedSort = state.currentSort,
+                        currentTab = state.currentTab,
+                        playlists = state.playlists,
+                        isPlaylistsLoading = state.isPlaylistsLoading,
                         isLoadingMore = state.isLoadingMore,
+                        onTabChange = viewModel::onTabSelected,
                         onSortChange = viewModel::onSortSelected,
                         onLoadMore = viewModel::loadMore,
-                        onVideoClick = onVideoClick
+                        onVideoClick = onVideoClick,
+                        onPlaylistClick = onPlaylistClick
                     )
                 }
             }
@@ -298,10 +305,15 @@ private fun ChannelContent(
     channel: ChannelData,
     videos: List<VideoItem>,
     selectedSort: ChannelSortOption,
+    currentTab: ChannelTab,
+    playlists: List<PlaylistItem>,
+    isPlaylistsLoading: Boolean,
     isLoadingMore: Boolean,
+    onTabChange: (ChannelTab) -> Unit,
     onSortChange: (ChannelSortOption) -> Unit,
     onLoadMore: () -> Unit,
     onVideoClick: (VideoItem) -> Unit,
+    onPlaylistClick: ((playlistUrl: String, playlistTitle: String) -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     var isDescriptionExpanded by remember { mutableStateOf(false) }
@@ -442,83 +454,165 @@ private fun ChannelContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ChannelSortOption.entries.forEach { option ->
-                    val isSelected = option == selectedSort
+                ChannelTab.entries.forEach { tab ->
+                    val isSelected = tab == currentTab
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSelected) YouTubeRed else Color(0xFF1E1E1E))
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isSelected) Color(0xFF2E2E2E) else Color(0xFF161616))
                             .border(
                                 border = BorderStroke(
-                                    width = 0.5.dp,
-                                    color = if (isSelected) YouTubeRed else Color(0xFF333333)
+                                    width = 1.dp,
+                                    color = if (isSelected) YouTubeRed else Color.Transparent
                                 ),
-                                shape = RoundedCornerShape(50.dp)
+                                shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                onSortChange(option)
+                                onTabChange(tab)
                             }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .padding(horizontal = 18.dp, vertical = 8.dp)
                     ) {
                         Text(
-                            text = option.title,
+                            text = tab.title,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = Color.White
+                            color = if (isSelected) Color.White else Color(0xFFAAAAAA)
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-
-        if (videos.isEmpty()) {
-            item {
-                Box(
+            if (currentTab == ChannelTab.VIDEOS) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Tidak ada video yang ditemukan",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    ChannelSortOption.entries.forEach { option ->
+                        val isSelected = option == selectedSort
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(if (isSelected) YouTubeRed else Color(0xFF1E1E1E))
+                                .border(
+                                    border = BorderStroke(
+                                        width = 0.5.dp,
+                                        color = if (isSelected) YouTubeRed else Color(0xFF333333)
+                                    ),
+                                    shape = RoundedCornerShape(50.dp)
+                                )
+                                .clickable {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                    onSortChange(option)
+                                }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = option.title,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
-        } else {
-            items(
-                items = videos,
-                key = { it.id }
-            ) { video ->
-                VideoCard(
-                    video = video,
-                    onClick = { onVideoClick(video) }
-                )
-            }
 
-            if (isLoadingMore) {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
+        if (currentTab == ChannelTab.VIDEOS) {
+            if (videos.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Tidak ada video yang ditemukan",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                items(
+                    items = videos,
+                    key = { it.id }
+                ) { video ->
+                    VideoCard(
+                        video = video,
+                        onClick = { onVideoClick(video) }
+                    )
+                }
+
+                if (isLoadingMore) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = BrandRed,
+                                modifier = Modifier.size(28.dp),
+                                strokeWidth = 2.5.dp
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            if (isPlaylistsLoading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(40.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = BrandRed,
-                            modifier = Modifier.size(28.dp),
+                            color = YouTubeRed,
+                            modifier = Modifier.size(32.dp),
                             strokeWidth = 2.5.dp
                         )
                     }
+                }
+            } else if (playlists.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Channel ini belum memiliki playlist",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                items(
+                    items = playlists,
+                    key = { it.id }
+                ) { playlist ->
+                    PlaylistCard(
+                        playlist = playlist,
+                        onClick = { onPlaylistClick?.invoke(playlist.url, playlist.title) }
+                    )
                 }
             }
         }
