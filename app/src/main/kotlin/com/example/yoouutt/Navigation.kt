@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.ui.animation.YouTubeScreenTransitions
 import com.example.yoouutt.ui.channel.ChannelScreen
 import com.example.yoouutt.ui.common.BottomNavigationBar
@@ -110,8 +111,14 @@ fun MainNavigation() {
                     PlaylistScreen(
                         playlistUrl = key.playlistUrl,
                         playlistTitle = key.playlistTitle,
-                        onVideoClick = { video, _, _ ->
-                            playbackManager.playVideo(video.url, video.title, video.uploaderName)
+                        onVideoClick = { video, index, allVideos ->
+                            val playlistContext = PlaylistContext(
+                                playlistId = key.playlistUrl,
+                                playlistTitle = key.playlistTitle,
+                                videos = allVideos,
+                                currentIndex = index
+                            )
+                            playbackManager.playPlaylistVideo(playlistContext, index)
                             backStack.add(
                                 PlayerKey(
                                     videoUrl = video.url,

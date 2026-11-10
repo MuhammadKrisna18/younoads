@@ -53,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
 import com.example.yoouutt.LocalInPipMode
+import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
@@ -64,6 +65,7 @@ import com.example.yoouutt.ui.player.components.PlayerActionPillRow
 import com.example.yoouutt.ui.player.components.PlayerChannelHeader
 import com.example.yoouutt.ui.player.components.PlayerControlsOverlay
 import com.example.yoouutt.ui.player.components.PlayerDescriptionCard
+import com.example.yoouutt.ui.player.components.PlayerPlaylistBanner
 import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
 import com.example.yoouutt.ui.player.components.ShareBottomSheet
 import com.example.yoouutt.ui.theme.YouTubeRed
@@ -95,6 +97,7 @@ fun PlayerScreen(
     val availableResolutions by viewModel.availableResolutions.collectAsStateWithLifecycle()
     val isResolutionDialogVisible by viewModel.isResolutionDialogVisible.collectAsStateWithLifecycle()
     val isAmbientModeEnabled by viewModel.isAmbientModeEnabled.collectAsStateWithLifecycle()
+    val playlistContext by viewModel.playlistContext.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
@@ -164,6 +167,11 @@ fun PlayerScreen(
             isFullscreen = isEffectiveFullscreen,
             isInPipMode = isInPipMode,
             resolutionLabel = resolutionLabel,
+            hasPlaylist = playlistContext != null,
+            hasPrevious = (playlistContext?.currentIndex ?: 0) > 0,
+            hasNext = (playlistContext?.let { it.currentIndex + 1 < it.videos.size } ?: false),
+            onPreviousClick = viewModel::playPreviousInPlaylist,
+            onNextClick = viewModel::playNextInPlaylist,
             onBack = onBack,
             onToggleFullscreen = handleToggleFullscreen,
             modifier = videoBoxModifier
@@ -178,6 +186,7 @@ fun PlayerScreen(
                 currentTitle = currentTitle,
                 currentUploader = currentUploader,
                 streamData = streamData,
+                playlistContext = playlistContext,
                 isLiked = isLiked,
                 isSaved = isSaved,
                 isSubscribed = isSubscribed,
@@ -200,6 +209,7 @@ fun PlayerScreen(
                 onToggleFullscreen = handleToggleFullscreen,
                 onToggleSubscribe = viewModel::toggleSubscribe,
                 onToggleDescription = viewModel::toggleDescription,
+                onPlaylistVideoClick = viewModel::playPlaylistIndex,
                 onChannelClick = onChannelClick,
                 onRelatedVideoClick = { relVideo ->
                     viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
@@ -244,6 +254,11 @@ private fun VideoPlayerSection(
     isFullscreen: Boolean,
     isInPipMode: Boolean,
     resolutionLabel: String,
+    hasPlaylist: Boolean = false,
+    hasPrevious: Boolean = false,
+    hasNext: Boolean = false,
+    onPreviousClick: () -> Unit = {},
+    onNextClick: () -> Unit = {},
     onBack: () -> Unit,
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -344,7 +359,12 @@ private fun VideoPlayerSection(
                 onToggleFullscreen = onToggleFullscreen,
                 onResolutionClick = viewModel::showResolutionDialog,
                 onScrubbing = viewModel::onScrubbing,
-                onSeek = viewModel::seekTo
+                onSeek = viewModel::seekTo,
+                hasPlaylist = hasPlaylist,
+                hasPrevious = hasPrevious,
+                hasNext = hasNext,
+                onPreviousClick = onPreviousClick,
+                onNextClick = onNextClick
             )
 
             seekFeedback?.let { feedback ->
@@ -410,6 +430,7 @@ private fun PlayerDetailContent(
     currentTitle: String,
     currentUploader: String,
     streamData: StreamData?,
+    playlistContext: PlaylistContext? = null,
     isLiked: Boolean,
     isSaved: Boolean,
     isSubscribed: Boolean,
@@ -429,6 +450,7 @@ private fun PlayerDetailContent(
     onToggleFullscreen: () -> Unit,
     onToggleSubscribe: () -> Unit,
     onToggleDescription: () -> Unit,
+    onPlaylistVideoClick: ((Int) -> Unit)? = null,
     onChannelClick: ((channelUrl: String, channelName: String) -> Unit)?,
     onRelatedVideoClick: (VideoItem) -> Unit,
     modifier: Modifier = Modifier
@@ -476,6 +498,15 @@ private fun PlayerDetailContent(
                             )
                         }
                     }
+                }
+            }
+
+            if (playlistContext != null && playlistContext.videos.isNotEmpty()) {
+                item(key = "playlist_banner") {
+                    PlayerPlaylistBanner(
+                        playlistContext = playlistContext,
+                        onVideoClick = { index -> onPlaylistVideoClick?.invoke(index) }
+                    )
                 }
             }
 

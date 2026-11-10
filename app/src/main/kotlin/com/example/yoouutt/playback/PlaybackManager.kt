@@ -19,6 +19,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
+import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.model.WatchHistoryItem
@@ -73,6 +74,9 @@ class PlaybackManager(
     private val _availableResolutions = MutableStateFlow<List<VideoResolutionOption>>(emptyList())
     val availableResolutions: StateFlow<List<VideoResolutionOption>> = _availableResolutions.asStateFlow()
 
+    private val _playlistContext = MutableStateFlow<PlaylistContext?>(null)
+    val playlistContext: StateFlow<PlaylistContext?> = _playlistContext.asStateFlow()
+
     val exoPlayer: ExoPlayer = run {
         val httpDataSourceFactory = DefaultHttpDataSource.Factory()
             .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -118,6 +122,9 @@ class PlaybackManager(
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         _isBuffering.value = (playbackState == Player.STATE_BUFFERING)
                         if (playbackState == Player.STATE_ENDED) {
+                            if (_playlistContext.value != null && playNextInPlaylist()) {
+                                return
+                            }
                             _isPlaying.value = false
                             _isBuffering.value = false
                         }
@@ -157,7 +164,10 @@ class PlaybackManager(
             .build()
     }
 
-    fun playVideo(videoUrl: String, title: String, uploaderName: String) {
+    fun playVideo(videoUrl: String, title: String, uploaderName: String, clearPlaylist: Boolean = true) {
+        if (clearPlaylist) {
+            _playlistContext.value = null
+        }
         val current = _currentPlayback.value
         if (current?.videoUrl == videoUrl && exoPlayer.playbackState != Player.STATE_IDLE) {
             return
@@ -350,7 +360,39 @@ class PlaybackManager(
         }
     }
 
+    fun playPlaylistVideo(context: PlaylistContext, index: Int) {
+        if (index !in context.videos.indices) return
+        _playlistContext.value = context.copy(currentIndex = index)
+        val targetVideo = context.videos[index]
+        playVideo(targetVideo.url, targetVideo.title, targetVideo.uploaderName, clearPlaylist = false)
+    }
+
+    fun playNextInPlaylist(): Boolean {
+        val currentContext = _playlistContext.value ?: return false
+        val nextIndex = currentContext.currentIndex + 1
+        if (nextIndex in currentContext.videos.indices) {
+            playPlaylistVideo(currentContext, nextIndex)
+            return true
+        }
+        return false
+    }
+
+    fun playPreviousInPlaylist(): Boolean {
+        val currentContext = _playlistContext.value ?: return false
+        val prevIndex = currentContext.currentIndex - 1
+        if (prevIndex in currentContext.videos.indices) {
+            playPlaylistVideo(currentContext, prevIndex)
+            return true
+        }
+        return false
+    }
+
+    fun clearPlaylist() {
+        _playlistContext.value = null
+    }
+
     fun stop() {
+        _playlistContext.value = null
         saveProgress()
         try {
             context.stopService(Intent(context, PlaybackService::class.java))

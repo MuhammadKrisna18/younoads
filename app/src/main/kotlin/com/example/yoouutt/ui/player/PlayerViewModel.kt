@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.repository.WatchHistoryRepository
@@ -34,6 +35,20 @@ class PlayerViewModel(
     val exoPlayer: ExoPlayer get() = playbackManager.exoPlayer
     val currentResolution: StateFlow<VideoResolutionOption?> = playbackManager.currentResolution
     val availableResolutions: StateFlow<List<VideoResolutionOption>> = playbackManager.availableResolutions
+    val playlistContext: StateFlow<PlaylistContext?> = playbackManager.playlistContext
+
+    fun playNextInPlaylist() {
+        playbackManager.playNextInPlaylist()
+    }
+
+    fun playPreviousInPlaylist() {
+        playbackManager.playPreviousInPlaylist()
+    }
+
+    fun playPlaylistIndex(index: Int) {
+        val context = playlistContext.value ?: return
+        playbackManager.playPlaylistVideo(context, index)
+    }
 
     private val _isResolutionDialogVisible = MutableStateFlow(false)
     val isResolutionDialogVisible: StateFlow<Boolean> = _isResolutionDialogVisible.asStateFlow()

@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,6 +60,11 @@ fun BoxScope.PlayerControlsOverlay(
     onResolutionClick: () -> Unit,
     onScrubbing: (Boolean, Long) -> Unit,
     onSeek: (Long) -> Unit,
+    hasPlaylist: Boolean = false,
+    hasPrevious: Boolean = false,
+    hasNext: Boolean = false,
+    onPreviousClick: () -> Unit = {},
+    onNextClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -69,7 +76,6 @@ fun BoxScope.PlayerControlsOverlay(
         modifier = modifier.matchParentSize()
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Gradient backgrounds for top and bottom controls
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -94,7 +100,6 @@ fun BoxScope.PlayerControlsOverlay(
                     )
             )
 
-            // Top-left: Back / Minimize button
             IconButton(
                 onClick = onBackClick,
                 modifier = Modifier
@@ -112,7 +117,6 @@ fun BoxScope.PlayerControlsOverlay(
                 )
             }
 
-            // Top-right: Quick Quality Settings button
             if (currentResolutionText.isNotBlank()) {
                 IconButton(
                     onClick = {
@@ -135,43 +139,81 @@ fun BoxScope.PlayerControlsOverlay(
                 }
             }
 
-            // Center: Play / Pause button
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(54.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.6f))
-                    .clickable {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        onPlayPauseClick()
-                    },
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.align(Alignment.Center),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                if (isBuffering) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(28.dp),
-                        color = Color.White,
-                        strokeWidth = 2.5.dp
-                    )
-                } else {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
-                        tint = Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
+                if (hasPlaylist) {
+                    IconButton(
+                        onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            onPreviousClick()
+                        },
+                        enabled = hasPrevious,
+                        modifier = Modifier.size(46.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SkipPrevious,
+                            contentDescription = "Video Sebelumnya",
+                            tint = if (hasPrevious) Color.White else Color.White.copy(alpha = 0.35f),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(54.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .clickable {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            onPlayPauseClick()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isBuffering) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White,
+                            strokeWidth = 2.5.dp
+                        )
+                    } else {
+                        Icon(
+                            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = if (isPlaying) "Pause" else "Play",
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+
+                if (hasPlaylist) {
+                    IconButton(
+                        onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            onNextClick()
+                        },
+                        enabled = hasNext,
+                        modifier = Modifier.size(46.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SkipNext,
+                            contentDescription = "Video Berikutnya",
+                            tint = if (hasNext) Color.White else Color.White.copy(alpha = 0.35f),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                 }
             }
 
-            // Bottom controls: Interactive Seekbar + (Time & Quality/Fullscreen row)
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(bottom = 6.dp)
             ) {
-                // Interactive Seekbar
                 InteractiveSeekBar(
                     currentPositionMs = currentPositionMs,
                     bufferedPositionMs = bufferedPositionMs,
@@ -183,7 +225,6 @@ fun BoxScope.PlayerControlsOverlay(
                         .padding(horizontal = 10.dp)
                 )
 
-                // Bottom row: Time on left, Resolution badge & Fullscreen on right
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
