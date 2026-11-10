@@ -53,6 +53,13 @@ Tampilan gelap murni (Pure Dark AMOLED) dengan aksen merah YouTubeRed standar, h
 ### 12. Pembaruan Aplikasi Mandiri (In-App Updater)
 Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan antarmuka unduh dan pasang langsung.
 
+### 13. Playlist Resmi Saluran & Antrean Pemutaran (Official Playlists & Auto-Next)
+- **Tab Playlist Saluran**: Halaman saluran kreator menyediakan tab khusus untuk menjelajahi seluruh daftar putar (playlist) resmi yang dipublikasikan oleh kreator terkait.
+- **Tampilan Detail Playlist**: Menampilkan visual cover thumbnail resolusi tinggi, informasi total video, tombol aksi "Putar Semua" dan "Acak", serta daftar trek berurutan.
+- **Antrean Pemutar Interaktif (In-Player Queue Banner)**: Komponen banner expandable di bawah layar pemutar video yang menampilkan posisi video aktif, judul playlist, serta daftar trek yang dapat dipilih secara instan.
+- **Pemutaran Berkelanjutan (Auto-Next)**: Video berikutnya dalam daftar putar akan otomatis diputar saat video saat ini selesai diputar.
+- **Kontrol Navigasi Trek**: Tombol Lewati Berikutnya (Next) dan Lewati Sebelumnya (Previous) terintegrasi pada kontrol pemutar video saat playlist aktif.
+
 ---
 
 ## Informasi & Spesifikasi Teknis
@@ -86,7 +93,7 @@ Proyek ini menerapkan prinsip Clean Architecture yang dipadukan dengan pola arsi
 | Concurrency | Kotlin Coroutines & Asynchronous Flow (`StateFlow`, `SharedFlow`) |
 | Local Database | AndroidX Room 2.6.1 (SQLite ORM) |
 | Image Loading | Coil Compose 2.6.0 |
-| Metadata Extraction | NewPipeExtractor 0.27.0 |
+| Metadata Extraction | NewPipeExtractor 0.27.1 |
 | Dependency Management | Gradle Kotlin DSL dengan Version Catalog / Plugins Modern |
 | Build Tooling | Android Gradle Plugin 8.3+, R8 / ProGuard Optimization |
 
@@ -114,6 +121,12 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Release Automation** (`build-release.yml`): Setiap push tag versi (`v*`) secara otomatis memicu kompilasi release APK ter-sign di runner Ubuntu GitHub Actions dan mempublikasikan file binary APK ke GitHub Releases.
 - **Upstream Engine Checker** (`auto-check-newpipe.yml`): Pengecekan otomatis berkala terhadap update NewPipeExtractor di upstream repository untuk menjaga kompatibilitas parsing terhadap perubahan YouTube backend.
 
+#### 7. Ekstraksi Playlist Saluran, Caching LRU & Manajemen Antrean ExoPlayer
+- **Ekstraksi Tab Saluran**: Menggunakan `ChannelTabExtractor` dengan parameter `ChannelTabs.PLAYLISTS` dari NewPipeExtractor untuk menarik katalog playlist resmi dari halaman saluran kreator secara mandiri.
+- **Two-Tier LRU Caching**: Implementasi cache berbasis `LruCache` pada lapisan repositori (`channelPlaylistsCache` dan `playlistDetailsCache`) guna memangkas latensi jaringan dan waktu respon saat berpindah antar tab saluran atau membuka kembali playlist yang sama.
+- **PlaylistContext & State Transition**: Status antrean dikelola dalam immutable data model `PlaylistContext` pada `PlaybackManager`. Transisi trek otomatis diintegrasikan langsung ke lifecycle listener ExoPlayer (`onPlaybackStateChanged`), memicu `playNextInPlaylist()` tanpa beban memori berlebih saat pemutaran mencapai `Player.STATE_ENDED`.
+- **Dukungan Pengacakan Trek (Shuffle)**: Mekanisme pengacakan urutan trek saat aksi "Acak" dijalankan dengan tetap mempertahankan konsistensi referensi URL dan metadata orisinal.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -122,17 +135,18 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 app/src/main/kotlin/com/example/yoouutt/
 |-- data/
 |   |-- db/              # Room Database, DAO entities (History, Saved, Search)
-|   |-- model/           # Data classes & domain models (StreamData, VideoItem)
-|   |-- repository/      # Abstraksi repositori data & integrasi NewPipe
-|-- service/             # AndroidX Media3 Player Service & Background playback
+|   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData)
+|   |-- repository/      # Abstraksi repositori data & integrasi NewPipe (LRU Cache)
+|-- playback/            # PlaybackManager, PlaybackService & MediaSession
 |-- ui/
-|   |-- channel/         # Tampilan profil saluran & video kreator
+|   |-- channel/         # Profil saluran, Tab Video & Tab Playlist (PlaylistCard)
 |   |-- common/          # Komponen UI global (AppConfirmDialog, ViewModels)
 |   |-- feed/            # Tampilan beranda & daftar video
 |   |-- history/         # Tampilan riwayat tontonan & aksi kelola
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
 |   |-- player/          # Tampilan utama pemutar video
-|   |   |-- components/  # Sub-komponen (ControlsOverlay, Scrubber, AmbientGlow)
+|   |   |-- components/  # Sub-komponen (ControlsOverlay, Scrubber, AmbientGlow, PlayerPlaylistBanner)
+|   |-- playlist/        # Tampilan detail playlist saluran (PlaylistScreen, PlaylistViewModel)
 |   |-- search/          # Antarmuka pencarian & saran kata kunci
 |   |-- theme/           # Tema Material 3, Warna (YouTubeRed), Tipografi
 |-- util/                # Format teks, helper orientasi, parser URL
