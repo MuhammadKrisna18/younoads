@@ -2,7 +2,8 @@ package com.example.yoouutt.ui.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.data.model.FeedItem
+import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.SearchHistoryRepository
 import com.example.yoouutt.data.repository.VideoRepository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory
 
 class FeedViewModel(
     private val repository: VideoRepository,
@@ -23,6 +25,7 @@ class FeedViewModel(
 ) : ViewModel() {
 
     private val defaultCategories = listOf("Musik", "Gaming", "Berita", "Podcast", "Teknologi", "Film", "Anime")
+    private val searchFilterCategories = listOf("Semua", "Video", "Playlist")
 
     private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
@@ -43,25 +46,39 @@ class FeedViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private var currentHistory: List<WatchHistoryItem> = emptyList()
+    private var currentPlaylists: List<PlaylistItem> = emptyList()
     private var suggestionJob: Job? = null
 
     init {
         viewModelScope.launch {
+            historyRepository.getWatchedPlaylists().collect { playlists ->
+                currentPlaylists = playlists
+            }
+        }
+        viewModelScope.launch {
             historyRepository.getHistory().collect { history ->
                 val wasEmpty = currentHistory.isEmpty()
                 currentHistory = history
-                val watchedChannels = history
-                    .map { it.uploaderName }
-                    .filter { it.isNotBlank() }
-                    .distinct()
-                    .take(6)
-                _categories.value = (listOf("Semua", "Trending") + watchedChannels + defaultCategories).distinct()
+                updateHomeCategories()
                 if (wasEmpty && history.isNotEmpty() && _selectedCategory.value == "Semua" && _searchQuery.value.isEmpty()) {
                     loadHomeFeed()
                 }
             }
         }
         loadHomeFeed()
+    }
+
+    private fun updateHomeCategories() {
+        if (_searchQuery.value.isNotEmpty()) {
+            _categories.value = searchFilterCategories
+            return
+        }
+        val watchedChannels = currentHistory
+            .map { it.uploaderName }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .take(6)
+        _categories.value = (listOf("Semua", "Trending") + watchedChannels + defaultCategories).distinct()
     }
 
     fun onQueryChanged(newQuery: String) {
@@ -71,6 +88,7 @@ class FeedViewModel(
         if (trimmed.isBlank()) {
             _searchSuggestions.value = emptyList()
             _selectedCategory.value = "Semua"
+            updateHomeCategories()
         } else {
             suggestionJob = viewModelScope.launch {
                 delay(250)
@@ -99,6 +117,15 @@ class FeedViewModel(
 
     fun selectCategory(category: String) {
         _selectedCategory.value = category
+        if (_searchQuery.value.isNotBlank()) {
+            val filter = when (category) {
+                "Video" -> YoutubeSearchQueryHandlerFactory.VIDEOS
+                "Playlist" -> YoutubeSearchQueryHandlerFactory.PLAYLISTS
+                else -> null
+            }
+            search(_searchQuery.value, filter)
+            return
+        }
         when (category) {
             "Semua" -> {
                 _searchQuery.value = ""
@@ -119,11 +146,13 @@ class FeedViewModel(
         suggestionJob?.cancel()
         _searchSuggestions.value = emptyList()
         _selectedCategory.value = "Semua"
+        _searchQuery.value = ""
+        updateHomeCategories()
         _uiState.value = FeedUiState.Loading
         viewModelScope.launch {
-            repository.getPersonalizedFeed(currentHistory)
-                .onSuccess { videos ->
-                    _uiState.value = FeedUiState.Success(videos)
+            repository.getPersonalizedFeed(currentHistory, currentPlaylists)
+                .onSuccess { items ->
+                    _uiState.value = FeedUiState.Success(items)
                 }
                 .onFailure { throwable ->
                     _uiState.value = FeedUiState.Error(throwable.localizedMessage ?: "Gagal memuat video")
@@ -135,11 +164,13 @@ class FeedViewModel(
         suggestionJob?.cancel()
         _searchSuggestions.value = emptyList()
         _selectedCategory.value = "Trending"
+        _searchQuery.value = ""
+        updateHomeCategories()
         _uiState.value = FeedUiState.Loading
         viewModelScope.launch {
             repository.getTrendingVideos()
                 .onSuccess { videos ->
-                    _uiState.value = FeedUiState.Success(videos)
+                    _uiState.value = FeedUiState.Success(videos.map { FeedItem.Video(it) })
                 }
                 .onFailure { throwable ->
                     _uiState.value = FeedUiState.Error(throwable.localizedMessage ?: "Gagal memuat trending")
@@ -147,7 +178,7 @@ class FeedViewModel(
         }
     }
 
-    fun search(targetQuery: String? = null) {
+    fun search(targetQuery: String? = null, filter: String? = null) {
         suggestionJob?.cancel()
         _searchSuggestions.value = emptyList()
         val query = (targetQuery ?: _searchQuery.value).trim()
@@ -159,15 +190,20 @@ class FeedViewModel(
             return
         }
 
+        if (filter == null) {
+            _selectedCategory.value = "Semua"
+        }
+        _categories.value = searchFilterCategories
+
         viewModelScope.launch {
             searchHistoryRepository.saveSearchQuery(query)
         }
 
         _uiState.value = FeedUiState.Loading
         viewModelScope.launch {
-            repository.searchVideos(query)
-                .onSuccess { videos ->
-                    _uiState.value = FeedUiState.Success(videos)
+            repository.search(query, filter)
+                .onSuccess { items ->
+                    _uiState.value = FeedUiState.Success(items)
                 }
                 .onFailure { throwable ->
                     _uiState.value = FeedUiState.Error(throwable.localizedMessage ?: "Pencarian gagal")

@@ -58,6 +58,9 @@ fun MainNavigation() {
                         },
                         onChannelClick = { url, name ->
                             backStack.add(ChannelKey(url, name))
+                        },
+                        onPlaylistClick = { playlistUrl, playlistTitle ->
+                            backStack.add(PlaylistKey(playlistUrl, playlistTitle))
                         }
                     )
                 }

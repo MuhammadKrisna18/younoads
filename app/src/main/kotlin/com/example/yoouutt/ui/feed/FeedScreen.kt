@@ -72,7 +72,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.ui.channel.PlaylistCard
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
@@ -89,6 +91,7 @@ fun FeedScreen(
     onVideoClick: (VideoItem) -> Unit,
     onHistoryClick: () -> Unit,
     onChannelClick: (channelUrl: String, channelName: String) -> Unit,
+    onPlaylistClick: (playlistUrl: String, playlistTitle: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FeedViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -401,9 +404,9 @@ fun FeedScreen(
                     }
 
                     is FeedUiState.Success -> {
-                        if (state.videos.isEmpty()) {
+                        if (state.items.isEmpty()) {
                             Text(
-                                text = "No videos found",
+                                text = "Tidak ada hasil ditemukan",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.align(Alignment.Center)
@@ -414,14 +417,24 @@ fun FeedScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 items(
-                                    items = state.videos,
+                                    items = state.items,
                                     key = { it.id }
-                                ) { video ->
-                                    VideoCard(
-                                        video = video,
-                                        onClick = { onVideoClick(video) },
-                                        onChannelClick = onChannelClick
-                                    )
+                                ) { feedItem ->
+                                    when (feedItem) {
+                                        is FeedItem.Video -> {
+                                            VideoCard(
+                                                video = feedItem.video,
+                                                onClick = { onVideoClick(feedItem.video) },
+                                                onChannelClick = onChannelClick
+                                            )
+                                        }
+                                        is FeedItem.Playlist -> {
+                                            PlaylistCard(
+                                                playlist = feedItem.playlist,
+                                                onClick = { onPlaylistClick(feedItem.playlist.url, feedItem.playlist.title) }
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

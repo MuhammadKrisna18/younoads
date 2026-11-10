@@ -20,6 +20,7 @@ import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.data.model.PlaylistContext
+import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.model.WatchHistoryItem
@@ -364,6 +365,17 @@ class PlaybackManager(
         if (index !in context.videos.indices) return
         _playlistContext.value = context.copy(currentIndex = index)
         val targetVideo = context.videos[index]
+        scope.launch {
+            val playlistItem = PlaylistItem(
+                id = context.playlistId,
+                url = context.playlistId,
+                title = context.playlistTitle,
+                thumbnailUrl = targetVideo.thumbnailUrl,
+                uploaderName = targetVideo.uploaderName,
+                streamCount = context.videos.size.toLong()
+            )
+            historyRepository.saveWatchedPlaylist(playlistItem)
+        }
         playVideo(targetVideo.url, targetVideo.title, targetVideo.uploaderName, clearPlaylist = false)
     }
 

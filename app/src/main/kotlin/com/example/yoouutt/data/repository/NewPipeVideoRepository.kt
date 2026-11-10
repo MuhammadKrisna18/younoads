@@ -2,6 +2,7 @@ package com.example.yoouutt.data.repository
 
 import android.util.LruCache
 import com.example.yoouutt.data.model.ChannelData
+import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.PlaylistData
 import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
@@ -102,6 +103,29 @@ class NewPipeVideoRepository(
                 .filterIsInstance<StreamInfoItem>()
                 .map { it.toVideoItem() }
                 .distinctBy { it.id }
+        }
+    }
+
+    override suspend fun search(query: String, filter: String?): Result<List<FeedItem>> = withContext(ioDispatcher) {
+        runCatching {
+            val trimmed = query.trim()
+            if (trimmed.isBlank()) return@runCatching emptyList()
+
+            val searchExtractor = if (!filter.isNullOrBlank()) {
+                ServiceList.YouTube.getSearchExtractor(trimmed, listOf(filter), null)
+            } else {
+                ServiceList.YouTube.getSearchExtractor(trimmed)
+            }
+            searchExtractor.fetchPage()
+            val initialPage = searchExtractor.initialPage
+            val list = mutableListOf<FeedItem>()
+            for (item in initialPage.items) {
+                when (item) {
+                    is StreamInfoItem -> list.add(FeedItem.Video(item.toVideoItem()))
+                    is PlaylistInfoItem -> list.add(FeedItem.Playlist(item.toPlaylistItem()))
+                }
+            }
+            list.distinctBy { it.id }
         }
     }
 
@@ -474,17 +498,23 @@ class NewPipeVideoRepository(
         }
     }
 
-    override suspend fun getPersonalizedFeed(watchedVideos: List<WatchHistoryItem>): Result<List<VideoItem>> = withContext(ioDispatcher) {
+    override suspend fun getPersonalizedFeed(
+        watchedVideos: List<WatchHistoryItem>,
+        watchedPlaylists: List<PlaylistItem>
+    ): Result<List<FeedItem>> = withContext(ioDispatcher) {
         runCatching {
-            if (watchedVideos.isEmpty()) {
-                return@runCatching getTrendingVideos().getOrThrow()
+            if (watchedVideos.isEmpty() && watchedPlaylists.isEmpty()) {
+                return@runCatching getTrendingVideos().getOrThrow().map { FeedItem.Video(it) }
             }
 
             coroutineScope {
                 val watchedChannels = watchedVideos
-                    .map { it.uploaderName }
+                    .groupingBy { it.uploaderName }
+                    .eachCount()
+                    .entries
+                    .sortedByDescending { it.value }
+                    .map { it.key }
                     .filter { it.isNotBlank() }
-                    .distinct()
                     .take(4)
 
                 val recentVideoUrls = watchedVideos
@@ -506,38 +536,68 @@ class NewPipeVideoRepository(
                     }
                 }
 
+                val playlistDeferreds = watchedChannels.take(2).map { channel ->
+                    async {
+                        getChannelPlaylists(channel).getOrNull().orEmpty().take(2)
+                    }
+                }
+
                 val trendingDeferred = async {
                     getTrendingVideos().getOrNull().orEmpty()
                 }
 
                 val channelVideos = channelDeferreds.awaitAll().flatten()
+                val channelPlaylists = playlistDeferreds.awaitAll().flatten()
                 val trendingVideos = trendingDeferred.await()
 
-                val seenIds = mutableSetOf<String>()
-                val candidateList = (relatedCandidates + channelVideos).filter { seenIds.add(it.id) }
-                val trendingList = trendingVideos.filter { seenIds.add(it.id) }
+                val seenVideoIds = mutableSetOf<String>()
+                val candidateList = (relatedCandidates + channelVideos).filter { seenVideoIds.add(it.id) }
+                val trendingList = trendingVideos.filter { seenVideoIds.add(it.id) }
 
-                val finalFeed = mutableListOf<VideoItem>()
+                val relevantPlaylists = (watchedPlaylists + channelPlaylists).distinctBy { it.id }
+                val playlistQueue = ArrayDeque(relevantPlaylists)
+
                 val candidateQueue = ArrayDeque(candidateList)
                 val trendingQueue = ArrayDeque(trendingList)
+                val finalFeed = mutableListOf<FeedItem>()
 
+                var videoCounter = 0
                 while (candidateQueue.isNotEmpty() || trendingQueue.isNotEmpty()) {
                     repeat(2) {
                         if (candidateQueue.isNotEmpty()) {
-                            finalFeed.add(candidateQueue.removeFirst())
+                            finalFeed.add(FeedItem.Video(candidateQueue.removeFirst()))
+                            videoCounter++
                         }
                     }
+                    if (videoCounter in 1..2 && playlistQueue.isNotEmpty()) {
+                        finalFeed.add(FeedItem.Playlist(playlistQueue.removeFirst()))
+                    }
                     if (trendingQueue.isNotEmpty()) {
-                        finalFeed.add(trendingQueue.removeFirst())
+                        finalFeed.add(FeedItem.Video(trendingQueue.removeFirst()))
+                        videoCounter++
+                    }
+                    if (videoCounter >= 4 && playlistQueue.isNotEmpty()) {
+                        finalFeed.add(FeedItem.Playlist(playlistQueue.removeFirst()))
+                        videoCounter = 0
                     }
                     if (candidateQueue.isEmpty() && trendingQueue.isNotEmpty()) {
-                        finalFeed.addAll(trendingQueue)
-                        trendingQueue.clear()
+                        while (trendingQueue.isNotEmpty()) {
+                            finalFeed.add(FeedItem.Video(trendingQueue.removeFirst()))
+                            videoCounter++
+                            if (videoCounter >= 4 && playlistQueue.isNotEmpty()) {
+                                finalFeed.add(FeedItem.Playlist(playlistQueue.removeFirst()))
+                                videoCounter = 0
+                            }
+                        }
                     }
                 }
 
+                while (playlistQueue.isNotEmpty()) {
+                    finalFeed.add(FeedItem.Playlist(playlistQueue.removeFirst()))
+                }
+
                 if (finalFeed.isEmpty()) {
-                    trendingVideos
+                    trendingVideos.map { FeedItem.Video(it) }
                 } else {
                     finalFeed
                 }

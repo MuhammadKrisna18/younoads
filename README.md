@@ -56,6 +56,8 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 ### 13. Playlist Resmi Saluran & Antrean Pemutaran (Official Playlists & Auto-Next)
 - **Tab Playlist Saluran**: Halaman saluran kreator menyediakan tab khusus untuk menjelajahi seluruh daftar putar (playlist) resmi yang dipublikasikan oleh kreator terkait.
 - **Tampilan Detail Playlist**: Menampilkan visual cover thumbnail resolusi tinggi, informasi total video, tombol aksi "Putar Semua" dan "Acak", serta daftar trek berurutan.
+- **Penemuan di Hasil Pencarian (Search Discovery & Filter)**: Playlist resmi YouTube tampil berdampingan dengan video pada hasil pencarian, lengkap dengan filter chip interaktif ("Semua", "Video", "Playlist") untuk penelusuran terfokus.
+- **Rekomendasi Cerdas di Beranda (Personalized Home Feed)**: Beranda ("Semua") secara adaptif menampilkan kartu playlist resmi dari saluran kreator yang sering ditonton atau playlist yang pernah ditonton sebelumnya, diselipkan secara harmonis di antara video rekomendasi.
 - **Antrean Pemutar Interaktif (In-Player Queue Banner)**: Komponen banner expandable di bawah layar pemutar video yang menampilkan posisi video aktif, judul playlist, serta daftar trek yang dapat dipilih secara instan.
 - **Pemutaran Berkelanjutan (Auto-Next)**: Video berikutnya dalam daftar putar akan otomatis diputar saat video saat ini selesai diputar.
 - **Kontrol Navigasi Trek**: Tombol Lewati Berikutnya (Next) dan Lewati Sebelumnya (Previous) terintegrasi pada kontrol pemutar video saat playlist aktif.
@@ -123,6 +125,8 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 
 #### 7. Ekstraksi Playlist Saluran, Caching LRU & Manajemen Antrean ExoPlayer
 - **Ekstraksi Tab Saluran**: Menggunakan `ChannelTabExtractor` dengan parameter `ChannelTabs.PLAYLISTS` dari NewPipeExtractor untuk menarik katalog playlist resmi dari halaman saluran kreator secara mandiri.
+- **Pencarian Terpadu & Filter Konten**: Mengintegrasikan `YoutubeSearchQueryHandlerFactory.PLAYLISTS` dan `YoutubeSearchQueryHandlerFactory.VIDEOS` sehingga hasil pencarian dapat menyajikan video dan playlist dalam hierarki polimorfik `FeedItem` dengan filter chip dinamis.
+- **Rekomendasi Beranda Adaptif**: Menghubungkan frekuensi riwayat tontonan kreator dan tabel `watched_playlists` SQLite ke algoritma `getPersonalizedFeed`, secara cerdas menyisipkan kartu playlist relevan ke dalam antrean beranda pengguna.
 - **Two-Tier LRU Caching**: Implementasi cache berbasis `LruCache` pada lapisan repositori (`channelPlaylistsCache` dan `playlistDetailsCache`) guna memangkas latensi jaringan dan waktu respon saat berpindah antar tab saluran atau membuka kembali playlist yang sama.
 - **PlaylistContext & State Transition**: Status antrean dikelola dalam immutable data model `PlaylistContext` pada `PlaybackManager`. Transisi trek otomatis diintegrasikan langsung ke lifecycle listener ExoPlayer (`onPlaybackStateChanged`), memicu `playNextInPlaylist()` tanpa beban memori berlebih saat pemutaran mencapai `Player.STATE_ENDED`.
 - **Dukungan Pengacakan Trek (Shuffle)**: Mekanisme pengacakan urutan trek saat aksi "Acak" dijalankan dengan tetap mempertahankan konsistensi referensi URL dan metadata orisinal.
@@ -134,14 +138,14 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 ```
 app/src/main/kotlin/com/example/yoouutt/
 |-- data/
-|   |-- db/              # Room Database, DAO entities (History, Saved, Search)
-|   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData)
+|   |-- local/           # SQLite Database, Repositori Riwayat Tontonan & Playlist
+|   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData, FeedItem)
 |   |-- repository/      # Abstraksi repositori data & integrasi NewPipe (LRU Cache)
 |-- playback/            # PlaybackManager, PlaybackService & MediaSession
 |-- ui/
 |   |-- channel/         # Profil saluran, Tab Video & Tab Playlist (PlaylistCard)
 |   |-- common/          # Komponen UI global (AppConfirmDialog, ViewModels)
-|   |-- feed/            # Tampilan beranda & daftar video
+|   |-- feed/            # Tampilan beranda & daftar video / playlist
 |   |-- history/         # Tampilan riwayat tontonan & aksi kelola
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
 |   |-- player/          # Tampilan utama pemutar video
