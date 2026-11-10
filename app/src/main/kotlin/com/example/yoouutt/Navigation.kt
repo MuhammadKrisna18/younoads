@@ -20,6 +20,7 @@ import com.example.yoouutt.ui.feed.FeedScreen
 import com.example.yoouutt.ui.history.HistoryScreen
 import com.example.yoouutt.ui.player.InAppPipPlayer
 import com.example.yoouutt.ui.player.PlayerScreen
+import com.example.yoouutt.ui.playlist.PlaylistScreen
 
 @Composable
 fun MainNavigation() {
@@ -98,6 +99,29 @@ fun MainNavigation() {
                                     uploader = video.uploaderName
                                 )
                             )
+                        },
+                        onPlaylistClick = { playlistUrl, playlistTitle ->
+                            backStack.add(PlaylistKey(playlistUrl, playlistTitle))
+                        },
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+                entry<PlaylistKey> { key ->
+                    PlaylistScreen(
+                        playlistUrl = key.playlistUrl,
+                        playlistTitle = key.playlistTitle,
+                        onVideoClick = { video, _, _ ->
+                            playbackManager.playVideo(video.url, video.title, video.uploaderName)
+                            backStack.add(
+                                PlayerKey(
+                                    videoUrl = video.url,
+                                    title = video.title,
+                                    uploader = video.uploaderName
+                                )
+                            )
+                        },
+                        onChannelClick = { url, name ->
+                            backStack.add(ChannelKey(url, name))
                         },
                         onBack = { backStack.removeLastOrNull() }
                     )

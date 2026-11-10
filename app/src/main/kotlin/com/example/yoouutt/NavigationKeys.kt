@@ -21,3 +21,9 @@ data class ChannelKey(
     val channelUrl: String,
     val channelName: String
 ) : NavKey
+
+@Serializable
+data class PlaylistKey(
+    val playlistUrl: String,
+    val playlistTitle: String = ""
+) : NavKey

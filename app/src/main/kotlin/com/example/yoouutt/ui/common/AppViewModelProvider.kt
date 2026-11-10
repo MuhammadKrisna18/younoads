@@ -7,6 +7,7 @@ import com.example.yoouutt.ui.channel.ChannelViewModel
 import com.example.yoouutt.ui.feed.FeedViewModel
 import com.example.yoouutt.ui.history.HistoryViewModel
 import com.example.yoouutt.ui.player.PlayerViewModel
+import com.example.yoouutt.ui.playlist.PlaylistViewModel
 
 object AppViewModelProvider {
     val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -26,6 +27,8 @@ object AppViewModelProvider {
                     HistoryViewModel(container.historyRepository) as T
                 modelClass.isAssignableFrom(PlayerViewModel::class.java) ->
                     PlayerViewModel(container.playbackManager, container.historyRepository) as T
+                modelClass.isAssignableFrom(PlaylistViewModel::class.java) ->
+                    PlaylistViewModel(container.videoRepository) as T
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
         }
