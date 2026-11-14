@@ -15,7 +15,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import com.example.yoouutt.ui.common.CyberpunkAppBackground
 import com.example.yoouutt.ui.theme.YoouuttTheme
 
 val LocalInPipMode = staticCompositionLocalOf { false }
@@ -34,11 +36,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             CompositionLocalProvider(LocalInPipMode provides inPipModeState.value) {
                 YoouuttTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        MainNavigation()
+                    CyberpunkAppBackground {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = Color.Transparent
+                        ) {
+                            MainNavigation()
+                        }
                     }
                 }
             }

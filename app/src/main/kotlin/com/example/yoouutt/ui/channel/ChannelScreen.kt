@@ -77,6 +77,7 @@ import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandRed
+import com.example.yoouutt.ui.theme.DarkBackground
 import com.example.yoouutt.ui.theme.YouTubeRed
 import com.example.yoouutt.ui.feed.VideoCard
 import com.example.yoouutt.ui.feed.VideoCardSkeleton
@@ -110,7 +111,7 @@ fun ChannelScreen(
 
     Scaffold(
         modifier = modifier,
-        containerColor = Color.Black,
+        containerColor = Color.Transparent,
         topBar = {
             if (!isSearchOpen) {
                 TopAppBar(
@@ -143,14 +144,14 @@ fun ChannelScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Black
+                        containerColor = Color.Transparent
                     )
                 )
             } else {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.Black)
+                        .background(DarkBackground.copy(alpha = 0.90f))
                         .height(56.dp)
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically

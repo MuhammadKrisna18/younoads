@@ -101,7 +101,6 @@ fun ShareBottomSheet(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 32.dp)
         ) {
-            // Header: Title
             Text(
                 text = "Bagikan Video",
                 color = Color.White,
@@ -122,7 +121,6 @@ fun ShareBottomSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // URL Preview Box with Quick Copy Button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,7 +172,6 @@ fun ShareBottomSheet(
                 }
             }
 
-            // Timestamp toggle row if available
             if (hasValidTimestamp) {
                 Spacer(modifier = Modifier.height(14.dp))
                 Row(
@@ -242,7 +239,6 @@ fun ShareBottomSheet(
                 modifier = Modifier.padding(vertical = 14.dp)
             )
 
-            // Primary Share Action Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -287,7 +283,6 @@ fun ShareBottomSheet(
                 }
             }
 
-            // Copy Link Option Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

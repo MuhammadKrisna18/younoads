@@ -5,15 +5,8 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.Locale
 
-/**
- * Utilitas pemformatan teks, durasi, tanggal, dan angka views/subscribers
- * untuk standarisasi tampilan bergaya YouTube Bahasa Indonesia di seluruh aplikasi.
- */
 object TextFormatters {
 
-    /**
-     * Membersihkan tag HTML dari teks deskripsi video.
-     */
     fun cleanHtmlDescription(raw: String): String {
         if (raw.isBlank()) return ""
         return try {
@@ -23,9 +16,6 @@ object TextFormatters {
         }
     }
 
-    /**
-     * Memformat durasi (dalam detik) ke format m:ss atau H:mm:ss.
-     */
     fun formatDuration(durationSeconds: Long): String {
         if (durationSeconds <= 0) return ""
         val hours = durationSeconds / 3600
@@ -38,9 +28,6 @@ object TextFormatters {
         }
     }
 
-    /**
-     * Memformat durasi dalam milidetik ke format mm:ss atau H:mm:ss.
-     */
     fun formatTimeMs(timeMs: Long): String {
         val totalSeconds = (timeMs / 1000).coerceAtLeast(0)
         val hours = totalSeconds / 3600
@@ -53,9 +40,6 @@ object TextFormatters {
         }
     }
 
-    /**
-     * Memformat jumlah penayangan (views) ke format lokal ringkas (contoh: 12 rb x, 1.5 jt x).
-     */
     fun formatViewCount(views: Long): String {
         if (views <= 0) return ""
         return when {
@@ -78,9 +62,6 @@ object TextFormatters {
         }
     }
 
-    /**
-     * Memformat jumlah subscribers channel (contoh: 120 rb subscriber, 1.2 jt subscriber).
-     */
     fun formatSubscriberCount(subscribers: Long): String {
         if (subscribers <= 0) return ""
         return when {
@@ -98,9 +79,6 @@ object TextFormatters {
         }
     }
 
-    /**
-     * Memformat tanggal unggah dari epoch millis atau string tekstual.
-     */
     fun formatUploadDate(uploadDateMillis: Long?, textualDate: String?): String {
         if (uploadDateMillis != null && uploadDateMillis > 0L) {
             val relative = formatRelativeTime(uploadDateMillis)
@@ -125,9 +103,6 @@ object TextFormatters {
         return translateEnglishRelativeDate(rawText)
     }
 
-    /**
-     * Menghitung dan memformat waktu relatif dari epoch millis ke Bahasa Indonesia.
-     */
     fun formatRelativeTime(millis: Long): String {
         if (millis <= 0L) return ""
         val diff = System.currentTimeMillis() - millis
@@ -152,9 +127,6 @@ object TextFormatters {
         }
     }
 
-    /**
-     * Menerjemahkan istilah tanggal relatif bahasa Inggris dari YouTube ke Bahasa Indonesia.
-     */
     fun translateEnglishRelativeDate(text: String): String {
         var result = text
         val replacements = listOf(
@@ -183,9 +155,6 @@ object TextFormatters {
         return result.trim()
     }
 
-    /**
-     * Mengubah tanggal tekstual relatif (contoh: "2 hours ago" atau "3 hari lalu") menjadi perkiraan epoch millis.
-     */
     fun parseTextualDateToMillis(text: String): Long {
         if (text.isBlank()) return 0L
         val now = System.currentTimeMillis()

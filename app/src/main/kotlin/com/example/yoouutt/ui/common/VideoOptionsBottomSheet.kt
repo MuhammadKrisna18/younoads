@@ -80,7 +80,6 @@ fun VideoOptionsBottomSheet(
                 .fillMaxWidth()
                 .padding(bottom = 28.dp)
         ) {
-            // Video Header info
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,7 +130,6 @@ fun VideoOptionsBottomSheet(
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            // Option 1: Salin Tautan
             OptionRowItem(
                 icon = Icons.Outlined.ContentCopy,
                 title = "Salin Tautan",
@@ -143,7 +141,6 @@ fun VideoOptionsBottomSheet(
                 }
             )
 
-            // Option 2: Bagikan Video
             OptionRowItem(
                 icon = Icons.Outlined.Share,
                 title = "Bagikan Video",
@@ -155,7 +152,6 @@ fun VideoOptionsBottomSheet(
                 }
             )
 
-            // Option 3: Buka Channel
             if (video.uploaderName.isNotBlank() && onChannelClick != null) {
                 val targetChannelUrl = video.uploaderUrl.ifBlank { video.uploaderName }
                 OptionRowItem(

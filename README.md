@@ -49,6 +49,7 @@ Pilihan resolusi adaptif (mulai dari resolusi hemat kuota hingga Full HD) dan pe
 
 ### 11. Desain Tema Cyberpunk Neo-Tokyo & Maskot Anime ("Youno-chan")
 - **Estetika Neo-Tokyo AMOLED**: Latar belakang hitam pekat murni (Pure Void Black `#08080C`) dengan aksen pendaran Electric Cyan (`#00F0FF`) dan Neon Magenta (`#FF2A85`) yang hemat daya OLED dan futuristik.
+- **Holographic Watermark Backdrop di Semua Halaman**: Latar belakang karakter anime maskot "Youno-chan" dalam format 9:16 vertikal (`youno_backdrop.webp`) dengan opasitas watermark halus (~16%) dipadukan dengan gradien vignette gelap di seluruh halaman (Beranda, Riwayat, Saluran, Playlist, dan Pemutar Video).
 - **Maskot Resmi Bebas Lisensi (Youno-chan)**: Kehadiran karakter anime cewek bertema cyberpunk dengan headphone audio futuristik pada header brand dan indikator status layar.
 - **Empty States Berkarakter**: Halaman riwayat tontonan kosong dan pencarian tidak ditemukan diperkaya ilustrasi ekspresif Youno-chan dalam format WebP teroptimasi.
 - **Scrubber & Ambient Glow Spektral**: Garis waktu video menggunakan gradien horizontal neon dengan pendaran spektral radial di sekeliling pemutar video.
@@ -136,8 +137,13 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 
 #### 8. Sistem Desain Cyberpunk Neon & Manajemen Aset Maskot WebP
 - **Palet Warna Spektral Berkontras Tinggi**: Menerapkan arsitektur tema Material 3 terpersonalisasi dengan token warna `NeonMagenta` (`#FF2A85`), `ElectricCyan` (`#00F0FF`), dan `CyberViolet` (`#9D4EDD`) di atas kanvas hitam pekat (`#08080C`), memaksimalkan efisiensi rasio kontras visual dan masa pakai baterai layar OLED/AMOLED.
-- **Integrasi Maskot Bebas Lisensi ("Youno-chan")**: Menyematkan ilustrasi maskot dalam format WebP dengan kompresi multi-level ke dalam komponen `BrandLogo`, status pencarian kosong (`youno_search_empty`), dan status riwayat kosong (`youno_empty_history`) tanpa memperbesar ukuran binary APK.
+- **Integrasi Maskot Bebas Lisensi ("Youno-chan")**: Menyematkan ilustrasi maskot dalam format WebP dengan kompresi multi-level ke dalam komponen `BrandLogo`, status pencarian kosong (`youno_search_empty`), status riwayat kosong (`youno_empty_history`), dan latar belakang aplikasi global (`youno_backdrop.webp`) tanpa memperbesar ukuran binary APK.
 - **Pendaran Ambien Spektral Real-Time**: Merombak kalkulasi radial dan linear gradient pada `AmbientGlow` dan `InteractiveSeekBar` sehingga transisi seekbar dan bayangan panggung pemutar memancarkan aksen gradien neon yang halus.
+
+#### 9. Arsitektur CyberpunkAppBackground & Holographic Backdrop Layering
+- **Centralized Wrapper Layering**: Mengimplementasikan komponen pembungkus terpusat `CyberpunkAppBackground` pada hierarki root aplikasi di `MainActivity`. Komponen ini menyatukan kanvas dasar `DarkBackground`, layer gambar vektor/bitmap WebP dengan opasitas watermark (~16%), gradien vertikal quad-stop untuk proteksi kontras status bar dan bottom bar, serta vignette radial halus.
+- **Transparansi Selektif pada Scaffolding**: Seluruh kontainer halaman (`FeedScreen`, `HistoryScreen`, `ChannelScreen`, `PlaylistScreen`, dan bagian bawah `PlayerScreen`) dikonfigurasi menggunakan `containerColor = Color.Transparent`, memungkinkan efek parallax halus saat daftar video digulir di atas latar belakang watermark yang statis tanpa penalti beban rendering grafis tambahan.
+- **Isolasi Pemutar Video**: Area pemutaran video (`VideoPlayerSection`) tetap mempertahankan latar belakang hitam absolut (`Color.Black`) guna menjamin rasio kontras pemutaran video 16:9 dan mode layar penuh (fullscreen) tanpa distorsi visual.
 
 ---
 

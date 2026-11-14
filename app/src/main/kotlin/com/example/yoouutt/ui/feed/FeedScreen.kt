@@ -87,6 +87,7 @@ import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
 import com.example.yoouutt.ui.common.BrandRed
 import com.example.yoouutt.ui.theme.CyberpunkGradient
+import com.example.yoouutt.ui.theme.DarkBackground
 import com.example.yoouutt.ui.theme.ElectricCyan
 import com.example.yoouutt.ui.theme.PureBlack
 import com.example.yoouutt.ui.theme.YouTubeRed
@@ -186,12 +187,12 @@ fun FeedScreen(
 
     Scaffold(
         modifier = modifier,
-        containerColor = Color.Black,
+        containerColor = Color.Transparent,
         topBar = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Black)
+                    .background(DarkBackground.copy(alpha = 0.88f))
                     .statusBarsPadding()
             ) {
                 AnimatedContent(
@@ -510,7 +511,7 @@ fun FeedScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black)
+                        .background(DarkBackground.copy(alpha = 0.94f))
                         .imePadding(),
                     contentPadding = PaddingValues(top = 4.dp, bottom = 130.dp)
                 ) {

@@ -109,7 +109,7 @@ fun InAppPipPlayer(
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .shadow(8.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
-            .border(BorderStroke(0.5.dp, Color(0xFF2C2C2C)), RoundedCornerShape(16.dp))
+            .border(BorderStroke(1.dp, Color(0xFF1E2235)), RoundedCornerShape(16.dp))
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onHorizontalDrag = { change, dragAmount ->
@@ -142,7 +142,7 @@ fun InAppPipPlayer(
                 )
             }
             .clickable(onClick = onExpand),
-        color = Color(0xFF1E1E1E)
+        color = Color(0xFF0F1018)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(

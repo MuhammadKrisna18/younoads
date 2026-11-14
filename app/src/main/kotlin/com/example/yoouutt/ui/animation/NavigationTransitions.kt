@@ -24,7 +24,6 @@ object YouTubeScreenTransitions {
         val initialKey = initialState.key
 
         when {
-            // Opening Player: Slides up from bottom like YouTube mobile
             targetKey is PlayerKey -> {
                 (slideInVertically(
                     initialOffsetY = { it },
@@ -32,7 +31,6 @@ object YouTubeScreenTransitions {
                 ) + fadeIn(tween(200))) togetherWith fadeOut(tween(150))
             }
 
-            // Minimizing / Closing Player: Slides down to bottom
             initialKey is PlayerKey -> {
                 fadeIn(tween(150)) togetherWith (slideOutVertically(
                     targetOffsetY = { it },
@@ -40,7 +38,6 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(200)))
             }
 
-            // Navigating to Channel or History: Slides in from right with parallax on previous screen
             targetKey is ChannelKey || targetKey is HistoryKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { it },
@@ -51,7 +48,6 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(150)))
             }
 
-            // Popping / Back from Channel or History: Slides out to right
             initialKey is ChannelKey || initialKey is HistoryKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { -it / 3 },
@@ -62,7 +58,6 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(200)))
             }
 
-            // Default smooth crossfade for other navigation switches
             else -> {
                 fadeIn(tween(200)) togetherWith fadeOut(tween(200))
             }

@@ -148,7 +148,7 @@ fun PlayerScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(if (isEffectiveFullscreen) Color.Black else Color.Transparent)
     ) {
         val videoBoxModifier = if (isEffectiveFullscreen) {
             Modifier.fillMaxSize()
