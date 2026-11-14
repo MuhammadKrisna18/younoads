@@ -17,7 +17,7 @@ import com.example.yoouutt.ui.theme.DarkBackground
 @Composable
 fun CyberpunkAppBackground(
     modifier: Modifier = Modifier,
-    alpha: Float = 0.16f,
+    alpha: Float = 0.35f,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -40,10 +40,10 @@ fun CyberpunkAppBackground(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            DarkBackground.copy(alpha = 0.84f),
-                            DarkBackground.copy(alpha = 0.22f),
-                            DarkBackground.copy(alpha = 0.32f),
-                            DarkBackground.copy(alpha = 0.92f)
+                            DarkBackground.copy(alpha = 0.72f),
+                            DarkBackground.copy(alpha = 0.08f),
+                            DarkBackground.copy(alpha = 0.12f),
+                            DarkBackground.copy(alpha = 0.78f)
                         )
                     )
                 )
@@ -56,9 +56,9 @@ fun CyberpunkAppBackground(
                     Brush.radialGradient(
                         colors = listOf(
                             Color.Transparent,
-                            DarkBackground.copy(alpha = 0.65f)
+                            DarkBackground.copy(alpha = 0.25f)
                         ),
-                        radius = 1500f
+                        radius = 1600f
                     )
                 )
         )
