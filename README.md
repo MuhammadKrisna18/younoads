@@ -47,8 +47,11 @@ Mendukung penyalinan dan pembagian tautan video dengan parameter stempel waktu (
 ### 10. Konfigurasi Resolusi dan Kecepatan Pemutaran
 Pilihan resolusi adaptif (mulai dari resolusi hemat kuota hingga Full HD) dan pengatur kecepatan pemutaran (0.25x hingga 2.0x).
 
-### 11. Desain Tema Gelap AMOLED
-Tampilan gelap murni (Pure Dark AMOLED) dengan aksen merah YouTubeRed standar, hemat konsumsi daya layar OLED dan nyaman di mata pada kondisi pencahayaan rendah.
+### 11. Desain Tema Cyberpunk Neo-Tokyo & Maskot Anime ("Youno-chan")
+- **Estetika Neo-Tokyo AMOLED**: Latar belakang hitam pekat murni (Pure Void Black `#08080C`) dengan aksen pendaran Electric Cyan (`#00F0FF`) dan Neon Magenta (`#FF2A85`) yang hemat daya OLED dan futuristik.
+- **Maskot Resmi Bebas Lisensi (Youno-chan)**: Kehadiran karakter anime cewek bertema cyberpunk dengan headphone audio futuristik pada header brand dan indikator status layar.
+- **Empty States Berkarakter**: Halaman riwayat tontonan kosong dan pencarian tidak ditemukan diperkaya ilustrasi ekspresif Youno-chan dalam format WebP teroptimasi.
+- **Scrubber & Ambient Glow Spektral**: Garis waktu video menggunakan gradien horizontal neon dengan pendaran spektral radial di sekeliling pemutar video.
 
 ### 12. Pembaruan Aplikasi Mandiri (In-App Updater)
 Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan antarmuka unduh dan pasang langsung.
@@ -130,6 +133,11 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Two-Tier LRU Caching**: Implementasi cache berbasis `LruCache` pada lapisan repositori (`channelPlaylistsCache` dan `playlistDetailsCache`) guna memangkas latensi jaringan dan waktu respon saat berpindah antar tab saluran atau membuka kembali playlist yang sama.
 - **PlaylistContext & State Transition**: Status antrean dikelola dalam immutable data model `PlaylistContext` pada `PlaybackManager`. Transisi trek otomatis diintegrasikan langsung ke lifecycle listener ExoPlayer (`onPlaybackStateChanged`), memicu `playNextInPlaylist()` tanpa beban memori berlebih saat pemutaran mencapai `Player.STATE_ENDED`.
 - **Dukungan Pengacakan Trek (Shuffle)**: Mekanisme pengacakan urutan trek saat aksi "Acak" dijalankan dengan tetap mempertahankan konsistensi referensi URL dan metadata orisinal.
+
+#### 8. Sistem Desain Cyberpunk Neon & Manajemen Aset Maskot WebP
+- **Palet Warna Spektral Berkontras Tinggi**: Menerapkan arsitektur tema Material 3 terpersonalisasi dengan token warna `NeonMagenta` (`#FF2A85`), `ElectricCyan` (`#00F0FF`), dan `CyberViolet` (`#9D4EDD`) di atas kanvas hitam pekat (`#08080C`), memaksimalkan efisiensi rasio kontras visual dan masa pakai baterai layar OLED/AMOLED.
+- **Integrasi Maskot Bebas Lisensi ("Youno-chan")**: Menyematkan ilustrasi maskot dalam format WebP dengan kompresi multi-level ke dalam komponen `BrandLogo`, status pencarian kosong (`youno_search_empty`), dan status riwayat kosong (`youno_empty_history`) tanpa memperbesar ukuran binary APK.
+- **Pendaran Ambien Spektral Real-Time**: Merombak kalkulasi radial dan linear gradient pada `AmbientGlow` dan `InteractiveSeekBar` sehingga transisi seekbar dan bayangan panggung pemutar memancarkan aksen gradien neon yang halus.
 
 ---
 
