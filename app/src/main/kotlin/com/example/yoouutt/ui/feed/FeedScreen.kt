@@ -8,7 +8,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,16 +65,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.channel.PlaylistCard
@@ -79,6 +86,9 @@ import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BrandLogo
 import com.example.yoouutt.ui.common.BrandRed
+import com.example.yoouutt.ui.theme.CyberpunkGradient
+import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.PureBlack
 import com.example.yoouutt.ui.theme.YouTubeRed
 import com.example.yoouutt.ui.common.UpdateDialog
 import com.example.yoouutt.update.AppUpdateManager
@@ -225,10 +235,21 @@ fun FeedScreen(
                             ) {
                                 items(categories) { category ->
                                     val isSelected = selectedCategory == category
+                                    val chipShape = RoundedCornerShape(50.dp)
                                     Box(
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(50.dp))
-                                            .background(if (isSelected) YouTubeRed else Color(0xFF222222))
+                                            .clip(chipShape)
+                                            .then(
+                                                if (isSelected) {
+                                                    Modifier
+                                                        .background(CyberpunkGradient)
+                                                        .border(BorderStroke(1.dp, ElectricCyan.copy(alpha = 0.6f)), chipShape)
+                                                } else {
+                                                    Modifier
+                                                        .background(Color(0xFF131522))
+                                                        .border(BorderStroke(0.8.dp, Color(0xFF222638)), chipShape)
+                                                }
+                                            )
                                             .clickable {
                                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                                 viewModel.selectCategory(category)
@@ -238,9 +259,9 @@ fun FeedScreen(
                                     ) {
                                         Text(
                                             text = category,
-                                            color = Color.White,
+                                            color = if (isSelected) PureBlack else Color.White,
                                             fontSize = 12.5.sp,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                            fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
                                         )
                                     }
                                 }
@@ -405,12 +426,41 @@ fun FeedScreen(
 
                     is FeedUiState.Success -> {
                         if (state.items.isEmpty()) {
-                            Text(
-                                text = "Tidak ada hasil ditemukan",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(horizontal = 32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(190.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .border(BorderStroke(1.dp, CyberpunkGradient), RoundedCornerShape(24.dp))
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.youno_search_empty),
+                                        contentDescription = "Search Empty",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(18.dp))
+                                Text(
+                                    text = "Sinyal Tidak Ditemukan",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "Youno-chan tidak menemukan video atau playlist untuk kata kunci ini. Coba telusuri dengan kata kunci lain!",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFF9DA4B8),
+                                    textAlign = TextAlign.Center,
+                                    lineHeight = 19.sp
+                                )
+                            }
                         } else {
                             LazyColumn(
                                 contentPadding = PaddingValues(top = 0.dp, bottom = 130.dp),

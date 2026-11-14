@@ -5,6 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
@@ -39,7 +39,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.yoouutt.ui.theme.YouTubeRed
+import com.example.yoouutt.ui.theme.CyberpunkGradient
+import com.example.yoouutt.ui.theme.NeonMagenta
 
 @Composable
 fun BottomNavigationBar(
@@ -54,9 +55,9 @@ fun BottomNavigationBar(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp),
-        color = Color(0xFF0D0D0D),
+        color = Color(0xFF0A0B12),
         tonalElevation = 8.dp,
-        border = BorderStroke(0.5.dp, Color(0xFF222222))
+        border = BorderStroke(1.dp, Color(0xFF1E2235))
     ) {
         Row(
             modifier = Modifier
@@ -102,7 +103,7 @@ private fun BottomNavItem(
     modifier: Modifier = Modifier
 ) {
     val contentColor by animateColorAsState(
-        targetValue = if (selected) YouTubeRed else Color(0xFF888888),
+        targetValue = if (selected) NeonMagenta else Color(0xFF7A8299),
         animationSpec = tween(durationMillis = 150),
         label = "BottomNavColor"
     )
@@ -119,10 +120,19 @@ private fun BottomNavItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        val pillShape = RoundedCornerShape(14.dp)
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(14.dp))
-                .background(if (selected) YouTubeRed.copy(alpha = 0.14f) else Color.Transparent)
+                .clip(pillShape)
+                .then(
+                    if (selected) {
+                        Modifier
+                            .background(NeonMagenta.copy(alpha = 0.16f))
+                            .border(BorderStroke(1.dp, CyberpunkGradient), pillShape)
+                    } else {
+                        Modifier.background(Color.Transparent)
+                    }
+                )
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -140,9 +150,8 @@ private fun BottomNavItem(
             text = title,
             color = contentColor,
             fontSize = 11.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
             letterSpacing = 0.2.sp
         )
     }
 }
-
