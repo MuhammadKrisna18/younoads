@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.yoouutt.ui.theme.YouTubeRed
+import com.example.yoouutt.ui.theme.CyberViolet
+import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.NeonMagenta
 
 @Composable
 fun AmbientGlow(
@@ -30,7 +32,6 @@ fun AmbientGlow(
     val density = LocalDensity.current
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
 
-    // Subtle breathing pulse for an alive stage-light atmosphere
     val infiniteTransition = rememberInfiniteTransition(label = "ambientPulse")
     val pulseFactor by infiniteTransition.animateFloat(
         initialValue = 0.90f,
@@ -42,15 +43,15 @@ fun AmbientGlow(
         label = "pulseFactor"
     )
 
-    val pureRed = YouTubeRed
-    val deepRed = Color(0xFFCC0000)
+    val cyanGlow = ElectricCyan
+    val magentaGlow = NeonMagenta
+    val violetGlow = CyberViolet
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(glowHeight.dp)
     ) {
-        // Layer 1: Core Radial Bloom with White center radiating into pure YouTube Red
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,9 +59,10 @@ fun AmbientGlow(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0.28f * pulseFactor),
-                            pureRed.copy(alpha = 0.38f * pulseFactor),
-                            deepRed.copy(alpha = 0.18f * pulseFactor),
+                            Color.White.copy(alpha = 0.24f * pulseFactor),
+                            cyanGlow.copy(alpha = 0.32f * pulseFactor),
+                            magentaGlow.copy(alpha = 0.34f * pulseFactor),
+                            violetGlow.copy(alpha = 0.16f * pulseFactor),
                             Color.Transparent
                         ),
                         center = Offset(screenWidthPx / 2f, 0f),
@@ -69,7 +71,6 @@ fun AmbientGlow(
                 )
         )
 
-        // Layer 2: Vertical Red Bleed from top edge under the video player
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,15 +78,14 @@ fun AmbientGlow(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            pureRed.copy(alpha = 0.28f * pulseFactor),
-                            deepRed.copy(alpha = 0.12f * pulseFactor),
+                            magentaGlow.copy(alpha = 0.24f * pulseFactor),
+                            violetGlow.copy(alpha = 0.12f * pulseFactor),
                             Color.Transparent
                         )
                     )
                 )
         )
 
-        // Layer 3: Central Soft White spotlight accent directly below the video
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,7 +93,7 @@ fun AmbientGlow(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0.22f),
+                            Color.White.copy(alpha = 0.20f),
                             Color.Transparent
                         ),
                         center = Offset(screenWidthPx / 2f, 0f),
@@ -102,7 +102,6 @@ fun AmbientGlow(
                 )
         )
 
-        // Layer 4: Smooth fade into pure black at the bottom for crystal-clear readability
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,8 +110,8 @@ fun AmbientGlow(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.Black.copy(alpha = 0.45f),
-                            Color.Black
+                            Color(0xFF08080C).copy(alpha = 0.55f),
+                            Color(0xFF08080C)
                         )
                     )
                 )

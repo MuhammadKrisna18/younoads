@@ -51,6 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.PlaylistContext
+import com.example.yoouutt.ui.theme.CyberpunkGradient
+import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.NeonMagenta
 import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
@@ -67,8 +70,8 @@ fun PlayerPlaylistBanner(
             .fillMaxWidth()
             .padding(horizontal = 14.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF1E1E1E))
-            .border(BorderStroke(0.5.dp, Color(0xFF2E2E2E)), RoundedCornerShape(12.dp))
+            .background(Color(0xFF0E0F18))
+            .border(BorderStroke(1.dp, Color(0xFF1E2235)), RoundedCornerShape(12.dp))
     ) {
         Row(
             modifier = Modifier
@@ -83,7 +86,7 @@ fun PlayerPlaylistBanner(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
                 contentDescription = null,
-                tint = YouTubeRed,
+                tint = ElectricCyan,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -134,11 +137,20 @@ fun PlayerPlaylistBanner(
                         key = { _, item -> item.id }
                     ) { index, video ->
                         val isCurrent = index == playlistContext.currentIndex
+                        val trackShape = RoundedCornerShape(8.dp)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(if (isCurrent) Color(0xFF2C2C2C) else Color.Transparent)
+                                .clip(trackShape)
+                                .then(
+                                    if (isCurrent) {
+                                        Modifier
+                                            .background(NeonMagenta.copy(alpha = 0.16f))
+                                            .border(BorderStroke(1.dp, CyberpunkGradient), trackShape)
+                                    } else {
+                                        Modifier.background(Color.Transparent)
+                                    }
+                                )
                                 .clickable {
                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                     onVideoClick(index)
@@ -150,7 +162,7 @@ fun PlayerPlaylistBanner(
                                 Icon(
                                     imageVector = Icons.Default.PlayArrow,
                                     contentDescription = null,
-                                    tint = YouTubeRed,
+                                    tint = ElectricCyan,
                                     modifier = Modifier.size(16.dp)
                                 )
                             } else {
@@ -190,7 +202,7 @@ fun PlayerPlaylistBanner(
                                     text = video.title,
                                     fontSize = 12.5.sp,
                                     fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Normal,
-                                    color = if (isCurrent) YouTubeRed else Color.White,
+                                    color = if (isCurrent) NeonMagenta else Color.White,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )

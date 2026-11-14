@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.changedToUp
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.player.PlayerUtils
+import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.NeonMagenta
 import com.example.yoouutt.ui.theme.YouTubeRed
 import kotlin.math.roundToInt
 
@@ -141,7 +144,11 @@ fun InteractiveSeekBar(
             val playedX = canvasWidth * activeProgress
             if (playedX > 0f) {
                 drawLine(
-                    color = YouTubeRed,
+                    brush = Brush.horizontalGradient(
+                        listOf(ElectricCyan, NeonMagenta),
+                        startX = 0f,
+                        endX = playedX.coerceAtLeast(1f)
+                    ),
                     start = Offset(0f, centerY),
                     end = Offset(playedX, centerY),
                     strokeWidth = trackStroke,
@@ -150,7 +157,11 @@ fun InteractiveSeekBar(
             }
 
             drawCircle(
-                color = YouTubeRed,
+                brush = Brush.radialGradient(
+                    listOf(Color.White, ElectricCyan, NeonMagenta),
+                    center = Offset(playedX, centerY),
+                    radius = animatedThumbRadius.toPx().coerceAtLeast(1f)
+                ),
                 radius = animatedThumbRadius.toPx(),
                 center = Offset(playedX, centerY)
             )
@@ -230,7 +241,11 @@ fun MinimalBottomProgressBar(
         val playedX = canvasWidth * progress
         if (playedX > 0f) {
             drawLine(
-                color = YouTubeRed,
+                brush = Brush.horizontalGradient(
+                    listOf(ElectricCyan, NeonMagenta),
+                    startX = 0f,
+                    endX = playedX.coerceAtLeast(1f)
+                ),
                 start = Offset(0f, centerY),
                 end = Offset(playedX, centerY),
                 strokeWidth = stroke

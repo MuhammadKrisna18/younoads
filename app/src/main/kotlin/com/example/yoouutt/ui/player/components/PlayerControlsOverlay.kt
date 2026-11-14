@@ -4,7 +4,9 @@ import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +45,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.player.PlayerUtils
+import com.example.yoouutt.ui.theme.CyberpunkGradient
+import com.example.yoouutt.ui.theme.ElectricCyan
 
 @Composable
 fun BoxScope.PlayerControlsOverlay(
@@ -164,9 +168,10 @@ fun BoxScope.PlayerControlsOverlay(
 
                 Box(
                     modifier = Modifier
-                        .size(54.dp)
+                        .size(56.dp)
                         .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.6f))
+                        .background(Color.Black.copy(alpha = 0.65f))
+                        .border(BorderStroke(1.2.dp, CyberpunkGradient), CircleShape)
                         .clickable {
                             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             onPlayPauseClick()
@@ -176,7 +181,7 @@ fun BoxScope.PlayerControlsOverlay(
                     if (isBuffering) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(28.dp),
-                            color = Color.White,
+                            color = ElectricCyan,
                             strokeWidth = 2.5.dp
                         )
                     } else {
