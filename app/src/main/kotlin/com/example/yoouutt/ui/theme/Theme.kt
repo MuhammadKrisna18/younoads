@@ -1,11 +1,9 @@
 package com.example.yoouutt.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 
@@ -17,13 +15,16 @@ private val Shapes = Shapes(
     extraLarge = RoundedCornerShape(24.dp)
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = PureWhite,
+private val CyberpunkColorScheme = darkColorScheme(
+    primary = ElectricCyan,
     onPrimary = PureBlack,
     primaryContainer = DarkSurfaceVariant,
-    onPrimaryContainer = PureWhite,
-    secondary = PureWhite,
-    onSecondary = PureBlack,
+    onPrimaryContainer = ElectricCyan,
+    secondary = NeonMagenta,
+    onSecondary = PureWhite,
+    secondaryContainer = DarkSurfaceVariant,
+    onSecondaryContainer = NeonMagenta,
+    tertiary = CyberViolet,
     background = DarkBackground,
     onBackground = PureWhite,
     surface = DarkSurface,
@@ -33,31 +34,13 @@ private val DarkColorScheme = darkColorScheme(
     outline = DarkOutline
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = PureBlack,
-    onPrimary = PureWhite,
-    primaryContainer = LightSurfaceVariant,
-    onPrimaryContainer = PureBlack,
-    secondary = PureBlack,
-    onSecondary = PureWhite,
-    background = LightBackground,
-    onBackground = PureBlack,
-    surface = LightSurface,
-    onSurface = PureBlack,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
-    outline = LightOutline
-)
-
 @Composable
 fun YoouuttTheme(
     darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = CyberpunkColorScheme,
         typography = Typography,
         shapes = Shapes,
         content = content

@@ -1,24 +1,29 @@
 package com.example.yoouutt.ui.common
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
+import com.example.yoouutt.ui.theme.CyberpunkGradient
+import com.example.yoouutt.ui.theme.NeonMagenta
 import com.example.yoouutt.ui.theme.YouTubeRed
 
 val BrandRed = YouTubeRed
@@ -31,22 +36,22 @@ fun BrandLogo(modifier: Modifier = Modifier) {
     ) {
         Box(
             modifier = Modifier
-                .size(28.dp)
-                .clip(RoundedCornerShape(7.dp))
-                .background(BrandRed),
+                .size(30.dp)
+                .clip(CircleShape)
+                .border(BorderStroke(1.5.dp, CyberpunkGradient), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(18.dp)
+            Image(
+                painter = painterResource(id = R.drawable.youno_avatar),
+                contentDescription = "Youno-chan",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(9.dp))
 
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "You",
                 style = MaterialTheme.typography.titleMedium,
@@ -57,9 +62,16 @@ fun BrandLogo(modifier: Modifier = Modifier) {
                 text = "noAds",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = BrandRed
+                color = NeonMagenta
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = "NEO",
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.primary,
+                letterSpacing = 1.sp
             )
         }
     }
 }
-
