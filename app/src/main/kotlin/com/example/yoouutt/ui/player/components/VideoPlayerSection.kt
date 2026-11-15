@@ -72,6 +72,8 @@ fun VideoPlayerSection(
     val seekFeedback by viewModel.seekFeedback.collectAsStateWithLifecycle()
     val resumeBannerVisible by viewModel.resumeBannerVisible.collectAsStateWithLifecycle()
     val resumeSavedPosition by viewModel.resumeSavedPosition.collectAsStateWithLifecycle()
+    val isAutoplayEnabled by viewModel.isAutoplayEnabled.collectAsStateWithLifecycle()
+    val autoplayCountdown by viewModel.autoplayCountdown.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
         if (isLoading) {
@@ -148,6 +150,8 @@ fun VideoPlayerSection(
                 durationMs = durationMs,
                 currentResolutionText = resolutionLabel,
                 hasAudioTracks = hasAudioTracks,
+                isAutoplayEnabled = isAutoplayEnabled,
+                onToggleAutoplay = viewModel::toggleAutoplay,
                 onBackClick = {
                     if (isFullscreen) onToggleFullscreen() else onBack()
                 },
@@ -171,6 +175,13 @@ fun VideoPlayerSection(
                     text = feedback.text
                 )
             }
+
+            AutoplayCountdownBanner(
+                countdown = autoplayCountdown,
+                onPlayNext = viewModel::playNextImmediately,
+                onCancel = viewModel::cancelAutoplayCountdown,
+                modifier = Modifier.align(Alignment.Center)
+            )
 
             if (!controlsVisible && !isInPipMode) {
                 MinimalBottomProgressBar(

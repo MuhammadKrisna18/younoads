@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Audiotrack
+import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.PictureInPictureAlt
+import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.BookmarkBorder
@@ -30,6 +32,8 @@ fun PlayerActionPillRow(
     videoUrl: String,
     isLiked: Boolean,
     isSaved: Boolean,
+    isAutoplayEnabled: Boolean = true,
+    isLoopEnabled: Boolean = false,
     speedText: String,
     resolutionText: String = "",
     audioTrackText: String = "",
@@ -37,6 +41,8 @@ fun PlayerActionPillRow(
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
+    onToggleAutoplay: () -> Unit = {},
+    onToggleLoop: () -> Unit = {},
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit = {},
     onAudioTrackClick: () -> Unit = {},
@@ -89,6 +95,26 @@ fun PlayerActionPillRow(
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onToggleSave()
+            }
+        )
+
+        ActionPill(
+            icon = Icons.Default.AutoMode,
+            label = if (isAutoplayEnabled) "Autoplay: Aktif" else "Autoplay: Nonaktif",
+            isActive = isAutoplayEnabled,
+            onClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onToggleAutoplay()
+            }
+        )
+
+        ActionPill(
+            icon = Icons.Default.Repeat,
+            label = if (isLoopEnabled) "Loop: Aktif" else "Loop: Nonaktif",
+            isActive = isLoopEnabled,
+            onClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onToggleLoop()
             }
         )
 

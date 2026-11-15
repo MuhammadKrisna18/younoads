@@ -51,6 +51,8 @@ fun PlayerScreen(
     val isLiked by viewModel.isLiked.collectAsStateWithLifecycle()
     val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
     val isSubscribed by viewModel.isSubscribed.collectAsStateWithLifecycle()
+    val isAutoplayEnabled by viewModel.isAutoplayEnabled.collectAsStateWithLifecycle()
+    val isLoopEnabled by viewModel.isLoopEnabled.collectAsStateWithLifecycle()
     val speedIndex by viewModel.speedIndex.collectAsStateWithLifecycle()
     val currentResolution by viewModel.currentResolution.collectAsStateWithLifecycle()
     val availableResolutions by viewModel.availableResolutions.collectAsStateWithLifecycle()
@@ -154,6 +156,8 @@ fun PlayerScreen(
                 isSaved = isSaved,
                 isSubscribed = isSubscribed,
                 isDescriptionExpanded = isDescriptionExpanded,
+                isAutoplayEnabled = isAutoplayEnabled,
+                isLoopEnabled = isLoopEnabled,
                 speedText = "${viewModel.speeds[speedIndex]}x",
                 resolutionLabel = resolutionLabel,
                 audioTrackText = currentAudioTrack?.displayName.orEmpty(),
@@ -165,6 +169,8 @@ fun PlayerScreen(
                     PlayerUtils.copyToClipboard(context, shortUrl, "Tautan berhasil disalin")
                 },
                 onToggleSave = viewModel::toggleSave,
+                onToggleAutoplay = viewModel::toggleAutoplay,
+                onToggleLoop = viewModel::toggleLoop,
                 onCycleSpeed = viewModel::cyclePlaybackSpeed,
                 onResolutionClick = viewModel::showResolutionDialog,
                 onAudioTrackClick = viewModel::showAudioTrackDialog,

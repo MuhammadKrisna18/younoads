@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Audiotrack
+import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -60,6 +61,8 @@ fun BoxScope.PlayerControlsOverlay(
     durationMs: Long,
     currentResolutionText: String,
     hasAudioTracks: Boolean = false,
+    isAutoplayEnabled: Boolean = true,
+    onToggleAutoplay: () -> Unit = {},
     onBackClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
@@ -131,6 +134,24 @@ fun BoxScope.PlayerControlsOverlay(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(
+                    onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        onToggleAutoplay()
+                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.5f))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AutoMode,
+                        contentDescription = if (isAutoplayEnabled) "Autoplay Aktif" else "Autoplay Nonaktif",
+                        tint = if (isAutoplayEnabled) ElectricCyan else Color.White.copy(alpha = 0.5f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
                 if (hasAudioTracks) {
                     IconButton(
                         onClick = {
