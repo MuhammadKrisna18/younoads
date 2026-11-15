@@ -156,6 +156,12 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Smart Priority Resolution**: Mengimplementasikan algoritma komparasi `compareByDescending { it.isOriginal }.thenByDescending { it.languageCode == defaultLocale }` untuk memastikan trek audio asli selalu menjadi default pertama.
 - **Dynamic MergingMediaSource Injection**: Memodifikasi pembuat media source pada `PlaybackManager` sehingga saat pengguna memilih trek audio baru, ExoPlayer me-rebuild `MergingMediaSource` dengan aliran audio yang baru dan melakukan seek instan ke posisi detik terakhir tanpa interupsi visual.
 
+#### 11. Modular Clean Architecture Refactoring (Single Responsibility Principle)
+- **Modularisasi Playback Layer**: Pemecahan `PlaybackManager` dengan mendelegasikan perakitan sumber media adaptif (HLS, Progressive, dan dynamic audio track injection) ke `MediaSourceBuilder`, serta pengelolaan antrean daftar putar (playlist queue traversal & cursor state) ke `PlaybackQueueManager`. `PlaybackManager` berperan murni sebagai orkestrator kontrol pemutar dan penyedia `StateFlow` reaktif ke UI.
+- **Dekomposisi God-Class Repository**: Dekomposisi `NewPipeVideoRepository` dari 695 baris menjadi 58 baris dengan memisahkan 5 domain ekstraksi ke dalam paket `extractor/` (`StreamExtractionHelper`, `SearchExtractionHelper`, `ChannelExtractionHelper`, `PlaylistExtractionHelper`, `FeedExtractionHelper`, dan `ExtractorMappers`). `NewPipeVideoRepository` bertindak sebagai Clean Facade yang mempertahankan backward compatibility 100% tanpa mengubah kontrak pemanggil pada seluruh ViewModel.
+- **Pemisahan Database Infrastructure**: Pemisahan infrastruktur DDL SQLite dan manajemen skema versi (`WatchHistoryDbHelper`) dari operasi repositori bisnis (`SqliteWatchHistoryRepository`), memperjelas batas tanggung jawab antara layer database engine dengan layer logika repositori aplikasi.
+- **Zero Comments & Pure Code Readability**: Seluruh basis kode Kotlin ditulis dengan pendekatan self-documenting code yang rapi, deklaratif, dan 100% bebas dari baris komentar.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -163,10 +169,12 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 ```
 app/src/main/kotlin/com/example/yoouutt/
 |-- data/
-|   |-- local/           # SQLite Database, Repositori Riwayat Tontonan & Playlist
+|   |-- local/           # SQLite Database (WatchHistoryDbHelper), Repositori Riwayat Tontonan & Pencarian
 |   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData, FeedItem)
-|   |-- repository/      # Abstraksi repositori data & integrasi NewPipe (LRU Cache)
-|-- playback/            # PlaybackManager, PlaybackService & MediaSession
+|   |-- repository/      # Abstraksi repositori data (VideoRepository, NewPipeVideoRepository Facade)
+|   |   |-- extractor/   # Modular extraction helpers (Stream, Search, Channel, Playlist, Feed, Mappers)
+|-- di/                  # Dependency Injection container (AppContainer, DefaultAppContainer)
+|-- playback/            # PlaybackManager, MediaSourceBuilder, PlaybackQueueManager, PlaybackService
 |-- ui/
 |   |-- channel/         # Profil saluran, Tab Video & Tab Playlist (PlaylistCard)
 |   |-- common/          # Komponen UI global (AppConfirmDialog, ViewModels)
@@ -177,7 +185,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |   |-- components/  # Sub-komponen (ControlsOverlay, Scrubber, AmbientGlow, PlayerPlaylistBanner)
 |   |-- playlist/        # Tampilan detail playlist saluran (PlaylistScreen, PlaylistViewModel)
 |   |-- search/          # Antarmuka pencarian & saran kata kunci
-|   |-- theme/           # Tema Material 3, Warna (YouTubeRed), Tipografi
+|   |-- theme/           # Tema Material 3, Cyberpunk Neo-Tokyo Palette, Tipografi
 |-- util/                # Format teks, helper orientasi, parser URL
 ```
 
