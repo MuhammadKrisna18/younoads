@@ -59,8 +59,6 @@ class PlayerViewModel(
     private val _isAudioTrackDialogVisible = MutableStateFlow(false)
     val isAudioTrackDialogVisible: StateFlow<Boolean> = _isAudioTrackDialogVisible.asStateFlow()
 
-    private val _isAmbientModeEnabled = MutableStateFlow(true)
-    val isAmbientModeEnabled: StateFlow<Boolean> = _isAmbientModeEnabled.asStateFlow()
 
     private val _currentPositionMs = MutableStateFlow(0L)
     val currentPositionMs: StateFlow<Long> = _currentPositionMs.asStateFlow()
@@ -232,9 +230,6 @@ class PlayerViewModel(
         _isAudioTrackDialogVisible.value = false
     }
 
-    fun toggleAmbientMode() {
-        _isAmbientModeEnabled.value = !_isAmbientModeEnabled.value
-    }
 
     fun toggleControls() {
         if (_controlsVisible.value) {

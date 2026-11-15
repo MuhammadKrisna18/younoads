@@ -58,7 +58,6 @@ fun PlayerScreen(
     val currentAudioTrack by viewModel.currentAudioTrack.collectAsStateWithLifecycle()
     val availableAudioTracks by viewModel.availableAudioTracks.collectAsStateWithLifecycle()
     val isAudioTrackDialogVisible by viewModel.isAudioTrackDialogVisible.collectAsStateWithLifecycle()
-    val isAmbientModeEnabled by viewModel.isAmbientModeEnabled.collectAsStateWithLifecycle()
     val playlistContext by viewModel.playlistContext.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
@@ -154,7 +153,6 @@ fun PlayerScreen(
                 isLiked = isLiked,
                 isSaved = isSaved,
                 isSubscribed = isSubscribed,
-                isAmbientModeEnabled = isAmbientModeEnabled,
                 isDescriptionExpanded = isDescriptionExpanded,
                 speedText = "${viewModel.speeds[speedIndex]}x",
                 resolutionLabel = resolutionLabel,
@@ -170,7 +168,6 @@ fun PlayerScreen(
                 onCycleSpeed = viewModel::cyclePlaybackSpeed,
                 onResolutionClick = viewModel::showResolutionDialog,
                 onAudioTrackClick = viewModel::showAudioTrackDialog,
-                onToggleAmbient = viewModel::toggleAmbientMode,
                 onPipClick = { activity?.enterPipMode() },
                 onToggleFullscreen = handleToggleFullscreen,
                 onToggleSubscribe = viewModel::toggleSubscribe,
@@ -191,9 +188,7 @@ fun PlayerScreen(
         ResolutionSelectionDialog(
             availableResolutions = availableResolutions,
             currentResolution = currentResolution,
-            isAmbientModeEnabled = isAmbientModeEnabled,
             onSelectResolution = viewModel::selectResolution,
-            onToggleAmbientMode = viewModel::toggleAmbientMode,
             onDismiss = viewModel::dismissResolutionDialog
         )
     }

@@ -24,8 +24,8 @@ Audio video tetap berjalan secara berkelanjutan ketika layar ponsel dimatikan at
 - **In-App Floating Player**: Mini player mengambang di dalam aplikasi dengan kontrol gestur halus, memungkinkan navigasi feed sambil tetap menonton video.
 - **System PiP**: Mendukung mode Picture-in-Picture native Android saat keluar dari aplikasi.
 
-### 4. Efek Pencahayaan Ambient (Ambient Glow)
-Menghadirkan bias cahaya adaptif di sekeliling pemutar video yang selaras dengan palet warna frame video yang sedang aktif, memberikan pengalaman menonton yang imersif.
+### 4. Ekstraksi Fallback Otomatis untuk Video Terbatas (Age-Restricted 18+ Bypass)
+Mengintegrasikan resolver sekunder berbasis public Piped & Invidious API ketika video terkena batasan usia (Age-Restricted / 18+) atau pembatasan autentikasi YouTube. Alur fallback berjalan secara otomatis di latar belakang tanpa mengharuskan pengguna melakukan login atau registrasi akun.
 
 ### 5. Kontrol Interaktif dan Gestur
 - **Double-Tap to Seek**: Ketuk ganda di sisi kanan atau kiri pemutar untuk melompat maju atau mundur 10 detik dengan feedback haptik instan.
@@ -52,7 +52,7 @@ Pilihan resolusi adaptif (mulai dari resolusi hemat kuota hingga Full HD) dan pe
 - **Holographic Watermark Backdrop di Semua Halaman**: Latar belakang karakter anime maskot "Youno-chan" dalam format 9:16 vertikal (`youno_backdrop.webp`) dengan opasitas hologram jernih (~35%) dipadukan dengan gradien vignette gelap di seluruh halaman (Beranda, Riwayat, Saluran, Playlist, dan Pemutar Video).
 - **Maskot Resmi Bebas Lisensi (Youno-chan)**: Kehadiran karakter anime cewek bertema cyberpunk dengan headphone audio futuristik pada header brand dan indikator status layar.
 - **Empty States Berkarakter**: Halaman riwayat tontonan kosong dan pencarian tidak ditemukan diperkaya ilustrasi ekspresif Youno-chan dalam format WebP teroptimasi.
-- **Scrubber & Ambient Glow Spektral**: Garis waktu video menggunakan gradien horizontal neon dengan pendaran spektral radial di sekeliling pemutar video.
+- **Scrubber Spektral**: Garis waktu video menggunakan gradien horizontal neon yang presisi dan responsif terhadap interaksi pengguna.
 
 ### 12. Pembaruan Aplikasi Mandiri (In-App Updater)
 Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan antarmuka unduh dan pasang langsung.
@@ -83,7 +83,7 @@ Proyek ini menerapkan prinsip Clean Architecture yang dipadukan dengan pola arsi
 1. **Presentation Layer (UI)**:
    - Dibangun sepenuhnya secara deklaratif menggunakan **Jetpack Compose**.
    - Mengonsumsi data reaktif melalui `StateFlow` dari ViewModel dengan siklus hidup terkelola (`collectAsStateWithLifecycle`).
-   - Menerapkan modularisasi komponen reusable (Pill Buttons, Dialogs, Sliders, Glow Panels).
+   - Menerapkan modularisasi komponen reusable (Pill Buttons, Dialogs, Sliders).
 
 2. **Domain & ViewModel Layer**:
    - Menangani logika bisnis, manajemen status pemutaran ExoPlayer, navigasi state, dan sinkronisasi durasi/posisi tontonan.
@@ -144,7 +144,7 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 #### 8. Sistem Desain Cyberpunk Neon & Manajemen Aset Maskot WebP
 - **Palet Warna Spektral Berkontras Tinggi**: Menerapkan arsitektur tema Material 3 terpersonalisasi dengan token warna `NeonMagenta` (`#FF2A85`), `ElectricCyan` (`#00F0FF`), dan `CyberViolet` (`#9D4EDD`) di atas kanvas hitam pekat (`#08080C`), memaksimalkan efisiensi rasio kontras visual dan masa pakai baterai layar OLED/AMOLED.
 - **Integrasi Maskot Bebas Lisensi ("Youno-chan")**: Menyematkan ilustrasi maskot dalam format WebP dengan kompresi multi-level ke dalam komponen `BrandLogo`, status pencarian kosong (`youno_search_empty`), status riwayat kosong (`youno_empty_history`), dan latar belakang aplikasi global (`youno_backdrop.webp`) tanpa memperbesar ukuran binary APK.
-- **Pendaran Ambien Spektral Real-Time**: Merombak kalkulasi radial dan linear gradient pada `AmbientGlow` dan `InteractiveSeekBar` sehingga transisi seekbar dan bayangan panggung pemutar memancarkan aksen gradien neon yang halus.
+- **Aksen Neon Spektral Real-Time**: Merombak kalkulasi gradient pada `InteractiveSeekBar` sehingga transisi seekbar memancarkan aksen gradien neon cyberpunk yang halus.
 
 #### 9. Arsitektur CyberpunkAppBackground & Holographic Backdrop Layering
 - **Centralized Wrapper Layering**: Mengimplementasikan komponen pembungkus terpusat `CyberpunkAppBackground` pada hierarki root aplikasi di `MainActivity`. Komponen ini menyatukan kanvas dasar `DarkBackground`, layer gambar vektor/bitmap WebP dengan opasitas hologram jernih (~35%), gradien vertikal quad-stop untuk proteksi kontras status bar dan bottom bar, serta vignette radial halus.
@@ -169,6 +169,10 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
   Arsitektur ini memaksimalkan kemampuan smart skipping pada Compose compiler, membatasi lingkup rekomposisi hanya pada node UI yang mengalami mutasi state, serta meningkatkan keterbacaan kode secara drastis.
 - **Zero Comments & Pure Code Readability**: Seluruh basis kode Kotlin ditulis dengan pendekatan self-documenting code yang rapi, deklaratif, dan 100% bebas dari baris komentar.
 
+#### 12. Fallback Multi-Tier Resolver untuk Konten Terbatas (Age-Restricted Fallback Engine)
+- **Seamless Fallback**: Mengimplementasikan `PipedFallbackExtractor` di dalam paket `extractor/` yang secara cerdas menangkap kegagalan ekstraksi (seperti `AgeRestrictedContentException` atau `ContentNotAvailableException` dari NewPipeExtractor).
+- **Multi-Instance Redundancy**: Mendukung failover dinamis ke multi-instance publik Piped dan Invidious (`api.piped.private.coffee`, `pipedapi.ducks.party`, `yt.chocolatemoo53.com`) untuk menjamin ketersediaan video 18+ tanpa memerlukan login, kredensial pengguna, atau autentikasi OAuth pada perangkat.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -179,7 +183,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |-- local/           # SQLite Database (WatchHistoryDbHelper), Repositori Riwayat Tontonan & Pencarian
 |   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData, FeedItem)
 |   |-- repository/      # Abstraksi repositori data (VideoRepository, NewPipeVideoRepository Facade)
-|   |   |-- extractor/   # Modular extraction helpers (Stream, Search, Channel, Playlist, Feed, Mappers)
+|   |   |-- extractor/   # Modular extraction helpers (Stream, Search, Channel, Playlist, Feed, Mappers, PipedFallback)
 |-- di/                  # Dependency Injection container (AppContainer, DefaultAppContainer)
 |-- playback/            # PlaybackManager, MediaSourceBuilder, PlaybackQueueManager, PlaybackService
 |-- ui/
@@ -192,7 +196,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |   |-- components/  # HistoryItemRow, HistoryEmptyState
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
 |   |-- player/          # Tampilan utama pemutar video & routing PlayerScreen
-|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, Scrubber, AmbientGlow
+|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, Scrubber, Dialogs
 |   |-- playlist/        # Tampilan detail playlist & routing PlaylistScreen
 |   |   |-- components/  # PlaylistHeaderSection, PlaylistItemRow, PlaylistStateViews, PlaylistContent
 |   |-- search/          # Antarmuka pencarian & saran kata kunci

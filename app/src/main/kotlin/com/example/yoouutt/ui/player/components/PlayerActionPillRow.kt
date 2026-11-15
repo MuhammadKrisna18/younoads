@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Audiotrack
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.HighQuality
@@ -34,7 +33,6 @@ fun PlayerActionPillRow(
     speedText: String,
     resolutionText: String = "",
     audioTrackText: String = "",
-    isAmbientEnabled: Boolean = true,
     onToggleLike: () -> Unit,
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
@@ -42,7 +40,6 @@ fun PlayerActionPillRow(
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit = {},
     onAudioTrackClick: () -> Unit = {},
-    onToggleAmbient: () -> Unit = {},
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -116,16 +113,6 @@ fun PlayerActionPillRow(
                 }
             )
         }
-
-        ActionPill(
-            icon = Icons.Default.AutoAwesome,
-            label = "Ambience",
-            isActive = isAmbientEnabled,
-            onClick = {
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                onToggleAmbient()
-            }
-        )
 
         ActionPill(
             icon = Icons.Default.Speed,

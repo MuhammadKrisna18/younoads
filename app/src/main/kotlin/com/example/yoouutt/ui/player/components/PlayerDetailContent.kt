@@ -32,7 +32,6 @@ fun PlayerDetailContent(
     isLiked: Boolean,
     isSaved: Boolean,
     isSubscribed: Boolean,
-    isAmbientModeEnabled: Boolean,
     isDescriptionExpanded: Boolean,
     speedText: String,
     resolutionLabel: String,
@@ -45,7 +44,6 @@ fun PlayerDetailContent(
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit,
     onAudioTrackClick: () -> Unit = {},
-    onToggleAmbient: () -> Unit,
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     onToggleSubscribe: () -> Unit,
@@ -56,14 +54,6 @@ fun PlayerDetailContent(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        if (isAmbientModeEnabled) {
-            AmbientGlow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-            )
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -131,7 +121,6 @@ fun PlayerDetailContent(
                     speedText = speedText,
                     resolutionText = resolutionLabel.ifBlank { "Kualitas" },
                     audioTrackText = audioTrackText,
-                    isAmbientEnabled = isAmbientModeEnabled,
                     onToggleLike = onToggleLike,
                     onShareClick = onShareClick,
                     onCopyLinkClick = onCopyLinkClick,
@@ -139,7 +128,6 @@ fun PlayerDetailContent(
                     onCycleSpeed = onCycleSpeed,
                     onResolutionClick = onResolutionClick,
                     onAudioTrackClick = onAudioTrackClick,
-                    onToggleAmbient = onToggleAmbient,
                     onPipClick = onPipClick,
                     onToggleFullscreen = onToggleFullscreen
                 )
