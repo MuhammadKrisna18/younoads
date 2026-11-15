@@ -160,6 +160,13 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Modularisasi Playback Layer**: Pemecahan `PlaybackManager` dengan mendelegasikan perakitan sumber media adaptif (HLS, Progressive, dan dynamic audio track injection) ke `MediaSourceBuilder`, serta pengelolaan antrean daftar putar (playlist queue traversal & cursor state) ke `PlaybackQueueManager`. `PlaybackManager` berperan murni sebagai orkestrator kontrol pemutar dan penyedia `StateFlow` reaktif ke UI.
 - **Dekomposisi God-Class Repository**: Dekomposisi `NewPipeVideoRepository` dari 695 baris menjadi 58 baris dengan memisahkan 5 domain ekstraksi ke dalam paket `extractor/` (`StreamExtractionHelper`, `SearchExtractionHelper`, `ChannelExtractionHelper`, `PlaylistExtractionHelper`, `FeedExtractionHelper`, dan `ExtractorMappers`). `NewPipeVideoRepository` bertindak sebagai Clean Facade yang mempertahankan backward compatibility 100% tanpa mengubah kontrak pemanggil pada seluruh ViewModel.
 - **Pemisahan Database Infrastructure**: Pemisahan infrastruktur DDL SQLite dan manajemen skema versi (`WatchHistoryDbHelper`) dari operasi repositori bisnis (`SqliteWatchHistoryRepository`), memperjelas batas tanggung jawab antara layer database engine dengan layer logika repositori aplikasi.
+- **Dekomposisi Monolithic Compose Screens (Frontend Modularization)**: Memecah seluruh screen monolitik yang membengkak (500-700 baris) menjadi sub-komponen terisolasi dalam sub-paket `components/` untuk setiap domain layar:
+  - `FeedScreen`: Didekomposisi dari 706 baris menjadi sub-komponen `FeedTopBar`, `FeedFilterRow`, `FeedSearchSuggestions`, `FeedStateViews`, dan `FeedContentList`.
+  - `ChannelScreen`: Didekomposisi dari 621 baris menjadi sub-komponen `ChannelTopBar`, `ChannelHeaderSection`, `ChannelTabNavigation`, `ChannelStateViews`, dan `ChannelContent`.
+  - `PlaylistScreen`: Didekomposisi dari 469 baris menjadi `PlaylistHeaderSection`, `PlaylistItemRow`, `PlaylistStateViews`, dan `PlaylistContent`.
+  - `HistoryScreen`: Didekomposisi dari 314 baris menjadi `HistoryItemRow` dan `HistoryEmptyState`.
+  - `PlayerScreen`: Didekomposisi dari 610 baris menjadi `VideoPlayerSection` dan `PlayerDetailContent`.
+  Arsitektur ini memaksimalkan kemampuan smart skipping pada Compose compiler, membatasi lingkup rekomposisi hanya pada node UI yang mengalami mutasi state, serta meningkatkan keterbacaan kode secara drastis.
 - **Zero Comments & Pure Code Readability**: Seluruh basis kode Kotlin ditulis dengan pendekatan self-documenting code yang rapi, deklaratif, dan 100% bebas dari baris komentar.
 
 ---
@@ -176,14 +183,18 @@ app/src/main/kotlin/com/example/yoouutt/
 |-- di/                  # Dependency Injection container (AppContainer, DefaultAppContainer)
 |-- playback/            # PlaybackManager, MediaSourceBuilder, PlaybackQueueManager, PlaybackService
 |-- ui/
-|   |-- channel/         # Profil saluran, Tab Video & Tab Playlist (PlaylistCard)
+|   |-- channel/         # Profil saluran & routing ChannelScreen
+|   |   |-- components/  # ChannelTopBar, ChannelHeaderSection, ChannelTabNavigation, ChannelStateViews, ChannelContent
 |   |-- common/          # Komponen UI global (AppConfirmDialog, ViewModels)
-|   |-- feed/            # Tampilan beranda & daftar video / playlist
-|   |-- history/         # Tampilan riwayat tontonan & aksi kelola
+|   |-- feed/            # Beranda utama & routing FeedScreen
+|   |   |-- components/  # FeedTopBar, FeedFilterRow, FeedSearchSuggestions, FeedStateViews, FeedContentList
+|   |-- history/         # Riwayat tontonan & routing HistoryScreen
+|   |   |-- components/  # HistoryItemRow, HistoryEmptyState
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
-|   |-- player/          # Tampilan utama pemutar video
-|   |   |-- components/  # Sub-komponen (ControlsOverlay, Scrubber, AmbientGlow, PlayerPlaylistBanner)
-|   |-- playlist/        # Tampilan detail playlist saluran (PlaylistScreen, PlaylistViewModel)
+|   |-- player/          # Tampilan utama pemutar video & routing PlayerScreen
+|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, Scrubber, AmbientGlow
+|   |-- playlist/        # Tampilan detail playlist & routing PlaylistScreen
+|   |   |-- components/  # PlaylistHeaderSection, PlaylistItemRow, PlaylistStateViews, PlaylistContent
 |   |-- search/          # Antarmuka pencarian & saran kata kunci
 |   |-- theme/           # Tema Material 3, Cyberpunk Neo-Tokyo Palette, Tipografi
 |-- util/                # Format teks, helper orientasi, parser URL
