@@ -72,6 +72,12 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Dialog Pemilih Trek Cyberpunk**: Antarmuka dialog interaktif untuk beralih bahasa audio yang dapat diakses langsung dari kontrol pemutar video dan tombol aksi cepat (*action pills*).
 - **Transisi Audio Mulus**: Beralih antar bahasa audio secara instan di latar belakang tanpa me-reset posisi pemutaran video aktif.
 
+### 15. Pemutaran Otomatis (Autoplay) & Pengulangan Video Tunggal (Loop)
+- **Autoplay dengan Transisi Hitung Mundur 3 Detik**: Saat video yang sedang diputar selesai (`STATE_ENDED`), aplikasi memulai hitung mundur 3 detik dengan banner transisi mengambang (*floating banner*) yang menampilkan judul video berikutnya, tombol "Putar Sekarang", dan tombol "Batal". Video berikutnya diambil secara otomatis dari playlist aktif atau video terkait pertama (*related video*).
+- **Kontrol Cepat di Overlay & Action Pill**: Status Autoplay dapat dinyalakan atau dimatikan secara instan melalui ikon *quick toggle* di sudut kanan atas pemutar video (`PlayerControlsOverlay`) maupun melalui tombol pil aksi (`PlayerActionPillRow`) di bawah video.
+- **Fitur Loop Video Tunggal**: Memungkinkan pemutaran ulang video yang sama secara terus-menerus tanpa henti. Fitur Loop memiliki prioritas lebih tinggi daripada Autoplay; ketika Loop aktif, video langsung diputar ulang dari detik ke-0 tanpa memicu hitung mundur transisi ke video lain.
+- **Penyimpanan Preferensi Lokal (SharedPreferences)**: Preferensi status Autoplay dan Loop disimpan secara persisten di penyimpanan lokal perangkat melalui `PlayerPreferences`, sehingga konfigurasi pengguna tetap terjaga saat aplikasi ditutup dan dibuka kembali.
+
 ---
 
 ## Informasi & Spesifikasi Teknis
@@ -173,6 +179,13 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Seamless Fallback**: Mengimplementasikan `PipedFallbackExtractor` di dalam paket `extractor/` yang secara cerdas menangkap kegagalan ekstraksi (seperti `AgeRestrictedContentException` atau `ContentNotAvailableException` dari NewPipeExtractor).
 - **Multi-Instance Redundancy**: Mendukung failover dinamis ke multi-instance publik Piped dan Invidious (`api.piped.private.coffee`, `pipedapi.ducks.party`, `yt.chocolatemoo53.com`) untuk menjamin ketersediaan video 18+ tanpa memerlukan login, kredensial pengguna, atau autentikasi OAuth pada perangkat.
 
+#### 13. State Engine Pemutaran Berkelanjutan: Autoplay Countdown & Loop Priority Scheduling
+- **Logika Prioritas State**: Mengatur penjadwalan saat siklus hidup pemutaran ExoPlayer mencapai status `Player.STATE_ENDED`. Evaluasi dilakukan dengan prioritas ketat: jika `isLoopEnabled` bernilai true, pemutar langsung me-replay video aktif dari detik ke-0 (`seekTo(0)` dan `play()`). Jika Loop nonaktif dan `isAutoplayEnabled` bernilai true, coroutine job hitung mundur 3 detik diaktifkan untuk mengeksekusi transisi video berikutnya.
+- **Non-Destructive Queue Peeking**: Metode `peekNextTarget()` pada `PlaybackQueueManager` membaca kandidat video berikutnya dari antrean playlist tanpa memajukan kursor antrean sebelum hitung mundur selesai atau dikonfirmasi oleh pengguna.
+- **Reactive Cancellation Flow**: Menjamin pembatalan hitung mundur secara reaktif saat terjadi interaksi pengguna (seek, pause, pemilihan video manual, atau penekanan tombol "Batal") untuk mencegah pergantian video yang tidak diinginkan.
+- **Modular UI Decoupling**: Menghadirkan komponen UI mandiri `AutoplayCountdownBanner` yang terisolasi dari kontrol scrubber dan overlay, mematuhi prinsip Single Responsibility Principle (SRP) serta memaksimalkan efisiensi kompilasi Compose.
+- **Persistensi Preferensi Tanpa Overhead**: Menggunakan `PlayerPreferences` berbasis `SharedPreferences` terisolasi untuk menyimpan status sakelar Autoplay dan Loop secara asinkron, memastikan state konsisten di seluruh sesi penggunaan aplikasi.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -180,7 +193,7 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 ```
 app/src/main/kotlin/com/example/yoouutt/
 |-- data/
-|   |-- local/           # SQLite Database (WatchHistoryDbHelper), Repositori Riwayat Tontonan & Pencarian
+|   |-- local/           # SQLite Database, PlayerPreferences (Autoplay & Loop), Repositori Riwayat & Pencarian
 |   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData, FeedItem)
 |   |-- repository/      # Abstraksi repositori data (VideoRepository, NewPipeVideoRepository Facade)
 |   |   |-- extractor/   # Modular extraction helpers (Stream, Search, Channel, Playlist, Feed, Mappers, PipedFallback)
@@ -196,7 +209,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |   |-- components/  # HistoryItemRow, HistoryEmptyState
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
 |   |-- player/          # Tampilan utama pemutar video & routing PlayerScreen
-|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, Scrubber, Dialogs
+|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, AutoplayCountdownBanner, Dialogs
 |   |-- playlist/        # Tampilan detail playlist & routing PlaylistScreen
 |   |   |-- components/  # PlaylistHeaderSection, PlaylistItemRow, PlaylistStateViews, PlaylistContent
 |   |-- search/          # Antarmuka pencarian & saran kata kunci
