@@ -1,6 +1,9 @@
 package com.example.yoouutt.ui.common
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.yoouutt.ui.theme.ElectricCyan
 import com.example.yoouutt.update.UpdateInfo
 
 @Composable
@@ -42,10 +47,10 @@ fun UpdateDialog(
         onDismissRequest = {
             if (!isDownloading) onDismiss()
         },
-        containerColor = Color(0xFF141414),
+        containerColor = Color(0xFF16161C),
         titleContentColor = Color.White,
         textContentColor = Color(0xFFCCCCCC),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(22.dp),
         title = {
             Column {
                 Text(
@@ -55,34 +60,56 @@ fun UpdateDialog(
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = updateInfo.versionName,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = BrandRed
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Versi Terbaru:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFFAAAAAA)
+                    )
+                    Text(
+                        text = updateInfo.versionName,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = ElectricCyan
+                    )
+                }
             }
         },
         text = {
             Column {
-                if (updateInfo.changelog.isNotBlank()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 160.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF1F1F1F))
-                            .padding(12.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Text(
-                            text = updateInfo.changelog,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFDDDDDD)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Apa yang baru di ${updateInfo.versionName}:",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val changelogText = updateInfo.changelog.ifBlank {
+                    "• Desain pengaturan pemutar video terpadu ala YouTube\n• Fitur Autoplay pemutaran otomatis dengan transisi hitung mundur 3 detik\n• Fitur Loop pengulangan video tunggal tanpa jeda\n• Dialog pemilih kecepatan pemutaran terstruktur\n• Optimalisasi arsitektur dan efisiensi performa"
                 }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 180.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF202028))
+                        .border(BorderStroke(1.dp, Color(0xFF2E2E38)), RoundedCornerShape(10.dp))
+                        .padding(12.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = changelogText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFFDDDDDD),
+                        lineHeight = 19.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(14.dp))
 
                 if (downloadProgress != null) {
                     val progress = downloadProgress
@@ -99,13 +126,13 @@ fun UpdateDialog(
                             .fillMaxWidth()
                             .height(6.dp)
                             .clip(RoundedCornerShape(3.dp)),
-                        color = BrandRed,
-                        trackColor = Color(0xFF333333)
+                        color = ElectricCyan,
+                        trackColor = Color(0xFF33333D)
                     )
                 } else {
                     Text(
-                        text = "Versi baru siap dipasang langsung ke HP Anda.",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "Versi baru siap diunduh dan dipasang langsung ke HP Anda.",
+                        style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFFAAAAAA)
                     )
                 }
@@ -117,8 +144,8 @@ fun UpdateDialog(
                     onClick = onUpdateClick,
                     shape = RoundedCornerShape(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BrandRed,
-                        contentColor = Color.White
+                        containerColor = ElectricCyan,
+                        contentColor = Color.Black
                     )
                 ) {
                     Text(
@@ -132,7 +159,8 @@ fun UpdateDialog(
             if (!isDownloading) {
                 OutlinedButton(
                     onClick = onDismiss,
-                    shape = RoundedCornerShape(50.dp)
+                    shape = RoundedCornerShape(50.dp),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.35f))
                 ) {
                     Text(
                         text = "Nanti",

@@ -43,15 +43,18 @@ jobs:
             echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Prepare Release Notes
+        run: |
+          if [ ! -f RELEASE_NOTES.md ]; then
+            echo "Pembaruan otomatis YounoAds ${{ steps.release_tag.outputs.tag }}." > RELEASE_NOTES.md
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_tag.outputs.tag }}
           name: YounoAds ${{ steps.release_tag.outputs.tag }}
-          body: |
-            Pembaruan otomatis YounoAds.
-            - Versi: ${{ steps.release_tag.outputs.tag }}
-            - Unduh file `app-release.apk` di bawah dan buka di HP Anda, atau perbarui langsung dari dalam aplikasi.
+          body_path: RELEASE_NOTES.md
           files: app/build/outputs/apk/release/app-release.apk
           draft: false
           prerelease: false
