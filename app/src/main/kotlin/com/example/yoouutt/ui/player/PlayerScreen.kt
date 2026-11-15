@@ -24,7 +24,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.components.AudioTrackSelectionDialog
+import com.example.yoouutt.ui.player.components.PlaybackSpeedSelectionDialog
 import com.example.yoouutt.ui.player.components.PlayerDetailContent
+import com.example.yoouutt.ui.player.components.PlayerSettingsBottomSheet
 import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
 import com.example.yoouutt.ui.player.components.ShareBottomSheet
 import com.example.yoouutt.ui.player.components.VideoPlayerSection
@@ -55,6 +57,8 @@ fun PlayerScreen(
     val currentResolution by viewModel.currentResolution.collectAsStateWithLifecycle()
     val availableResolutions by viewModel.availableResolutions.collectAsStateWithLifecycle()
     val isResolutionDialogVisible by viewModel.isResolutionDialogVisible.collectAsStateWithLifecycle()
+    val isSettingsSheetVisible by viewModel.isSettingsSheetVisible.collectAsStateWithLifecycle()
+    val isSpeedDialogVisible by viewModel.isSpeedDialogVisible.collectAsStateWithLifecycle()
     val currentAudioTrack by viewModel.currentAudioTrack.collectAsStateWithLifecycle()
     val availableAudioTracks by viewModel.availableAudioTracks.collectAsStateWithLifecycle()
     val isAudioTrackDialogVisible by viewModel.isAudioTrackDialogVisible.collectAsStateWithLifecycle()
@@ -152,11 +156,6 @@ fun PlayerScreen(
                 playlistContext = playlistContext,
                 isSaved = isSaved,
                 isDescriptionExpanded = isDescriptionExpanded,
-                isAutoplayEnabled = isAutoplayEnabled,
-                isLoopEnabled = isLoopEnabled,
-                speedText = "${viewModel.speeds[speedIndex]}x",
-                resolutionLabel = resolutionLabel,
-                audioTrackText = currentAudioTrack?.displayName.orEmpty(),
                 videoUrl = videoUrl,
                 onShareClick = { isShareSheetVisible = true },
                 onCopyLinkClick = {
@@ -164,11 +163,7 @@ fun PlayerScreen(
                     PlayerUtils.copyToClipboard(context, shortUrl, "Tautan berhasil disalin")
                 },
                 onToggleSave = viewModel::toggleSave,
-                onToggleAutoplay = viewModel::toggleAutoplay,
-                onToggleLoop = viewModel::toggleLoop,
-                onCycleSpeed = viewModel::cyclePlaybackSpeed,
-                onResolutionClick = viewModel::showResolutionDialog,
-                onAudioTrackClick = viewModel::showAudioTrackDialog,
+                onSettingsClick = viewModel::showSettingsSheet,
                 onPipClick = { activity?.enterPipMode() },
                 onToggleFullscreen = handleToggleFullscreen,
                 onToggleDescription = viewModel::toggleDescription,
@@ -199,6 +194,47 @@ fun PlayerScreen(
             currentAudioTrack = currentAudioTrack,
             onSelectAudioTrack = viewModel::selectAudioTrack,
             onDismiss = viewModel::dismissAudioTrackDialog
+        )
+    }
+
+    if (isSettingsSheetVisible) {
+        val currentSpeed = viewModel.speeds[speedIndex]
+        val formattedSpeedText = if (currentSpeed == 1.0f) "Normal (1.0x)" else "${currentSpeed}x"
+
+        PlayerSettingsBottomSheet(
+            resolutionLabel = resolutionLabel,
+            speedText = formattedSpeedText,
+            audioTrackText = currentAudioTrack?.displayName.orEmpty(),
+            hasMultipleAudioTracks = availableAudioTracks.size > 1,
+            isLoopEnabled = isLoopEnabled,
+            isAutoplayEnabled = isAutoplayEnabled,
+            onSelectQualityClick = {
+                viewModel.dismissSettingsSheet()
+                viewModel.showResolutionDialog()
+            },
+            onSelectSpeedClick = {
+                viewModel.dismissSettingsSheet()
+                viewModel.showSpeedDialog()
+            },
+            onSelectAudioTrackClick = {
+                viewModel.dismissSettingsSheet()
+                viewModel.showAudioTrackDialog()
+            },
+            onToggleLoop = viewModel::toggleLoop,
+            onToggleAutoplay = viewModel::toggleAutoplay,
+            onDismiss = viewModel::dismissSettingsSheet
+        )
+    }
+
+    if (isSpeedDialogVisible) {
+        PlaybackSpeedSelectionDialog(
+            availableSpeeds = viewModel.speeds,
+            currentSpeedIndex = speedIndex,
+            onSelectSpeed = { index ->
+                viewModel.selectSpeed(index)
+                viewModel.dismissSpeedDialog()
+            },
+            onDismiss = viewModel::dismissSpeedDialog
         )
     }
 

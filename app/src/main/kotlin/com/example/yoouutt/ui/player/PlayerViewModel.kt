@@ -101,6 +101,12 @@ class PlayerViewModel(
     private val _speedIndex = MutableStateFlow(2)
     val speedIndex: StateFlow<Int> = _speedIndex.asStateFlow()
 
+    private val _isSettingsSheetVisible = MutableStateFlow(false)
+    val isSettingsSheetVisible: StateFlow<Boolean> = _isSettingsSheetVisible.asStateFlow()
+
+    private val _isSpeedDialogVisible = MutableStateFlow(false)
+    val isSpeedDialogVisible: StateFlow<Boolean> = _isSpeedDialogVisible.asStateFlow()
+
     private val _seekFeedback = MutableStateFlow<SeekFeedback?>(null)
     val seekFeedback: StateFlow<SeekFeedback?> = _seekFeedback.asStateFlow()
 
@@ -295,6 +301,29 @@ class PlayerViewModel(
         val nextIndex = (_speedIndex.value + 1) % speeds.size
         _speedIndex.value = nextIndex
         exoPlayer.setPlaybackSpeed(speeds[nextIndex])
+    }
+
+    fun selectSpeed(index: Int) {
+        if (index in speeds.indices) {
+            _speedIndex.value = index
+            exoPlayer.setPlaybackSpeed(speeds[index])
+        }
+    }
+
+    fun showSettingsSheet() {
+        _isSettingsSheetVisible.value = true
+    }
+
+    fun dismissSettingsSheet() {
+        _isSettingsSheetVisible.value = false
+    }
+
+    fun showSpeedDialog() {
+        _isSpeedDialogVisible.value = true
+    }
+
+    fun dismissSpeedDialog() {
+        _isSpeedDialogVisible.value = false
     }
 
     fun toggleDescription() {

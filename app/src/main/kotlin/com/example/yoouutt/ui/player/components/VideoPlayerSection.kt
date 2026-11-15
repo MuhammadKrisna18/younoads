@@ -158,6 +158,7 @@ fun VideoPlayerSection(
                 onPlayPauseClick = viewModel::togglePlayPause,
                 onToggleFullscreen = onToggleFullscreen,
                 onResolutionClick = viewModel::showResolutionDialog,
+                onSettingsClick = viewModel::showSettingsSheet,
                 onAudioTrackClick = onAudioTrackClick,
                 onScrubbing = viewModel::onScrubbing,
                 onSeek = viewModel::seekTo,

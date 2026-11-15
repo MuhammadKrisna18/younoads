@@ -8,14 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Audiotrack
-import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.PictureInPictureAlt
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Share
@@ -29,19 +25,10 @@ import androidx.compose.ui.unit.dp
 fun PlayerActionPillRow(
     videoUrl: String,
     isSaved: Boolean,
-    isAutoplayEnabled: Boolean = true,
-    isLoopEnabled: Boolean = false,
-    speedText: String,
-    resolutionText: String = "",
-    audioTrackText: String = "",
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
-    onToggleAutoplay: () -> Unit = {},
-    onToggleLoop: () -> Unit = {},
-    onCycleSpeed: () -> Unit,
-    onResolutionClick: () -> Unit = {},
-    onAudioTrackClick: () -> Unit = {},
+    onSettingsClick: () -> Unit,
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -85,51 +72,12 @@ fun PlayerActionPillRow(
         )
 
         ActionPill(
-            icon = Icons.Default.AutoMode,
-            label = if (isAutoplayEnabled) "Autoplay: Aktif" else "Autoplay: Nonaktif",
-            isActive = isAutoplayEnabled,
+            icon = Icons.Default.Settings,
+            label = "Pengaturan",
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                onToggleAutoplay()
+                onSettingsClick()
             }
-        )
-
-        ActionPill(
-            icon = Icons.Default.Repeat,
-            label = if (isLoopEnabled) "Loop: Aktif" else "Loop: Nonaktif",
-            isActive = isLoopEnabled,
-            onClick = {
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                onToggleLoop()
-            }
-        )
-
-        if (resolutionText.isNotBlank()) {
-            ActionPill(
-                icon = Icons.Default.HighQuality,
-                label = resolutionText,
-                onClick = {
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                    onResolutionClick()
-                }
-            )
-        }
-
-        if (audioTrackText.isNotBlank()) {
-            ActionPill(
-                icon = Icons.Default.Audiotrack,
-                label = audioTrackText,
-                onClick = {
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                    onAudioTrackClick()
-                }
-            )
-        }
-
-        ActionPill(
-            icon = Icons.Default.Speed,
-            label = speedText,
-            onClick = onCycleSpeed
         )
 
         ActionPill(

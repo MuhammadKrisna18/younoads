@@ -67,6 +67,7 @@ fun BoxScope.PlayerControlsOverlay(
     onPlayPauseClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     onResolutionClick: () -> Unit,
+    onSettingsClick: () -> Unit = onResolutionClick,
     onAudioTrackClick: () -> Unit = {},
     onScrubbing: (Boolean, Long) -> Unit,
     onSeek: (Long) -> Unit,
@@ -172,24 +173,22 @@ fun BoxScope.PlayerControlsOverlay(
                     }
                 }
 
-                if (currentResolutionText.isNotBlank()) {
-                    IconButton(
-                        onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                            onResolutionClick()
-                        },
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.5f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Kualitas Video",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                IconButton(
+                    onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        onSettingsClick()
+                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.5f))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Pengaturan",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
 
