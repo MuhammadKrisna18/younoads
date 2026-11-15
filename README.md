@@ -74,9 +74,16 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 
 ### 15. Pemutaran Otomatis (Autoplay) & Pengulangan Video Tunggal (Loop)
 - **Autoplay dengan Transisi Hitung Mundur 3 Detik**: Saat video yang sedang diputar selesai (`STATE_ENDED`), aplikasi memulai hitung mundur 3 detik dengan banner transisi mengambang (*floating banner*) yang menampilkan judul video berikutnya, tombol "Putar Sekarang", dan tombol "Batal". Video berikutnya diambil secara otomatis dari playlist aktif atau video terkait pertama (*related video*).
-- **Kontrol Cepat di Overlay & Action Pill**: Status Autoplay dapat dinyalakan atau dimatikan secara instan melalui ikon *quick toggle* di sudut kanan atas pemutar video (`PlayerControlsOverlay`) maupun melalui tombol pil aksi (`PlayerActionPillRow`) di bawah video.
+- **Kontrol Cepat di Overlay & Bottom Sheet**: Status Autoplay dapat dinyalakan atau dimatikan secara instan melalui ikon *quick toggle* di sudut kanan atas pemutar video (`PlayerControlsOverlay`) maupun sakelar toggle switch di dalam `PlayerSettingsBottomSheet`.
 - **Fitur Loop Video Tunggal**: Memungkinkan pemutaran ulang video yang sama secara terus-menerus tanpa henti. Fitur Loop memiliki prioritas lebih tinggi daripada Autoplay; ketika Loop aktif, video langsung diputar ulang dari detik ke-0 tanpa memicu hitung mundur transisi ke video lain.
 - **Penyimpanan Preferensi Lokal (SharedPreferences)**: Preferensi status Autoplay dan Loop disimpan secara persisten di penyimpanan lokal perangkat melalui `PlayerPreferences`, sehingga konfigurasi pengguna tetap terjaga saat aplikasi ditutup dan dibuka kembali.
+
+### 16. Lembar Pengaturan Pemutar Terpadu ala YouTube (Player Settings Bottom Sheet)
+- **Konsolidasi Kontrol Pemutar**: Mengelompokkan seluruh opsi konfigurasi video (Kualitas Resolusi, Kecepatan Pemutaran, Trek Audio, Pengulangan Loop, dan Autoplay) ke dalam satu lembar modal (*Modal Bottom Sheet*) terpadu bergaya YouTube native.
+- **Akses Cepat Ganda**: Dapat diakses melalui ikon roda gigi (Settings) di sudut kanan atas pemutar video maupun melalui pil aksi "Pengaturan" di bawah judul video.
+- **Komponen Switch Interaktif**: Fitur Loop video dan Autoplay disematkan dengan sakelar toggle `Switch` Material 3 beraksen neon Electric Cyan yang dapat dinyalakan/dimatikan secara instan dengan satu sentuhan.
+- **Dialog Pemilih Kecepatan Eksplisit**: Menggantikan siklus kecepatan manual dengan dialog `PlaybackSpeedSelectionDialog` yang menyajikan seluruh opsi (0.5x, 0.75x, Normal 1.0x, 1.25x, 1.5x, 2.0x) lengkap dengan penanda centang aktif.
+- **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol "Suka" dan "Subscribe" semu untuk menjaga arsitektur lokal murni tanpa akun, menyisakan baris pil aksi yang esensial, ringkas, dan bebas gulir panjang (`Bagikan`, `Salin`, `Simpan`, `Pengaturan`, `PiP`, `Layar Penuh`).
 
 ---
 
@@ -186,6 +193,11 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Modular UI Decoupling**: Menghadirkan komponen UI mandiri `AutoplayCountdownBanner` yang terisolasi dari kontrol scrubber dan overlay, mematuhi prinsip Single Responsibility Principle (SRP) serta memaksimalkan efisiensi kompilasi Compose.
 - **Persistensi Preferensi Tanpa Overhead**: Menggunakan `PlayerPreferences` berbasis `SharedPreferences` terisolasi untuk menyimpan status sakelar Autoplay dan Loop secara asinkron, memastikan state konsisten di seluruh sesi penggunaan aplikasi.
 
+#### 14. Konsolidasi Arsitektur Pengaturan Pemutar (YouTube-Style Settings Modal Bottom Sheet)
+- **Desain Terpadu & Eliminasi Bloatware Baris Aksi**: Mengelompokkan seluruh opsi pengaturan video ke dalam `PlayerSettingsBottomSheet` dan dialog pemilih kecepatan terpisah `PlaybackSpeedSelectionDialog`. Langkah ini mengeliminasi baris pil aksi yang sebelumnya penuh sesak dan panjang menjadi ringkas dan esensial (`Bagikan`, `Salin`, `Simpan`, `Pengaturan`, `PiP`, `Layar Penuh`).
+- **Pembersihan Fitur Pseudo-Account**: Menghilangkan state in-memory `isLiked` dan `isSubscribed` dari `PlayerViewModel` serta komponen visual `PlayerChannelHeader` dan `PlayerActionPillRow`. Refactoring ini menegaskan arsitektur aplikasi sebagai klien lokal murni tanpa akun (no-login) yang hanya mengandalkan fitur persistensi nyata (penyimpanan riwayat dan bookmark SQLite).
+- **Alur Interaksi Berjenjang (Sheet-to-Dialog Navigation)**: Menghubungkan transisi mulus dari lembar modal pengaturan ke dialog resolusi, kecepatan, dan trek audio tanpa konflik state atau kebocoran memori.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -209,7 +221,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |   |-- components/  # HistoryItemRow, HistoryEmptyState
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
 |   |-- player/          # Tampilan utama pemutar video & routing PlayerScreen
-|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, AutoplayCountdownBanner, Dialogs
+|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, SettingsBottomSheet, SpeedDialog, Banner
 |   |-- playlist/        # Tampilan detail playlist & routing PlaylistScreen
 |   |   |-- components/  # PlaylistHeaderSection, PlaylistItemRow, PlaylistStateViews, PlaylistContent
 |   |-- search/          # Antarmuka pencarian & saran kata kunci
