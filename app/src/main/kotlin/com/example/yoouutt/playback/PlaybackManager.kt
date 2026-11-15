@@ -6,23 +6,19 @@ import android.content.Intent
 import android.net.Uri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
-import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
+import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.NewPipeVideoRepository
@@ -48,7 +44,9 @@ data class ActivePlayback(
 class PlaybackManager(
     private val context: Context,
     private val historyRepository: WatchHistoryRepository,
-    private val videoRepository: VideoRepository = NewPipeVideoRepository()
+    private val videoRepository: VideoRepository = NewPipeVideoRepository(),
+    private val mediaSourceBuilder: MediaSourceBuilder = MediaSourceBuilder(context),
+    private val queueManager: PlaybackQueueManager = PlaybackQueueManager()
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -82,19 +80,9 @@ class PlaybackManager(
     private val _availableAudioTracks = MutableStateFlow<List<AudioTrackOption>>(emptyList())
     val availableAudioTracks: StateFlow<List<AudioTrackOption>> = _availableAudioTracks.asStateFlow()
 
-    private val _playlistContext = MutableStateFlow<PlaylistContext?>(null)
-    val playlistContext: StateFlow<PlaylistContext?> = _playlistContext.asStateFlow()
+    val playlistContext: StateFlow<PlaylistContext?> = queueManager.playlistContext
 
     val exoPlayer: ExoPlayer = run {
-        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-            .setAllowCrossProtocolRedirects(true)
-            .setConnectTimeoutMs(20000)
-            .setReadTimeoutMs(20000)
-
-        val mediaSourceFactory = DefaultMediaSourceFactory(context)
-            .setDataSourceFactory(httpDataSourceFactory)
-
         val loadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(
                 15000,
@@ -105,7 +93,7 @@ class PlaybackManager(
             .build()
 
         ExoPlayer.Builder(context)
-            .setMediaSourceFactory(mediaSourceFactory)
+            .setMediaSourceFactory(mediaSourceBuilder.defaultMediaSourceFactory)
             .setLoadControl(loadControl)
             .setSeekBackIncrementMs(5000L)
             .setSeekForwardIncrementMs(5000L)
@@ -130,7 +118,7 @@ class PlaybackManager(
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         _isBuffering.value = (playbackState == Player.STATE_BUFFERING)
                         if (playbackState == Player.STATE_ENDED) {
-                            if (_playlistContext.value != null && playNextInPlaylist()) {
+                            if (queueManager.playlistContext.value != null && playNextInPlaylist()) {
                                 return
                             }
                             _isPlaying.value = false
@@ -174,7 +162,7 @@ class PlaybackManager(
 
     fun playVideo(videoUrl: String, title: String, uploaderName: String, clearPlaylist: Boolean = true) {
         if (clearPlaylist) {
-            _playlistContext.value = null
+            queueManager.clear()
         }
         val current = _currentPlayback.value
         if (current?.videoUrl == videoUrl && exoPlayer.playbackState != Player.STATE_IDLE) {
@@ -214,8 +202,9 @@ class PlaybackManager(
                         ?: streamData.availableResolutions.firstOrNull()
                     _currentResolution.value = initialResolution
                     _availableAudioTracks.value = streamData.availableAudioTracks
-                    _currentAudioTrack.value = streamData.selectedAudioTrack
+                    val initialAudioTrack = streamData.selectedAudioTrack
                         ?: streamData.availableAudioTracks.firstOrNull()
+                    _currentAudioTrack.value = initialAudioTrack
                     _isLoading.value = false
 
                     val history = historyRepository.getWatchHistory(streamData.videoId)
@@ -228,21 +217,13 @@ class PlaybackManager(
                     }
                     _resumePositionMs.value = resumePos
 
-                    val resolvedTitle = streamData.title.ifBlank { title }
-                    val resolvedUploader = streamData.uploaderName.ifBlank { uploaderName }
-                    val artworkUri = if (streamData.videoId.isNotBlank()) {
-                        Uri.parse("https://i.ytimg.com/vi/${streamData.videoId}/hqdefault.jpg")
-                    } else {
-                        null
-                    }
+                    val metadata = buildMetadata(
+                        title = streamData.title.ifBlank { title },
+                        uploaderName = streamData.uploaderName.ifBlank { uploaderName },
+                        videoId = streamData.videoId
+                    )
 
-                    val mediaMetadata = MediaMetadata.Builder()
-                        .setTitle(resolvedTitle)
-                        .setArtist(resolvedUploader)
-                        .setArtworkUri(artworkUri)
-                        .build()
-
-                    val mediaSource = createMediaSource(initialResolution, mediaMetadata)
+                    val mediaSource = mediaSourceBuilder.buildMediaSource(initialResolution, initialAudioTrack, metadata)
                     exoPlayer.setMediaSource(mediaSource)
                     exoPlayer.prepare()
                     if (resumePos != null && resumePos > 0L) {
@@ -293,84 +274,19 @@ class PlaybackManager(
         }
     }
 
-    private fun createMediaSource(
-        resolution: VideoResolutionOption?,
-        mediaMetadata: MediaMetadata
-    ): MediaSource {
-        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-            .setAllowCrossProtocolRedirects(true)
-            .setConnectTimeoutMs(20000)
-            .setReadTimeoutMs(20000)
-
-        val defaultFactory = DefaultMediaSourceFactory(context).setDataSourceFactory(httpDataSourceFactory)
-
-        if (resolution == null) {
-            val fallbackItem = MediaItem.Builder().setMediaMetadata(mediaMetadata).build()
-            return defaultFactory.createMediaSource(fallbackItem)
-        }
-
-        val activeAudioUrl = _currentAudioTrack.value?.audioUrl ?: resolution.audioUrl
-
-        return if (resolution.isHls) {
-            val mediaItem = MediaItem.Builder()
-                .setUri(resolution.videoUrl)
-                .setMimeType(MimeTypes.APPLICATION_M3U8)
-                .setMediaMetadata(mediaMetadata)
-                .build()
-            defaultFactory.createMediaSource(mediaItem)
-        } else if (!activeAudioUrl.isNullOrBlank() && (resolution.isVideoOnly || _currentAudioTrack.value != null)) {
-            val videoItem = MediaItem.Builder()
-                .setUri(resolution.videoUrl)
-                .setMediaMetadata(mediaMetadata)
-                .build()
-            val audioItem = MediaItem.Builder()
-                .setUri(activeAudioUrl)
-                .build()
-            val videoSource = defaultFactory.createMediaSource(videoItem)
-            val audioSource = defaultFactory.createMediaSource(audioItem)
-            MergingMediaSource(true, true, videoSource, audioSource)
-        } else {
-            val mediaItem = MediaItem.Builder()
-                .setUri(resolution.videoUrl)
-                .setMediaMetadata(mediaMetadata)
-                .build()
-            defaultFactory.createMediaSource(mediaItem)
-        }
-    }
-
     fun selectResolution(option: VideoResolutionOption) {
         val current = _currentPlayback.value ?: return
         val streamData = current.streamData ?: return
         if (_currentResolution.value == option) return
 
-        val currentPos = exoPlayer.currentPosition
-        val wasPlaying = exoPlayer.isPlaying
         _currentResolution.value = option
-
-        val resolvedTitle = streamData.title.ifBlank { current.title }
-        val resolvedUploader = streamData.uploaderName.ifBlank { current.uploaderName }
-        val artworkUri = if (streamData.videoId.isNotBlank()) {
-            Uri.parse("https://i.ytimg.com/vi/${streamData.videoId}/hqdefault.jpg")
-        } else {
-            null
-        }
-
-        val mediaMetadata = MediaMetadata.Builder()
-            .setTitle(resolvedTitle)
-            .setArtist(resolvedUploader)
-            .setArtworkUri(artworkUri)
-            .build()
-
-        val source = createMediaSource(option, mediaMetadata)
-        exoPlayer.setMediaSource(source)
-        exoPlayer.prepare()
-        if (currentPos > 0L) {
-            exoPlayer.seekTo(currentPos)
-        }
-        if (wasPlaying) {
-            exoPlayer.play()
-        }
+        val metadata = buildMetadata(
+            title = streamData.title.ifBlank { current.title },
+            uploaderName = streamData.uploaderName.ifBlank { current.uploaderName },
+            videoId = streamData.videoId
+        )
+        val source = mediaSourceBuilder.buildMediaSource(option, _currentAudioTrack.value, metadata)
+        switchMediaSource(source)
     }
 
     fun selectAudioTrack(track: AudioTrackOption) {
@@ -378,83 +294,46 @@ class PlaybackManager(
         val streamData = current.streamData ?: return
         if (_currentAudioTrack.value == track) return
 
-        val currentPos = exoPlayer.currentPosition
-        val wasPlaying = exoPlayer.isPlaying
         _currentAudioTrack.value = track
-
         val currentRes = _currentResolution.value
         val updatedRes = currentRes?.copy(audioUrl = track.audioUrl) ?: currentRes
         _currentResolution.value = updatedRes
 
-        val resolvedTitle = streamData.title.ifBlank { current.title }
-        val resolvedUploader = streamData.uploaderName.ifBlank { current.uploaderName }
-        val artworkUri = if (streamData.videoId.isNotBlank()) {
-            Uri.parse("https://i.ytimg.com/vi/${streamData.videoId}/hqdefault.jpg")
-        } else {
-            null
-        }
-
-        val mediaMetadata = MediaMetadata.Builder()
-            .setTitle(resolvedTitle)
-            .setArtist(resolvedUploader)
-            .setArtworkUri(artworkUri)
-            .build()
-
-        val source = createMediaSource(updatedRes, mediaMetadata)
-        exoPlayer.setMediaSource(source)
-        exoPlayer.prepare()
-        if (currentPos > 0L) {
-            exoPlayer.seekTo(currentPos)
-        }
-        if (wasPlaying) {
-            exoPlayer.play()
-        }
+        val metadata = buildMetadata(
+            title = streamData.title.ifBlank { current.title },
+            uploaderName = streamData.uploaderName.ifBlank { current.uploaderName },
+            videoId = streamData.videoId
+        )
+        val source = mediaSourceBuilder.buildMediaSource(updatedRes, track, metadata)
+        switchMediaSource(source)
     }
 
     fun playPlaylistVideo(context: PlaylistContext, index: Int) {
-        if (index !in context.videos.indices) return
-        _playlistContext.value = context.copy(currentIndex = index)
-        val targetVideo = context.videos[index]
-        scope.launch {
-            val playlistItem = PlaylistItem(
-                id = context.playlistId,
-                url = context.playlistId,
-                title = context.playlistTitle,
-                thumbnailUrl = targetVideo.thumbnailUrl,
-                uploaderName = targetVideo.uploaderName,
-                streamCount = context.videos.size.toLong()
-            )
-            historyRepository.saveWatchedPlaylist(playlistItem)
-        }
+        val targetVideo = queueManager.setPlaylist(context, index) ?: return
+        recordWatchedPlaylist(context, targetVideo)
         playVideo(targetVideo.url, targetVideo.title, targetVideo.uploaderName, clearPlaylist = false)
     }
 
     fun playNextInPlaylist(): Boolean {
-        val currentContext = _playlistContext.value ?: return false
-        val nextIndex = currentContext.currentIndex + 1
-        if (nextIndex in currentContext.videos.indices) {
-            playPlaylistVideo(currentContext, nextIndex)
-            return true
-        }
-        return false
+        val (updatedContext, targetVideo) = queueManager.getNextTarget() ?: return false
+        recordWatchedPlaylist(updatedContext, targetVideo)
+        playVideo(targetVideo.url, targetVideo.title, targetVideo.uploaderName, clearPlaylist = false)
+        return true
     }
 
     fun playPreviousInPlaylist(): Boolean {
-        val currentContext = _playlistContext.value ?: return false
-        val prevIndex = currentContext.currentIndex - 1
-        if (prevIndex in currentContext.videos.indices) {
-            playPlaylistVideo(currentContext, prevIndex)
-            return true
-        }
-        return false
+        val (updatedContext, targetVideo) = queueManager.getPreviousTarget() ?: return false
+        recordWatchedPlaylist(updatedContext, targetVideo)
+        playVideo(targetVideo.url, targetVideo.title, targetVideo.uploaderName, clearPlaylist = false)
+        return true
     }
 
     fun clearPlaylist() {
-        _playlistContext.value = null
+        queueManager.clear()
     }
 
     fun stop() {
-        _playlistContext.value = null
+        queueManager.clear()
         saveProgress()
         try {
             context.stopService(Intent(context, PlaybackService::class.java))
@@ -484,5 +363,44 @@ class PlaybackManager(
         }
         exoPlayer.release()
     }
-}
 
+    private fun buildMetadata(title: String, uploaderName: String, videoId: String): MediaMetadata {
+        val artworkUri = if (videoId.isNotBlank()) {
+            Uri.parse("https://i.ytimg.com/vi/$videoId/hqdefault.jpg")
+        } else {
+            null
+        }
+        return MediaMetadata.Builder()
+            .setTitle(title)
+            .setArtist(uploaderName)
+            .setArtworkUri(artworkUri)
+            .build()
+    }
+
+    private fun switchMediaSource(source: MediaSource) {
+        val currentPos = exoPlayer.currentPosition
+        val wasPlaying = exoPlayer.isPlaying
+        exoPlayer.setMediaSource(source)
+        exoPlayer.prepare()
+        if (currentPos > 0L) {
+            exoPlayer.seekTo(currentPos)
+        }
+        if (wasPlaying) {
+            exoPlayer.play()
+        }
+    }
+
+    private fun recordWatchedPlaylist(context: PlaylistContext, targetVideo: VideoItem) {
+        scope.launch {
+            val playlistItem = PlaylistItem(
+                id = context.playlistId,
+                url = context.playlistId,
+                title = context.playlistTitle,
+                thumbnailUrl = targetVideo.thumbnailUrl,
+                uploaderName = targetVideo.uploaderName,
+                streamCount = context.videos.size.toLong()
+            )
+            historyRepository.saveWatchedPlaylist(playlistItem)
+        }
+    }
+}
