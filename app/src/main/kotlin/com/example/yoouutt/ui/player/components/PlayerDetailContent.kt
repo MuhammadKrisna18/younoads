@@ -29,9 +29,7 @@ fun PlayerDetailContent(
     currentUploader: String,
     streamData: StreamData?,
     playlistContext: PlaylistContext? = null,
-    isLiked: Boolean,
     isSaved: Boolean,
-    isSubscribed: Boolean,
     isDescriptionExpanded: Boolean,
     isAutoplayEnabled: Boolean = true,
     isLoopEnabled: Boolean = false,
@@ -39,7 +37,6 @@ fun PlayerDetailContent(
     resolutionLabel: String,
     audioTrackText: String = "",
     videoUrl: String,
-    onToggleLike: () -> Unit,
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
@@ -50,7 +47,6 @@ fun PlayerDetailContent(
     onAudioTrackClick: () -> Unit = {},
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
-    onToggleSubscribe: () -> Unit,
     onToggleDescription: () -> Unit,
     onPlaylistVideoClick: ((Int) -> Unit)? = null,
     onChannelClick: ((channelUrl: String, channelName: String) -> Unit)?,
@@ -108,8 +104,6 @@ fun PlayerDetailContent(
                 PlayerChannelHeader(
                     uploaderName = currentUploader,
                     streamData = streamData,
-                    isSubscribed = isSubscribed,
-                    onToggleSubscribe = onToggleSubscribe,
                     onChannelClick = {
                         val targetUrl = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: currentUploader
                         onChannelClick?.invoke(targetUrl, currentUploader)
@@ -120,14 +114,12 @@ fun PlayerDetailContent(
             item(key = "action_pills") {
                 PlayerActionPillRow(
                     videoUrl = videoUrl,
-                    isLiked = isLiked,
                     isSaved = isSaved,
                     isAutoplayEnabled = isAutoplayEnabled,
                     isLoopEnabled = isLoopEnabled,
                     speedText = speedText,
                     resolutionText = resolutionLabel.ifBlank { "Kualitas" },
                     audioTrackText = audioTrackText,
-                    onToggleLike = onToggleLike,
                     onShareClick = onShareClick,
                     onCopyLinkClick = onCopyLinkClick,
                     onToggleSave = onToggleSave,

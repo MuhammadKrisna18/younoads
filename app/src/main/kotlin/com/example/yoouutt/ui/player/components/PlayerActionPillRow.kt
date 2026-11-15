@@ -16,11 +16,9 @@ import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,14 +28,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PlayerActionPillRow(
     videoUrl: String,
-    isLiked: Boolean,
     isSaved: Boolean,
     isAutoplayEnabled: Boolean = true,
     isLoopEnabled: Boolean = false,
     speedText: String,
     resolutionText: String = "",
     audioTrackText: String = "",
-    onToggleLike: () -> Unit,
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
@@ -60,16 +56,6 @@ fun PlayerActionPillRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ActionPill(
-            icon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-            label = if (isLiked) "Disukai" else "Suka",
-            isActive = isLiked,
-            onClick = {
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                onToggleLike()
-            }
-        )
-
         ActionPill(
             icon = Icons.Outlined.Share,
             label = "Bagikan",

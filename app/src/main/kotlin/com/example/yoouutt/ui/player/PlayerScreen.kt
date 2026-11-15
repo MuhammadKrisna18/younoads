@@ -48,9 +48,7 @@ fun PlayerScreen(
     val isFullscreen by viewModel.isFullscreen.collectAsStateWithLifecycle()
     val isEffectiveFullscreen = isFullscreen || isDeviceLandscape
     val isDescriptionExpanded by viewModel.isDescriptionExpanded.collectAsStateWithLifecycle()
-    val isLiked by viewModel.isLiked.collectAsStateWithLifecycle()
     val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
-    val isSubscribed by viewModel.isSubscribed.collectAsStateWithLifecycle()
     val isAutoplayEnabled by viewModel.isAutoplayEnabled.collectAsStateWithLifecycle()
     val isLoopEnabled by viewModel.isLoopEnabled.collectAsStateWithLifecycle()
     val speedIndex by viewModel.speedIndex.collectAsStateWithLifecycle()
@@ -152,9 +150,7 @@ fun PlayerScreen(
                 currentUploader = currentUploader,
                 streamData = streamData,
                 playlistContext = playlistContext,
-                isLiked = isLiked,
                 isSaved = isSaved,
-                isSubscribed = isSubscribed,
                 isDescriptionExpanded = isDescriptionExpanded,
                 isAutoplayEnabled = isAutoplayEnabled,
                 isLoopEnabled = isLoopEnabled,
@@ -162,7 +158,6 @@ fun PlayerScreen(
                 resolutionLabel = resolutionLabel,
                 audioTrackText = currentAudioTrack?.displayName.orEmpty(),
                 videoUrl = videoUrl,
-                onToggleLike = viewModel::toggleLike,
                 onShareClick = { isShareSheetVisible = true },
                 onCopyLinkClick = {
                     val shortUrl = PlayerUtils.formatShortUrl(videoUrl)
@@ -176,7 +171,6 @@ fun PlayerScreen(
                 onAudioTrackClick = viewModel::showAudioTrackDialog,
                 onPipClick = { activity?.enterPipMode() },
                 onToggleFullscreen = handleToggleFullscreen,
-                onToggleSubscribe = viewModel::toggleSubscribe,
                 onToggleDescription = viewModel::toggleDescription,
                 onPlaylistVideoClick = viewModel::playPlaylistIndex,
                 onChannelClick = onChannelClick,

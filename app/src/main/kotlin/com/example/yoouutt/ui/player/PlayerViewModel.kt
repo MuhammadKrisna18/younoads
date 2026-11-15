@@ -94,14 +94,8 @@ class PlayerViewModel(
     private val _isDescriptionExpanded = MutableStateFlow(false)
     val isDescriptionExpanded: StateFlow<Boolean> = _isDescriptionExpanded.asStateFlow()
 
-    private val _isLiked = MutableStateFlow(false)
-    val isLiked: StateFlow<Boolean> = _isLiked.asStateFlow()
-
     private val _isSaved = MutableStateFlow(false)
     val isSaved: StateFlow<Boolean> = _isSaved.asStateFlow()
-
-    private val _isSubscribed = MutableStateFlow(false)
-    val isSubscribed: StateFlow<Boolean> = _isSubscribed.asStateFlow()
 
     val speeds = listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
     private val _speedIndex = MutableStateFlow(2)
@@ -307,16 +301,8 @@ class PlayerViewModel(
         _isDescriptionExpanded.value = !_isDescriptionExpanded.value
     }
 
-    fun toggleLike() {
-        _isLiked.value = !_isLiked.value
-    }
-
     fun toggleSave() {
         _isSaved.value = !_isSaved.value
-    }
-
-    fun toggleSubscribe() {
-        _isSubscribed.value = !_isSubscribed.value
     }
 
     fun applyResume() {
