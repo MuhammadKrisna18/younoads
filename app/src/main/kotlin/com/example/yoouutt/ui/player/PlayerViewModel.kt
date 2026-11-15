@@ -39,6 +39,8 @@ class PlayerViewModel(
     val currentAudioTrack: StateFlow<AudioTrackOption?> = playbackManager.currentAudioTrack
     val availableAudioTracks: StateFlow<List<AudioTrackOption>> = playbackManager.availableAudioTracks
     val playlistContext: StateFlow<PlaylistContext?> = playbackManager.playlistContext
+    val isAutoplayEnabled: StateFlow<Boolean> = playbackManager.isAutoplayEnabled
+    val isLoopEnabled: StateFlow<Boolean> = playbackManager.isLoopEnabled
 
     fun playNextInPlaylist() {
         playbackManager.playNextInPlaylist()
@@ -228,6 +230,22 @@ class PlayerViewModel(
     fun selectAudioTrack(track: AudioTrackOption) {
         playbackManager.selectAudioTrack(track)
         _isAudioTrackDialogVisible.value = false
+    }
+
+    fun toggleAutoplay() {
+        playbackManager.toggleAutoplay()
+    }
+
+    fun setAutoplay(enabled: Boolean) {
+        playbackManager.setAutoplay(enabled)
+    }
+
+    fun toggleLoop() {
+        playbackManager.toggleLoop()
+    }
+
+    fun setLoop(enabled: Boolean) {
+        playbackManager.setLoop(enabled)
     }
 
 

@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
+import com.example.yoouutt.data.local.PlayerPreferences
 import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.PlaylistItem
@@ -46,12 +47,19 @@ class PlaybackManager(
     private val historyRepository: WatchHistoryRepository,
     private val videoRepository: VideoRepository = NewPipeVideoRepository(),
     private val mediaSourceBuilder: MediaSourceBuilder = MediaSourceBuilder(context),
-    private val queueManager: PlaybackQueueManager = PlaybackQueueManager()
+    private val queueManager: PlaybackQueueManager = PlaybackQueueManager(),
+    private val playerPreferences: PlayerPreferences = PlayerPreferences(context)
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val _currentPlayback = MutableStateFlow<ActivePlayback?>(null)
     val currentPlayback: StateFlow<ActivePlayback?> = _currentPlayback.asStateFlow()
+
+    private val _isAutoplayEnabled = MutableStateFlow(playerPreferences.isAutoplayEnabled)
+    val isAutoplayEnabled: StateFlow<Boolean> = _isAutoplayEnabled.asStateFlow()
+
+    private val _isLoopEnabled = MutableStateFlow(playerPreferences.isLoopEnabled)
+    val isLoopEnabled: StateFlow<Boolean> = _isLoopEnabled.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -100,6 +108,7 @@ class PlaybackManager(
             .build()
             .apply {
                 playWhenReady = true
+                repeatMode = if (playerPreferences.isLoopEnabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
                 setWakeMode(C.WAKE_MODE_NETWORK)
                 val audioAttributes = AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA)
@@ -362,6 +371,30 @@ class PlaybackManager(
         } catch (_: Exception) {
         }
         exoPlayer.release()
+    }
+
+    fun toggleAutoplay() {
+        val newValue = !_isAutoplayEnabled.value
+        _isAutoplayEnabled.value = newValue
+        playerPreferences.isAutoplayEnabled = newValue
+    }
+
+    fun setAutoplay(enabled: Boolean) {
+        _isAutoplayEnabled.value = enabled
+        playerPreferences.isAutoplayEnabled = enabled
+    }
+
+    fun toggleLoop() {
+        val newValue = !_isLoopEnabled.value
+        _isLoopEnabled.value = newValue
+        playerPreferences.isLoopEnabled = newValue
+        exoPlayer.repeatMode = if (newValue) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+    }
+
+    fun setLoop(enabled: Boolean) {
+        _isLoopEnabled.value = enabled
+        playerPreferences.isLoopEnabled = enabled
+        exoPlayer.repeatMode = if (enabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
     }
 
     private fun buildMetadata(title: String, uploaderName: String, videoId: String): MediaMetadata {
