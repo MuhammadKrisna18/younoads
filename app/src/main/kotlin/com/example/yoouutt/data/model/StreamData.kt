@@ -10,6 +10,16 @@ data class VideoResolutionOption(
     val format: String = ""
 )
 
+data class AudioTrackOption(
+    val id: String,
+    val displayName: String,
+    val languageCode: String = "",
+    val audioUrl: String,
+    val isOriginal: Boolean = false,
+    val format: String = "",
+    val bitrate: Int = 0
+)
+
 data class StreamData(
     val videoId: String,
     val title: String,
@@ -24,5 +34,7 @@ data class StreamData(
     val uploadDateText: String = "",
     val relatedVideos: List<VideoItem> = emptyList(),
     val availableResolutions: List<VideoResolutionOption> = emptyList(),
-    val selectedResolution: VideoResolutionOption? = null
+    val selectedResolution: VideoResolutionOption? = null,
+    val availableAudioTracks: List<AudioTrackOption> = emptyList(),
+    val selectedAudioTrack: AudioTrackOption? = null
 )

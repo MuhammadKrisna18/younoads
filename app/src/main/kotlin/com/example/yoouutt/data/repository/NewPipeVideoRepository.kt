@@ -1,6 +1,7 @@
 package com.example.yoouutt.data.repository
 
 import android.util.LruCache
+import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.PlaylistData
@@ -22,6 +23,7 @@ import org.schabi.newpipe.extractor.channel.tabs.ChannelTabs
 import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import com.example.yoouutt.util.TextFormatters
+import java.util.Locale
 
 class NewPipeVideoRepository(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -147,13 +149,55 @@ class NewPipeVideoRepository(
             }
 
             val audioStreams = try { streamExtractor.audioStreams } catch (_: Exception) { emptyList() }
-            val bestAudioStream = audioStreams
+            val availableAudioTracks = audioStreams
                 .filter { !it.content.isNullOrBlank() }
-                .maxWithOrNull(
-                    compareBy<org.schabi.newpipe.extractor.stream.AudioStream> { it.format == org.schabi.newpipe.extractor.MediaFormat.M4A }
-                        .thenBy { it.averageBitrate.takeIf { b -> b > 0 } ?: it.bitrate }
+                .groupBy { stream ->
+                    stream.audioTrackId?.takeIf { it.isNotBlank() }
+                        ?: "${stream.audioTrackName}_${stream.audioLocale?.toLanguageTag()}_${stream.audioTrackType?.name}"
+                }
+                .mapNotNull { (_, streamsInGroup) ->
+                    val bestInGroup = streamsInGroup.maxWithOrNull(
+                        compareBy<org.schabi.newpipe.extractor.stream.AudioStream> { it.format == org.schabi.newpipe.extractor.MediaFormat.M4A }
+                            .thenBy { it.averageBitrate.takeIf { b -> b > 0 } ?: it.bitrate }
+                    ) ?: return@mapNotNull null
+
+                    val isOriginal = bestInGroup.audioTrackType == org.schabi.newpipe.extractor.stream.AudioTrackType.ORIGINAL
+                    val locale = bestInGroup.audioLocale
+                    val rawName = bestInGroup.audioTrackName.orEmpty().trim()
+                    val langName = when {
+                        rawName.isNotBlank() -> rawName
+                        locale != null -> locale.getDisplayLanguage(Locale.forLanguageTag("id")).takeIf { it.isNotBlank() } ?: locale.displayLanguage
+                        else -> "Audio Utama"
+                    }
+
+                    val displayName = when {
+                        isOriginal && !langName.contains("asli", ignoreCase = true) && !langName.contains("original", ignoreCase = true) -> "$langName (Asli)"
+                        bestInGroup.audioTrackType == org.schabi.newpipe.extractor.stream.AudioTrackType.DUBBED && !langName.contains("dub", ignoreCase = true) && !langName.contains("sulih", ignoreCase = true) -> "$langName (Sulih Suara)"
+                        bestInGroup.audioTrackType == org.schabi.newpipe.extractor.stream.AudioTrackType.DESCRIPTIVE -> "$langName (Deskriptif)"
+                        else -> langName
+                    }
+
+                    AudioTrackOption(
+                        id = bestInGroup.audioTrackId.orEmpty().ifBlank { "${langName}_${bestInGroup.getItag()}" },
+                        displayName = displayName,
+                        languageCode = locale?.language.orEmpty(),
+                        audioUrl = bestInGroup.content,
+                        isOriginal = isOriginal,
+                        format = bestInGroup.format?.name.orEmpty(),
+                        bitrate = bestInGroup.averageBitrate.takeIf { b -> b > 0 } ?: bestInGroup.bitrate
+                    )
+                }
+                .sortedWith(
+                    compareByDescending<AudioTrackOption> { it.isOriginal }
+                        .thenByDescending { it.languageCode.equals(Locale.getDefault().language, ignoreCase = true) }
+                        .thenByDescending { it.bitrate }
                 )
-            val bestAudioUrl = bestAudioStream?.content
+
+            val selectedAudioTrack = availableAudioTracks.firstOrNull { it.isOriginal }
+                ?: availableAudioTracks.firstOrNull { it.languageCode.equals(Locale.getDefault().language, ignoreCase = true) }
+                ?: availableAudioTracks.firstOrNull()
+
+            val bestAudioUrl = selectedAudioTrack?.audioUrl
 
             val videoStreams = try { streamExtractor.videoStreams } catch (_: Exception) { emptyList() }
             val videoOnlyStreams = try { streamExtractor.videoOnlyStreams } catch (_: Exception) { emptyList() }
@@ -277,7 +321,9 @@ class NewPipeVideoRepository(
                 uploadDateText = formattedDate,
                 relatedVideos = relatedItems,
                 availableResolutions = availableResolutions,
-                selectedResolution = selectedResolution
+                selectedResolution = selectedResolution,
+                availableAudioTracks = availableAudioTracks,
+                selectedAudioTrack = selectedAudioTrack
             )
             streamCache.put(videoUrl, Pair(streamData, System.currentTimeMillis()))
             streamData

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
@@ -32,6 +33,7 @@ fun PlayerActionPillRow(
     isSaved: Boolean,
     speedText: String,
     resolutionText: String = "",
+    audioTrackText: String = "",
     isAmbientEnabled: Boolean = true,
     onToggleLike: () -> Unit,
     onShareClick: () -> Unit,
@@ -39,6 +41,7 @@ fun PlayerActionPillRow(
     onToggleSave: () -> Unit,
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit = {},
+    onAudioTrackClick: () -> Unit = {},
     onToggleAmbient: () -> Unit = {},
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
@@ -99,6 +102,17 @@ fun PlayerActionPillRow(
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     onResolutionClick()
+                }
+            )
+        }
+
+        if (audioTrackText.isNotBlank()) {
+            ActionPill(
+                icon = Icons.Default.Audiotrack,
+                label = audioTrackText,
+                onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    onAudioTrackClick()
                 }
             )
         }

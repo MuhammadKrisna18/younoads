@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoResolutionOption
@@ -35,6 +36,8 @@ class PlayerViewModel(
     val exoPlayer: ExoPlayer get() = playbackManager.exoPlayer
     val currentResolution: StateFlow<VideoResolutionOption?> = playbackManager.currentResolution
     val availableResolutions: StateFlow<List<VideoResolutionOption>> = playbackManager.availableResolutions
+    val currentAudioTrack: StateFlow<AudioTrackOption?> = playbackManager.currentAudioTrack
+    val availableAudioTracks: StateFlow<List<AudioTrackOption>> = playbackManager.availableAudioTracks
     val playlistContext: StateFlow<PlaylistContext?> = playbackManager.playlistContext
 
     fun playNextInPlaylist() {
@@ -52,6 +55,9 @@ class PlayerViewModel(
 
     private val _isResolutionDialogVisible = MutableStateFlow(false)
     val isResolutionDialogVisible: StateFlow<Boolean> = _isResolutionDialogVisible.asStateFlow()
+
+    private val _isAudioTrackDialogVisible = MutableStateFlow(false)
+    val isAudioTrackDialogVisible: StateFlow<Boolean> = _isAudioTrackDialogVisible.asStateFlow()
 
     private val _isAmbientModeEnabled = MutableStateFlow(true)
     val isAmbientModeEnabled: StateFlow<Boolean> = _isAmbientModeEnabled.asStateFlow()
@@ -211,6 +217,19 @@ class PlayerViewModel(
 
     fun selectResolution(option: VideoResolutionOption) {
         playbackManager.selectResolution(option)
+    }
+
+    fun showAudioTrackDialog() {
+        _isAudioTrackDialogVisible.value = true
+    }
+
+    fun dismissAudioTrackDialog() {
+        _isAudioTrackDialogVisible.value = false
+    }
+
+    fun selectAudioTrack(track: AudioTrackOption) {
+        playbackManager.selectAudioTrack(track)
+        _isAudioTrackDialogVisible.value = false
     }
 
     fun toggleAmbientMode() {

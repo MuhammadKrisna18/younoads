@@ -59,6 +59,7 @@ import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.feed.VideoCard
 import com.example.yoouutt.ui.player.components.AmbientGlow
+import com.example.yoouutt.ui.player.components.AudioTrackSelectionDialog
 import com.example.yoouutt.ui.player.components.DoubleTapSeekFeedback
 import com.example.yoouutt.ui.player.components.MinimalBottomProgressBar
 import com.example.yoouutt.ui.player.components.PlayerActionPillRow
@@ -96,6 +97,9 @@ fun PlayerScreen(
     val currentResolution by viewModel.currentResolution.collectAsStateWithLifecycle()
     val availableResolutions by viewModel.availableResolutions.collectAsStateWithLifecycle()
     val isResolutionDialogVisible by viewModel.isResolutionDialogVisible.collectAsStateWithLifecycle()
+    val currentAudioTrack by viewModel.currentAudioTrack.collectAsStateWithLifecycle()
+    val availableAudioTracks by viewModel.availableAudioTracks.collectAsStateWithLifecycle()
+    val isAudioTrackDialogVisible by viewModel.isAudioTrackDialogVisible.collectAsStateWithLifecycle()
     val isAmbientModeEnabled by viewModel.isAmbientModeEnabled.collectAsStateWithLifecycle()
     val playlistContext by viewModel.playlistContext.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
@@ -167,6 +171,7 @@ fun PlayerScreen(
             isFullscreen = isEffectiveFullscreen,
             isInPipMode = isInPipMode,
             resolutionLabel = resolutionLabel,
+            hasAudioTracks = availableAudioTracks.size > 1,
             hasPlaylist = playlistContext != null,
             hasPrevious = (playlistContext?.currentIndex ?: 0) > 0,
             hasNext = (playlistContext?.let { it.currentIndex + 1 < it.videos.size } ?: false),
@@ -174,6 +179,7 @@ fun PlayerScreen(
             onNextClick = viewModel::playNextInPlaylist,
             onBack = onBack,
             onToggleFullscreen = handleToggleFullscreen,
+            onAudioTrackClick = viewModel::showAudioTrackDialog,
             modifier = videoBoxModifier
         )
 
@@ -194,6 +200,7 @@ fun PlayerScreen(
                 isDescriptionExpanded = isDescriptionExpanded,
                 speedText = "${viewModel.speeds[speedIndex]}x",
                 resolutionLabel = resolutionLabel,
+                audioTrackText = currentAudioTrack?.displayName.orEmpty(),
                 videoUrl = videoUrl,
                 onToggleLike = viewModel::toggleLike,
                 onShareClick = { isShareSheetVisible = true },
@@ -204,6 +211,7 @@ fun PlayerScreen(
                 onToggleSave = viewModel::toggleSave,
                 onCycleSpeed = viewModel::cyclePlaybackSpeed,
                 onResolutionClick = viewModel::showResolutionDialog,
+                onAudioTrackClick = viewModel::showAudioTrackDialog,
                 onToggleAmbient = viewModel::toggleAmbientMode,
                 onPipClick = { activity?.enterPipMode() },
                 onToggleFullscreen = handleToggleFullscreen,
@@ -232,6 +240,15 @@ fun PlayerScreen(
         )
     }
 
+    if (isAudioTrackDialogVisible) {
+        AudioTrackSelectionDialog(
+            availableAudioTracks = availableAudioTracks,
+            currentAudioTrack = currentAudioTrack,
+            onSelectAudioTrack = viewModel::selectAudioTrack,
+            onDismiss = viewModel::dismissAudioTrackDialog
+        )
+    }
+
     if (isShareSheetVisible) {
         val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
         val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
@@ -254,6 +271,7 @@ private fun VideoPlayerSection(
     isFullscreen: Boolean,
     isInPipMode: Boolean,
     resolutionLabel: String,
+    hasAudioTracks: Boolean = false,
     hasPlaylist: Boolean = false,
     hasPrevious: Boolean = false,
     hasNext: Boolean = false,
@@ -261,6 +279,7 @@ private fun VideoPlayerSection(
     onNextClick: () -> Unit = {},
     onBack: () -> Unit,
     onToggleFullscreen: () -> Unit,
+    onAudioTrackClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -352,12 +371,14 @@ private fun VideoPlayerSection(
                 bufferedPositionMs = bufferedPositionMs,
                 durationMs = durationMs,
                 currentResolutionText = resolutionLabel,
+                hasAudioTracks = hasAudioTracks,
                 onBackClick = {
                     if (isFullscreen) onToggleFullscreen() else onBack()
                 },
                 onPlayPauseClick = viewModel::togglePlayPause,
                 onToggleFullscreen = onToggleFullscreen,
                 onResolutionClick = viewModel::showResolutionDialog,
+                onAudioTrackClick = onAudioTrackClick,
                 onScrubbing = viewModel::onScrubbing,
                 onSeek = viewModel::seekTo,
                 hasPlaylist = hasPlaylist,
@@ -438,6 +459,7 @@ private fun PlayerDetailContent(
     isDescriptionExpanded: Boolean,
     speedText: String,
     resolutionLabel: String,
+    audioTrackText: String = "",
     videoUrl: String,
     onToggleLike: () -> Unit,
     onShareClick: () -> Unit,
@@ -445,6 +467,7 @@ private fun PlayerDetailContent(
     onToggleSave: () -> Unit,
     onCycleSpeed: () -> Unit,
     onResolutionClick: () -> Unit,
+    onAudioTrackClick: () -> Unit = {},
     onToggleAmbient: () -> Unit,
     onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
@@ -530,6 +553,7 @@ private fun PlayerDetailContent(
                     isSaved = isSaved,
                     speedText = speedText,
                     resolutionText = resolutionLabel.ifBlank { "Kualitas" },
+                    audioTrackText = audioTrackText,
                     isAmbientEnabled = isAmbientModeEnabled,
                     onToggleLike = onToggleLike,
                     onShareClick = onShareClick,
@@ -537,6 +561,7 @@ private fun PlayerDetailContent(
                     onToggleSave = onToggleSave,
                     onCycleSpeed = onCycleSpeed,
                     onResolutionClick = onResolutionClick,
+                    onAudioTrackClick = onAudioTrackClick,
                     onToggleAmbient = onToggleAmbient,
                     onPipClick = onPipClick,
                     onToggleFullscreen = onToggleFullscreen

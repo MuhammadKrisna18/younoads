@@ -66,6 +66,12 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Pemutaran Berkelanjutan (Auto-Next)**: Video berikutnya dalam daftar putar akan otomatis diputar saat video saat ini selesai diputar.
 - **Kontrol Navigasi Trek**: Tombol Lewati Berikutnya (Next) dan Lewati Sebelumnya (Previous) terintegrasi pada kontrol pemutar video saat playlist aktif.
 
+### 14. Pemilih Trek Audio & Sulih Suara (Multi-Language Audio Track Selector)
+- **Prioritas Cerdas Suara Asli (Original Audio Priority)**: Sistem secara cerdas memprioritaskan trek audio asli (`ORIGINAL`) saat video diputar, mencegah video kreator Indonesia tertukar secara otomatis dengan dubbing AI/Bahasa Inggris.
+- **Dukungan Multi-Language Track YouTube**: Mengekstraksi seluruh varian audio (asli, dubbing sulih suara, deskriptif) dari YouTube backend dan mengelompokkannya secara terstruktur.
+- **Dialog Pemilih Trek Cyberpunk**: Antarmuka dialog interaktif untuk beralih bahasa audio yang dapat diakses langsung dari kontrol pemutar video dan tombol aksi cepat (*action pills*).
+- **Transisi Audio Mulus**: Beralih antar bahasa audio secara instan di latar belakang tanpa me-reset posisi pemutaran video aktif.
+
 ---
 
 ## Informasi & Spesifikasi Teknis
@@ -144,6 +150,11 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Centralized Wrapper Layering**: Mengimplementasikan komponen pembungkus terpusat `CyberpunkAppBackground` pada hierarki root aplikasi di `MainActivity`. Komponen ini menyatukan kanvas dasar `DarkBackground`, layer gambar vektor/bitmap WebP dengan opasitas hologram jernih (~35%), gradien vertikal quad-stop untuk proteksi kontras status bar dan bottom bar, serta vignette radial halus.
 - **Transparansi Selektif pada Scaffolding**: Seluruh kontainer halaman (`FeedScreen`, `HistoryScreen`, `ChannelScreen`, `PlaylistScreen`, dan bagian bawah `PlayerScreen`) dikonfigurasi menggunakan `containerColor = Color.Transparent`, memungkinkan efek parallax halus saat daftar video digulir di atas latar belakang watermark yang statis tanpa penalti beban rendering grafis tambahan.
 - **Isolasi Pemutar Video**: Area pemutaran video (`VideoPlayerSection`) tetap mempertahankan latar belakang hitam absolut (`Color.Black`) guna menjamin rasio kontras pemutaran video 16:9 dan mode layar penuh (fullscreen) tanpa distorsi visual.
+
+#### 10. Manajemen Multi-Track Audio & MergingMediaSource Dynamic Swapping
+- **Ekstraksi & Deduplikasi AudioStream**: Mengelompokkan aliran audio berdasarkan kombinasi `audioTrackId`, `audioTrackName`, dan `audioLocale`. Menyeleksi bitrate dan format M4A terbaik untuk tiap bahasa tanpa duplikasi itag.
+- **Smart Priority Resolution**: Mengimplementasikan algoritma komparasi `compareByDescending { it.isOriginal }.thenByDescending { it.languageCode == defaultLocale }` untuk memastikan trek audio asli selalu menjadi default pertama.
+- **Dynamic MergingMediaSource Injection**: Memodifikasi pembuat media source pada `PlaybackManager` sehingga saat pengguna memilih trek audio baru, ExoPlayer me-rebuild `MergingMediaSource` dengan aliran audio yang baru dan melakukan seek instan ke posisi detik terakhir tanpa interupsi visual.
 
 ---
 

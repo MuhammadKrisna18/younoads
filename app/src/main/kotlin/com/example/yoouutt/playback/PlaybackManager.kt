@@ -19,6 +19,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
+import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
@@ -74,6 +75,12 @@ class PlaybackManager(
 
     private val _availableResolutions = MutableStateFlow<List<VideoResolutionOption>>(emptyList())
     val availableResolutions: StateFlow<List<VideoResolutionOption>> = _availableResolutions.asStateFlow()
+
+    private val _currentAudioTrack = MutableStateFlow<AudioTrackOption?>(null)
+    val currentAudioTrack: StateFlow<AudioTrackOption?> = _currentAudioTrack.asStateFlow()
+
+    private val _availableAudioTracks = MutableStateFlow<List<AudioTrackOption>>(emptyList())
+    val availableAudioTracks: StateFlow<List<AudioTrackOption>> = _availableAudioTracks.asStateFlow()
 
     private val _playlistContext = MutableStateFlow<PlaylistContext?>(null)
     val playlistContext: StateFlow<PlaylistContext?> = _playlistContext.asStateFlow()
@@ -206,6 +213,9 @@ class PlaybackManager(
                     val initialResolution = streamData.selectedResolution
                         ?: streamData.availableResolutions.firstOrNull()
                     _currentResolution.value = initialResolution
+                    _availableAudioTracks.value = streamData.availableAudioTracks
+                    _currentAudioTrack.value = streamData.selectedAudioTrack
+                        ?: streamData.availableAudioTracks.firstOrNull()
                     _isLoading.value = false
 
                     val history = historyRepository.getWatchHistory(streamData.videoId)
@@ -300,6 +310,8 @@ class PlaybackManager(
             return defaultFactory.createMediaSource(fallbackItem)
         }
 
+        val activeAudioUrl = _currentAudioTrack.value?.audioUrl ?: resolution.audioUrl
+
         return if (resolution.isHls) {
             val mediaItem = MediaItem.Builder()
                 .setUri(resolution.videoUrl)
@@ -307,13 +319,13 @@ class PlaybackManager(
                 .setMediaMetadata(mediaMetadata)
                 .build()
             defaultFactory.createMediaSource(mediaItem)
-        } else if (resolution.isVideoOnly && !resolution.audioUrl.isNullOrBlank()) {
+        } else if (!activeAudioUrl.isNullOrBlank() && (resolution.isVideoOnly || _currentAudioTrack.value != null)) {
             val videoItem = MediaItem.Builder()
                 .setUri(resolution.videoUrl)
                 .setMediaMetadata(mediaMetadata)
                 .build()
             val audioItem = MediaItem.Builder()
-                .setUri(resolution.audioUrl)
+                .setUri(activeAudioUrl)
                 .build()
             val videoSource = defaultFactory.createMediaSource(videoItem)
             val audioSource = defaultFactory.createMediaSource(audioItem)
@@ -351,6 +363,44 @@ class PlaybackManager(
             .build()
 
         val source = createMediaSource(option, mediaMetadata)
+        exoPlayer.setMediaSource(source)
+        exoPlayer.prepare()
+        if (currentPos > 0L) {
+            exoPlayer.seekTo(currentPos)
+        }
+        if (wasPlaying) {
+            exoPlayer.play()
+        }
+    }
+
+    fun selectAudioTrack(track: AudioTrackOption) {
+        val current = _currentPlayback.value ?: return
+        val streamData = current.streamData ?: return
+        if (_currentAudioTrack.value == track) return
+
+        val currentPos = exoPlayer.currentPosition
+        val wasPlaying = exoPlayer.isPlaying
+        _currentAudioTrack.value = track
+
+        val currentRes = _currentResolution.value
+        val updatedRes = currentRes?.copy(audioUrl = track.audioUrl) ?: currentRes
+        _currentResolution.value = updatedRes
+
+        val resolvedTitle = streamData.title.ifBlank { current.title }
+        val resolvedUploader = streamData.uploaderName.ifBlank { current.uploaderName }
+        val artworkUri = if (streamData.videoId.isNotBlank()) {
+            Uri.parse("https://i.ytimg.com/vi/${streamData.videoId}/hqdefault.jpg")
+        } else {
+            null
+        }
+
+        val mediaMetadata = MediaMetadata.Builder()
+            .setTitle(resolvedTitle)
+            .setArtist(resolvedUploader)
+            .setArtworkUri(artworkUri)
+            .build()
+
+        val source = createMediaSource(updatedRes, mediaMetadata)
         exoPlayer.setMediaSource(source)
         exoPlayer.prepare()
         if (currentPos > 0L) {
@@ -415,6 +465,8 @@ class PlaybackManager(
         _currentPlayback.value = null
         _currentResolution.value = null
         _availableResolutions.value = emptyList()
+        _currentAudioTrack.value = null
+        _availableAudioTracks.value = emptyList()
         _isLoading.value = false
         _errorMessage.value = null
         _resumePositionMs.value = null
