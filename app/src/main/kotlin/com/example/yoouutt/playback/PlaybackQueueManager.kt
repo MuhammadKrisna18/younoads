@@ -26,6 +26,13 @@ class PlaybackQueueManager {
         return Pair(updatedContext, updatedContext.videos[nextIndex])
     }
 
+    fun peekNextTarget(): VideoItem? {
+        val current = _playlistContext.value ?: return null
+        val nextIndex = current.currentIndex + 1
+        if (nextIndex !in current.videos.indices) return null
+        return current.videos[nextIndex]
+    }
+
     fun getPreviousTarget(): Pair<PlaylistContext, VideoItem>? {
         val current = _playlistContext.value ?: return null
         val prevIndex = current.currentIndex - 1

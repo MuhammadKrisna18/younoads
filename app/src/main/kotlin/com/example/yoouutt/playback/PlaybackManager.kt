@@ -27,12 +27,18 @@ import com.example.yoouutt.data.repository.VideoRepository
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+data class AutoplayCountdown(
+    val targetVideo: VideoItem,
+    val secondsRemaining: Int
+)
 
 data class ActivePlayback(
     val videoUrl: String,
@@ -60,6 +66,10 @@ class PlaybackManager(
 
     private val _isLoopEnabled = MutableStateFlow(playerPreferences.isLoopEnabled)
     val isLoopEnabled: StateFlow<Boolean> = _isLoopEnabled.asStateFlow()
+
+    private var autoplayJob: Job? = null
+    private val _autoplayCountdown = MutableStateFlow<AutoplayCountdown?>(null)
+    val autoplayCountdown: StateFlow<AutoplayCountdown?> = _autoplayCountdown.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -121,17 +131,35 @@ class PlaybackManager(
                         _isPlaying.value = isPlaying
                         if (isPlaying) {
                             _isBuffering.value = false
+                            cancelAutoplayCountdown()
                         }
                     }
 
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         _isBuffering.value = (playbackState == Player.STATE_BUFFERING)
                         if (playbackState == Player.STATE_ENDED) {
-                            if (queueManager.playlistContext.value != null && playNextInPlaylist()) {
+                            if (_isLoopEnabled.value) {
+                                exoPlayer.seekTo(0L)
+                                exoPlayer.play()
                                 return
                             }
-                            _isPlaying.value = false
-                            _isBuffering.value = false
+                            if (!_isAutoplayEnabled.value) {
+                                _isPlaying.value = false
+                                _isBuffering.value = false
+                                cancelAutoplayCountdown()
+                                return
+                            }
+                            val nextVideo = if (queueManager.playlistContext.value != null) {
+                                queueManager.peekNextTarget()
+                            } else {
+                                _currentPlayback.value?.streamData?.relatedVideos?.firstOrNull()
+                            }
+                            if (nextVideo != null) {
+                                startAutoplayCountdown(nextVideo)
+                            } else {
+                                _isPlaying.value = false
+                                _isBuffering.value = false
+                            }
                         }
                     }
 
@@ -170,6 +198,7 @@ class PlaybackManager(
     }
 
     fun playVideo(videoUrl: String, title: String, uploaderName: String, clearPlaylist: Boolean = true) {
+        cancelAutoplayCountdown()
         if (clearPlaylist) {
             queueManager.clear()
         }
@@ -248,6 +277,7 @@ class PlaybackManager(
     }
 
     fun togglePlayPause() {
+        cancelAutoplayCountdown()
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
         } else {
@@ -342,6 +372,7 @@ class PlaybackManager(
     }
 
     fun stop() {
+        cancelAutoplayCountdown()
         queueManager.clear()
         saveProgress()
         try {
@@ -361,6 +392,7 @@ class PlaybackManager(
     }
 
     fun release() {
+        cancelAutoplayCountdown()
         saveProgress()
         try {
             context.stopService(Intent(context, PlaybackService::class.java))
@@ -371,6 +403,34 @@ class PlaybackManager(
         } catch (_: Exception) {
         }
         exoPlayer.release()
+    }
+
+    private fun startAutoplayCountdown(nextVideo: VideoItem) {
+        cancelAutoplayCountdown()
+        autoplayJob = scope.launch {
+            for (seconds in 3 downTo 1) {
+                _autoplayCountdown.value = AutoplayCountdown(nextVideo, seconds)
+                delay(1000L)
+            }
+            _autoplayCountdown.value = null
+            playNextImmediately()
+        }
+    }
+
+    fun cancelAutoplayCountdown() {
+        autoplayJob?.cancel()
+        autoplayJob = null
+        _autoplayCountdown.value = null
+    }
+
+    fun playNextImmediately() {
+        val target = _autoplayCountdown.value?.targetVideo
+        cancelAutoplayCountdown()
+        if (queueManager.playlistContext.value != null) {
+            playNextInPlaylist()
+        } else if (target != null) {
+            playVideo(target.url, target.title, target.uploaderName)
+        }
     }
 
     fun toggleAutoplay() {

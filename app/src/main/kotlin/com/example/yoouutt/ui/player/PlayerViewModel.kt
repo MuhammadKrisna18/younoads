@@ -10,6 +10,7 @@ import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoResolutionOption
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import com.example.yoouutt.playback.ActivePlayback
+import com.example.yoouutt.playback.AutoplayCountdown
 import com.example.yoouutt.playback.PlaybackManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -41,6 +42,7 @@ class PlayerViewModel(
     val playlistContext: StateFlow<PlaylistContext?> = playbackManager.playlistContext
     val isAutoplayEnabled: StateFlow<Boolean> = playbackManager.isAutoplayEnabled
     val isLoopEnabled: StateFlow<Boolean> = playbackManager.isLoopEnabled
+    val autoplayCountdown: StateFlow<AutoplayCountdown?> = playbackManager.autoplayCountdown
 
     fun playNextInPlaylist() {
         playbackManager.playNextInPlaylist()
@@ -159,6 +161,7 @@ class PlayerViewModel(
     }
 
     fun seekTo(seekMs: Long) {
+        cancelAutoplayCountdown()
         if (exoPlayer.playbackState == Player.STATE_IDLE) {
             exoPlayer.prepare()
         }
@@ -169,6 +172,7 @@ class PlayerViewModel(
     }
 
     fun doubleTapSeek(isForward: Boolean) {
+        cancelAutoplayCountdown()
         val player = playbackManager.exoPlayer
         val current = player.currentPosition
         val duration = if (player.duration > 0L) player.duration else Long.MAX_VALUE
@@ -246,6 +250,14 @@ class PlayerViewModel(
 
     fun setLoop(enabled: Boolean) {
         playbackManager.setLoop(enabled)
+    }
+
+    fun cancelAutoplayCountdown() {
+        playbackManager.cancelAutoplayCountdown()
+    }
+
+    fun playNextImmediately() {
+        playbackManager.playNextImmediately()
     }
 
 
