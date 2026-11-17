@@ -16,6 +16,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.yoouutt.util.TextFormatters
 
+import android.graphics.Rect
+
 fun Context.findActivity(): Activity? {
     var currentContext = this
     while (currentContext is ContextWrapper) {
@@ -25,21 +27,32 @@ fun Context.findActivity(): Activity? {
     return null
 }
 
-fun Activity.enterPipMode() {
+fun Activity.enterPipMode(
+    isPlaying: Boolean = true,
+    sourceRectHint: Rect? = null
+) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val params = PictureInPictureParams.Builder()
-            .setAspectRatio(Rational(16, 9))
-            .build()
+        val params = PipActionHelper.buildPipParams(
+            context = this,
+            isPlaying = isPlaying,
+            sourceRectHint = sourceRectHint,
+            autoEnterEnabled = false
+        ) ?: return
         enterPictureInPictureMode(params)
     }
 }
 
-fun Activity.updatePipAutoEnter() {
+fun Activity.updatePipAutoEnter(
+    isPlaying: Boolean,
+    sourceRectHint: Rect? = null
+) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val params = PictureInPictureParams.Builder()
-            .setAutoEnterEnabled(true)
-            .setAspectRatio(Rational(16, 9))
-            .build()
+        val params = PipActionHelper.buildPipParams(
+            context = this,
+            isPlaying = isPlaying,
+            sourceRectHint = sourceRectHint,
+            autoEnterEnabled = isPlaying
+        ) ?: return
         setPictureInPictureParams(params)
     }
 }

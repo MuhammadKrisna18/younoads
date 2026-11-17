@@ -293,6 +293,12 @@ class PlaybackManager(
         }
     }
 
+    fun seekByOffset(offsetSeconds: Int) {
+        val duration = exoPlayer.duration.coerceAtLeast(0L)
+        val targetPosition = (exoPlayer.currentPosition + (offsetSeconds * 1000L)).coerceIn(0L, duration)
+        exoPlayer.seekTo(targetPosition)
+    }
+
     fun saveProgress() {
         val current = _currentPlayback.value ?: return
         val pos = exoPlayer.currentPosition
