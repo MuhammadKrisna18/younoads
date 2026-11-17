@@ -43,6 +43,8 @@ class PlayerViewModel(
     val isAutoplayEnabled: StateFlow<Boolean> = playbackManager.isAutoplayEnabled
     val isLoopEnabled: StateFlow<Boolean> = playbackManager.isLoopEnabled
     val autoplayCountdown: StateFlow<AutoplayCountdown?> = playbackManager.autoplayCountdown
+    val seekIntervalSeconds: StateFlow<Int> = playbackManager.seekIntervalSeconds
+    val availableSeekIntervals = listOf(5, 10, 15, 20)
 
     fun playNextInPlaylist() {
         playbackManager.playNextInPlaylist()
@@ -106,6 +108,9 @@ class PlayerViewModel(
 
     private val _isSpeedDialogVisible = MutableStateFlow(false)
     val isSpeedDialogVisible: StateFlow<Boolean> = _isSpeedDialogVisible.asStateFlow()
+
+    private val _isSeekIntervalDialogVisible = MutableStateFlow(false)
+    val isSeekIntervalDialogVisible: StateFlow<Boolean> = _isSeekIntervalDialogVisible.asStateFlow()
 
     private val _seekFeedback = MutableStateFlow<SeekFeedback?>(null)
     val seekFeedback: StateFlow<SeekFeedback?> = _seekFeedback.asStateFlow()
@@ -324,6 +329,19 @@ class PlayerViewModel(
 
     fun dismissSpeedDialog() {
         _isSpeedDialogVisible.value = false
+    }
+
+    fun showSeekIntervalDialog() {
+        _isSeekIntervalDialogVisible.value = true
+    }
+
+    fun dismissSeekIntervalDialog() {
+        _isSeekIntervalDialogVisible.value = false
+    }
+
+    fun selectSeekInterval(seconds: Int) {
+        playbackManager.setSeekIntervalSeconds(seconds)
+        dismissSeekIntervalDialog()
     }
 
     fun toggleDescription() {

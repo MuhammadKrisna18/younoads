@@ -14,9 +14,14 @@ class PlayerPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_LOOP, false)
         set(value) = prefs.edit().putBoolean(KEY_LOOP, value).apply()
 
+    var seekIntervalSeconds: Int
+        get() = prefs.getInt(KEY_SEEK_INTERVAL, 10)
+        set(value) = prefs.edit().putInt(KEY_SEEK_INTERVAL, value).apply()
+
     companion object {
         private const val PREFS_NAME = "younoads_player_prefs"
         private const val KEY_AUTOPLAY = "is_autoplay_enabled"
         private const val KEY_LOOP = "is_loop_enabled"
+        private const val KEY_SEEK_INTERVAL = "seek_interval_seconds"
     }
 }

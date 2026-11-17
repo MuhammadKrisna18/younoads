@@ -67,6 +67,9 @@ class PlaybackManager(
     private val _isLoopEnabled = MutableStateFlow(playerPreferences.isLoopEnabled)
     val isLoopEnabled: StateFlow<Boolean> = _isLoopEnabled.asStateFlow()
 
+    private val _seekIntervalSeconds = MutableStateFlow(playerPreferences.seekIntervalSeconds)
+    val seekIntervalSeconds: StateFlow<Int> = _seekIntervalSeconds.asStateFlow()
+
     private var autoplayJob: Job? = null
     private val _autoplayCountdown = MutableStateFlow<AutoplayCountdown?>(null)
     val autoplayCountdown: StateFlow<AutoplayCountdown?> = _autoplayCountdown.asStateFlow()
@@ -455,6 +458,11 @@ class PlaybackManager(
         _isLoopEnabled.value = enabled
         playerPreferences.isLoopEnabled = enabled
         exoPlayer.repeatMode = if (enabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+    }
+
+    fun setSeekIntervalSeconds(seconds: Int) {
+        _seekIntervalSeconds.value = seconds
+        playerPreferences.seekIntervalSeconds = seconds
     }
 
     private fun buildMetadata(title: String, uploaderName: String, videoId: String): MediaMetadata {
