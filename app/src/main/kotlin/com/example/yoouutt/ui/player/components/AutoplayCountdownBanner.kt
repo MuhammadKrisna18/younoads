@@ -1,8 +1,13 @@
 package com.example.yoouutt.ui.player.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,9 +16,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -23,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +53,16 @@ fun AutoplayCountdownBanner(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = if (countdown != null) (countdown.secondsRemaining.toFloat() / 3f).coerceIn(0f, 1f) else 1f,
+        animationSpec = tween(durationMillis = 950, easing = LinearEasing),
+        label = "autoplay_progress"
+    )
+
     AnimatedVisibility(
         visible = countdown != null,
-        enter = fadeIn(),
-        exit = fadeOut(),
+        enter = fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.85f, animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(250)) + scaleOut(targetScale = 0.85f, animationSpec = tween(250)),
         modifier = modifier
     ) {
         if (countdown == null) return@AnimatedVisibility
@@ -64,12 +80,40 @@ fun AutoplayCountdownBanner(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text(
-                    text = "Video berikutnya dalam ${countdown.secondsRemaining} detik...",
-                    color = ElectricCyan,
-                    fontSize = 12.5.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(ElectricCyan)
+                    )
+                    Text(
+                        text = "Video berikutnya dalam ${countdown.secondsRemaining} detik...",
+                        color = ElectricCyan,
+                        fontSize = 12.5.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(3.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color(0xFF262633))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(animatedProgress)
+                            .fillMaxHeight()
+                            .background(CyberpunkGradient)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
                     text = countdown.targetVideo.title,

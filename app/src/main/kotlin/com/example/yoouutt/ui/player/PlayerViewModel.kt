@@ -153,6 +153,7 @@ class PlayerViewModel(
                     currentLoadedRecommendationVideoId = null
                     recommendationJob?.cancel()
                     _recommendedVideos.value = emptyList()
+                    playbackManager.setUpcomingRecommendations(emptyList())
                     _isLoadingRecommendations.value = false
                 }
             }
@@ -169,6 +170,7 @@ class PlayerViewModel(
 
             if (existingRelated.size >= 4) {
                 _recommendedVideos.value = existingRelated
+                playbackManager.setUpcomingRecommendations(existingRelated)
                 _isLoadingRecommendations.value = false
                 return@launch
             }
@@ -217,7 +219,9 @@ class PlayerViewModel(
                 }
             }
 
-            _recommendedVideos.value = collected.distinctBy { it.id }
+            val distinctList = collected.distinctBy { it.id }
+            _recommendedVideos.value = distinctList
+            playbackManager.setUpcomingRecommendations(distinctList)
             _isLoadingRecommendations.value = false
         }
     }
@@ -472,6 +476,7 @@ class PlayerViewModel(
         seekFeedbackJob?.cancel()
         recommendationJob?.cancel()
         currentLoadedRecommendationVideoId = null
+        playbackManager.setUpcomingRecommendations(emptyList())
         accumulatedSeekSeconds = 0
         currentSeekDirection = null
     }

@@ -70,6 +70,9 @@ class PlaybackManager(
     private val _seekIntervalSeconds = MutableStateFlow(playerPreferences.seekIntervalSeconds)
     val seekIntervalSeconds: StateFlow<Int> = _seekIntervalSeconds.asStateFlow()
 
+    private val _upcomingRecommendations = MutableStateFlow<List<VideoItem>>(emptyList())
+    val upcomingRecommendations: StateFlow<List<VideoItem>> = _upcomingRecommendations.asStateFlow()
+
     private var autoplayJob: Job? = null
     private val _autoplayCountdown = MutableStateFlow<AutoplayCountdown?>(null)
     val autoplayCountdown: StateFlow<AutoplayCountdown?> = _autoplayCountdown.asStateFlow()
@@ -152,11 +155,9 @@ class PlaybackManager(
                                 cancelAutoplayCountdown()
                                 return
                             }
-                            val nextVideo = if (queueManager.playlistContext.value != null) {
-                                queueManager.peekNextTarget()
-                            } else {
-                                _currentPlayback.value?.streamData?.relatedVideos?.firstOrNull()
-                            }
+                            val nextVideo = queueManager.peekNextTarget()
+                                ?: _upcomingRecommendations.value.firstOrNull()
+                                ?: _currentPlayback.value?.streamData?.relatedVideos?.firstOrNull()
                             if (nextVideo != null) {
                                 startAutoplayCountdown(nextVideo)
                             } else {
@@ -383,6 +384,7 @@ class PlaybackManager(
     fun stop() {
         cancelAutoplayCountdown()
         queueManager.clear()
+        _upcomingRecommendations.value = emptyList()
         saveProgress()
         try {
             context.stopService(Intent(context, PlaybackService::class.java))
@@ -402,6 +404,7 @@ class PlaybackManager(
 
     fun release() {
         cancelAutoplayCountdown()
+        _upcomingRecommendations.value = emptyList()
         saveProgress()
         try {
             context.stopService(Intent(context, PlaybackService::class.java))
@@ -412,6 +415,10 @@ class PlaybackManager(
         } catch (_: Exception) {
         }
         exoPlayer.release()
+    }
+
+    fun setUpcomingRecommendations(recommendations: List<VideoItem>) {
+        _upcomingRecommendations.value = recommendations
     }
 
     private fun startAutoplayCountdown(nextVideo: VideoItem) {
@@ -435,9 +442,12 @@ class PlaybackManager(
     fun playNextImmediately() {
         val target = _autoplayCountdown.value?.targetVideo
         cancelAutoplayCountdown()
-        if (queueManager.playlistContext.value != null) {
+        val playedPlaylistNext = if (queueManager.playlistContext.value != null) {
             playNextInPlaylist()
-        } else if (target != null) {
+        } else {
+            false
+        }
+        if (!playedPlaylistNext && target != null) {
             playVideo(target.url, target.title, target.uploaderName)
         }
     }
