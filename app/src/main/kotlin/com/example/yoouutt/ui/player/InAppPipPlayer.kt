@@ -4,8 +4,9 @@ import android.view.HapticFeedbackConstants
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -87,6 +88,11 @@ fun InAppPipPlayer(
     val coroutineScope = rememberCoroutineScope()
 
     var progress by remember { mutableFloatStateOf(0f) }
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+        label = "pip_progress"
+    )
 
     LaunchedEffect(playback.videoUrl, isPlaying) {
         while (true) {
@@ -124,7 +130,13 @@ fun InAppPipPlayer(
                         if (abs(currentX) > dismissThreshold) {
                             coroutineScope.launch {
                                 val targetX = if (currentX > 0) screenWidthPx + 100f else -screenWidthPx - 100f
-                                animOffsetX.animateTo(targetX, tween(200, easing = FastOutSlowInEasing))
+                                animOffsetX.animateTo(
+                                    targetValue = targetX,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioNoBouncy,
+                                        stiffness = Spring.StiffnessMedium
+                                    )
+                                )
                                 playbackManager.stop()
                             }
                         } else {
@@ -132,7 +144,7 @@ fun InAppPipPlayer(
                                 animOffsetX.animateTo(
                                     targetValue = 0f,
                                     animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        dampingRatio = Spring.DampingRatioLowBouncy,
                                         stiffness = Spring.StiffnessMediumLow
                                     )
                                 )
@@ -237,7 +249,7 @@ fun InAppPipPlayer(
             }
 
             LinearProgressIndicator(
-                progress = { progress },
+                progress = { animatedProgress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(2.dp),

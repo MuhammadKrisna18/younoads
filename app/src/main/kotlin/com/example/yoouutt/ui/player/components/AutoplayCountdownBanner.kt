@@ -1,13 +1,17 @@
 package com.example.yoouutt.ui.player.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,7 +36,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,11 +58,19 @@ fun AutoplayCountdownBanner(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = if (countdown != null) (countdown.secondsRemaining.toFloat() / 3f).coerceIn(0f, 1f) else 1f,
-        animationSpec = tween(durationMillis = 950, easing = LinearEasing),
-        label = "autoplay_progress"
-    )
+    val progressAnimatable = remember { Animatable(1f) }
+
+    LaunchedEffect(countdown?.targetVideo?.id) {
+        if (countdown != null) {
+            progressAnimatable.snapTo(1f)
+            progressAnimatable.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 3000, easing = LinearEasing)
+            )
+        } else {
+            progressAnimatable.snapTo(1f)
+        }
+    }
 
     AnimatedVisibility(
         visible = countdown != null,
@@ -82,7 +95,7 @@ fun AutoplayCountdownBanner(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -91,7 +104,28 @@ fun AutoplayCountdownBanner(
                             .background(ElectricCyan)
                     )
                     Text(
-                        text = "Video berikutnya dalam ${countdown.secondsRemaining} detik...",
+                        text = "Video berikutnya dalam",
+                        color = ElectricCyan,
+                        fontSize = 12.5.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    AnimatedContent(
+                        targetState = countdown.secondsRemaining,
+                        transitionSpec = {
+                            (slideInVertically { -it } + fadeIn()) togetherWith
+                                    (slideOutVertically { it } + fadeOut())
+                        },
+                        label = "seconds_roll"
+                    ) { seconds ->
+                        Text(
+                            text = "$seconds",
+                            color = ElectricCyan,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Text(
+                        text = "detik...",
                         color = ElectricCyan,
                         fontSize = 12.5.sp,
                         fontWeight = FontWeight.SemiBold
@@ -107,7 +141,7 @@ fun AutoplayCountdownBanner(
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(animatedProgress)
+                            .fillMaxWidth(progressAnimatable.value.coerceIn(0f, 1f))
                             .fillMaxHeight()
                             .background(CyberpunkGradient)
                     )

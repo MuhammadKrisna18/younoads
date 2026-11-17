@@ -1,6 +1,11 @@
 package com.example.yoouutt.ui.feed
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -191,23 +196,32 @@ fun FeedScreen(
                 onRefresh = ::refreshCurrentFeed,
                 modifier = Modifier.fillMaxSize()
             ) {
-                when (val state = uiState) {
-                    is FeedUiState.Loading -> FeedSkeletonList()
-                    is FeedUiState.Error -> FeedErrorState(
-                        message = state.message,
-                        onRetry = ::refreshCurrentFeed,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                    is FeedUiState.Success -> {
-                        if (state.items.isEmpty()) {
-                            FeedEmptyState(modifier = Modifier.align(Alignment.Center))
-                        } else {
-                            FeedContentList(
-                                items = state.items,
-                                onVideoClick = onVideoClick,
-                                onChannelClick = onChannelClick,
-                                onPlaylistClick = onPlaylistClick
-                            )
+                AnimatedContent(
+                    targetState = uiState,
+                    contentAlignment = Alignment.Center,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(280)) togetherWith fadeOut(animationSpec = tween(200))
+                    },
+                    label = "feed_content_transition",
+                    modifier = Modifier.fillMaxSize()
+                ) { state ->
+                    when (state) {
+                        is FeedUiState.Loading -> FeedSkeletonList()
+                        is FeedUiState.Error -> FeedErrorState(
+                            message = state.message,
+                            onRetry = ::refreshCurrentFeed
+                        )
+                        is FeedUiState.Success -> {
+                            if (state.items.isEmpty()) {
+                                FeedEmptyState()
+                            } else {
+                                FeedContentList(
+                                    items = state.items,
+                                    onVideoClick = onVideoClick,
+                                    onChannelClick = onChannelClick,
+                                    onPlaylistClick = onPlaylistClick
+                                )
+                            }
                         }
                     }
                 }

@@ -2,7 +2,7 @@ package com.example.yoouutt.ui.animation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,6 +19,9 @@ import com.example.yoouutt.PlayerKey
 
 object YouTubeScreenTransitions {
 
+    private val EmphasizedDecelerate = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f)
+    private val EmphasizedAccelerate = CubicBezierEasing(0.3f, 0.0f, 0.8f, 0.15f)
+
     val appTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>>.() -> ContentTransform = {
         val targetKey = targetState.key
         val initialKey = initialState.key
@@ -27,34 +30,34 @@ object YouTubeScreenTransitions {
             targetKey is PlayerKey -> {
                 (slideInVertically(
                     initialOffsetY = { it },
-                    animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                ) + fadeIn(tween(200))) togetherWith fadeOut(tween(150))
+                    animationSpec = tween(durationMillis = 360, easing = EmphasizedDecelerate)
+                ) + fadeIn(tween(220))) togetherWith fadeOut(tween(160))
             }
 
             initialKey is PlayerKey -> {
-                fadeIn(tween(150)) togetherWith (slideOutVertically(
+                fadeIn(tween(160)) togetherWith (slideOutVertically(
                     targetOffsetY = { it },
-                    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 320, easing = EmphasizedAccelerate)
                 ) + fadeOut(tween(200)))
             }
 
             targetKey is ChannelKey || targetKey is HistoryKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { it },
-                    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 320, easing = EmphasizedDecelerate)
                 ) + fadeIn(tween(200))) togetherWith (slideOutHorizontally(
                     targetOffsetX = { -it / 3 },
-                    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 320, easing = EmphasizedAccelerate)
                 ) + fadeOut(tween(150)))
             }
 
             initialKey is ChannelKey || initialKey is HistoryKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { -it / 3 },
-                    animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
-                ) + fadeIn(tween(150))) togetherWith (slideOutHorizontally(
+                    animationSpec = tween(durationMillis = 280, easing = EmphasizedDecelerate)
+                ) + fadeIn(tween(160))) togetherWith (slideOutHorizontally(
                     targetOffsetX = { it },
-                    animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 280, easing = EmphasizedAccelerate)
                 ) + fadeOut(tween(200)))
             }
 
