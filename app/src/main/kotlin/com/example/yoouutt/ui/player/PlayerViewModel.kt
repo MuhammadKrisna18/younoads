@@ -118,6 +118,8 @@ class PlayerViewModel(
     private var controlsTimeoutJob: Job? = null
     private var seekFeedbackJob: Job? = null
     private var progressTrackingJob: Job? = null
+    private var accumulatedSeekSeconds = 0
+    private var currentSeekDirection: Boolean? = null
 
     init {
         startProgressTracking()
@@ -167,6 +169,10 @@ class PlayerViewModel(
 
     fun seekTo(seekMs: Long) {
         cancelAutoplayCountdown()
+        accumulatedSeekSeconds = 0
+        currentSeekDirection = null
+        seekFeedbackJob?.cancel()
+        _seekFeedback.value = null
         if (exoPlayer.playbackState == Player.STATE_IDLE) {
             exoPlayer.prepare()
         }
@@ -178,13 +184,22 @@ class PlayerViewModel(
 
     fun doubleTapSeek(isForward: Boolean) {
         cancelAutoplayCountdown()
+        val interval = seekIntervalSeconds.value
+        if (currentSeekDirection == isForward && seekFeedbackJob?.isActive == true) {
+            accumulatedSeekSeconds += interval
+        } else {
+            accumulatedSeekSeconds = interval
+            currentSeekDirection = isForward
+        }
+
+        val stepMs = interval * 1000L
         val player = playbackManager.exoPlayer
         val current = player.currentPosition
         val duration = if (player.duration > 0L) player.duration else Long.MAX_VALUE
         val target = if (isForward) {
-            (current + 10000L).coerceAtMost(duration)
+            (current + stepMs).coerceAtMost(duration)
         } else {
-            (current - 10000L).coerceAtLeast(0L)
+            (current - stepMs).coerceAtLeast(0L)
         }
 
         if (player.playbackState == Player.STATE_IDLE) {
@@ -195,15 +210,25 @@ class PlayerViewModel(
         _currentPositionMs.value = target
 
         val feedback = SeekFeedback(
-            text = if (isForward) "+10 detik" else "-10 detik",
+            text = if (isForward) "+$accumulatedSeekSeconds detik" else "-$accumulatedSeekSeconds detik",
             isForward = isForward
         )
         _seekFeedback.value = feedback
         seekFeedbackJob?.cancel()
         seekFeedbackJob = viewModelScope.launch {
-            delay(750)
+            delay(800)
             _seekFeedback.value = null
+            accumulatedSeekSeconds = 0
+            currentSeekDirection = null
         }
+    }
+
+    fun handleTap(isForward: Boolean): Boolean {
+        if (currentSeekDirection == isForward && seekFeedbackJob?.isActive == true) {
+            doubleTapSeek(isForward)
+            return true
+        }
+        return false
     }
 
     fun onScrubbing(scrubbing: Boolean, targetMs: Long) {
@@ -371,6 +396,8 @@ class PlayerViewModel(
         progressTrackingJob?.cancel()
         controlsTimeoutJob?.cancel()
         seekFeedbackJob?.cancel()
+        accumulatedSeekSeconds = 0
+        currentSeekDirection = null
     }
 }
 

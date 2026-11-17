@@ -130,7 +130,14 @@ fun VideoPlayerSection(
                     .matchParentSize()
                     .pointerInput(Unit) {
                         detectTapGestures(
-                            onTap = { viewModel.toggleControls() },
+                            onTap = { offset ->
+                                val isForward = offset.x >= size.width / 2
+                                if (viewModel.handleTap(isForward)) {
+                                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                } else {
+                                    viewModel.toggleControls()
+                                }
+                            },
                             onDoubleTap = { offset ->
                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                 val isForward = offset.x >= size.width / 2
