@@ -1,3 +1,92 @@
 <resources>
     <string name="app_name">YounoAds</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_close">Close</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_back">Back</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_error">An error occurred</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_library">Library</string>
+
+    <string name="search_placeholder">Search YouTube...</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_history_title">Search History</string>
+    <string name="search_empty_title">No Results Found</string>
+    <string name="search_empty_desc">Try different keywords or check your internet connection.</string>
+
+    <string name="category_all">All</string>
+    <string name="category_music">Music</string>
+    <string name="category_gaming">Gaming</string>
+    <string name="category_news">News</string>
+    <string name="category_movies">Movies &amp; Animation</string>
+    <string name="category_tech">Technology</string>
+
+    <string name="library_title">Library &amp; Collection</string>
+    <string name="library_tab_saved">Saved (%1$d)</string>
+    <string name="library_tab_playlists">Playlists (%1$d)</string>
+    <string name="library_tab_history">History (%1$d)</string>
+    <string name="library_empty_saved_title">No Saved Videos Yet</string>
+    <string name="library_empty_saved_desc">Bookmark your favorite videos by tapping the Save button on the video player.</string>
+    <string name="library_empty_playlists_title">No Custom Playlists Yet</string>
+    <string name="library_empty_playlists_desc">Organize your favorite videos into custom playlists you create.</string>
+    <string name="library_empty_history_title">Watch History is Empty</string>
+    <string name="library_empty_history_desc">Videos you watch will automatically be saved here.</string>
+    <string name="library_btn_explore">Explore Home</string>
+    <string name="library_btn_play_all">Play All</string>
+    <string name="library_btn_shuffle">Shuffle</string>
+    <string name="library_btn_create_playlist">Create New Playlist</string>
+    <string name="library_clear_saved_title">Delete All Saved Videos?</string>
+    <string name="library_clear_saved_msg">All bookmarked videos will be removed from your device.</string>
+    <string name="library_clear_history_title">Clear Watch History?</string>
+    <string name="library_clear_history_msg">All watch history will be permanently cleared.</string>
+    <string name="library_delete_playlist_title">Delete Playlist?</string>
+    <string name="library_delete_playlist_msg">This playlist and all its video entries will be deleted.</string>
+    <string name="library_saved_count">%1$d saved videos</string>
+    <string name="library_video_count">%1$d videos</string>
+    <string name="library_custom_playlist_label">Custom Playlist</string>
+
+    <string name="playlist_create_title">Create New Playlist</string>
+    <string name="playlist_title_placeholder">Playlist Title (Required)</string>
+    <string name="playlist_desc_placeholder">Description (Optional)</string>
+    <string name="playlist_add_to_title">Save to Playlist</string>
+    <string name="playlist_new_button">New Playlist</string>
+    <string name="playlist_empty_title">No playlists yet</string>
+    <string name="playlist_empty_desc">Create your first custom playlist now</string>
+
+    <string name="player_action_share">Share</string>
+    <string name="player_action_copy">Copy</string>
+    <string name="player_action_save">Save</string>
+    <string name="player_action_saved">Saved</string>
+    <string name="player_action_playlist">Playlist</string>
+    <string name="player_action_settings">Settings</string>
+
+    <string name="settings_quality">Quality</string>
+    <string name="settings_speed">Playback speed</string>
+    <string name="settings_seek_interval">Double tap to seek</string>
+    <string name="settings_audio_track">Audio track</string>
+    <string name="settings_add_to_playlist">Add to playlist</string>
+    <string name="settings_theme">App theme</string>
+    <string name="settings_language">App language</string>
+    <string name="settings_loop">Repeat video (Loop)</string>
+    <string name="settings_autoplay">Autoplay</string>
+    <string name="settings_speed_normal">Normal (1.0x)</string>
+    <string name="settings_seconds_suffix">%1$d seconds</string>
+    <string name="settings_auto">Auto</string>
+    <string name="player_recommendations_title">Related Videos</string>
+
+    <string name="theme_dialog_title">Select App Theme</string>
+    <string name="theme_dialog_subtitle">Choose visual scheme &amp; app atmosphere</string>
+
+    <string name="language_dialog_title">Select App Language</string>
+    <string name="language_dialog_subtitle">Choose user interface display language</string>
+    <string name="language_system_title">Follow System</string>
+    <string name="language_system_desc">Use device system language</string>
+    <string name="language_in_title">Bahasa Indonesia</string>
+    <string name="language_in_desc">Bahasa Indonesia baku dan natural</string>
+    <string name="language_en_title">English</string>
+    <string name="language_en_desc">Standard English interface</string>
 </resources>

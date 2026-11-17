@@ -29,11 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.CustomPlaylist
 import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
@@ -94,7 +96,7 @@ fun CustomPlaylistCard(
                     .padding(horizontal = 4.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = "${playlist.itemCount} video",
+                    text = stringResource(R.string.library_video_count, playlist.itemCount),
                     color = Color.White,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Medium
@@ -128,7 +130,7 @@ fun CustomPlaylistCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Playlist Kustom",
+                text = stringResource(R.string.library_custom_playlist_label),
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold
@@ -138,7 +140,7 @@ fun CustomPlaylistCard(
         IconButton(onClick = onDelete) {
             Icon(
                 imageVector = Icons.Default.DeleteOutline,
-                contentDescription = "Hapus Playlist",
+                contentDescription = stringResource(R.string.common_delete),
                 tint = Color(0xFF888899)
             )
         }

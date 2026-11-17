@@ -39,9 +39,11 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.common.BrandLogo
 
 @Composable
@@ -97,7 +99,7 @@ fun FeedTopBar(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.QueueMusic,
-                                contentDescription = "Pustaka",
+                                contentDescription = stringResource(R.string.nav_library),
                                 tint = Color.White,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -110,7 +112,7 @@ fun FeedTopBar(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
+                                contentDescription = stringResource(R.string.search_placeholder),
                                 tint = Color.White,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -134,7 +136,7 @@ fun FeedTopBar(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Kembali",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = Color.White
                         )
                     }
@@ -144,7 +146,7 @@ fun FeedTopBar(
                         onValueChange = onQueryChange,
                         placeholder = {
                             Text(
-                                text = "Search YouTube...",
+                                text = stringResource(R.string.search_placeholder),
                                 fontSize = 14.sp,
                                 color = Color(0xFF8E8E8E)
                             )
@@ -154,7 +156,7 @@ fun FeedTopBar(
                                 IconButton(onClick = onClearQuery) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,
-                                        contentDescription = "Hapus",
+                                        contentDescription = stringResource(R.string.search_clear),
                                         tint = Color.White
                                     )
                                 }

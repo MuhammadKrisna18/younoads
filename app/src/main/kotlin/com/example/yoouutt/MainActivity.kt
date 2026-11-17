@@ -16,12 +16,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.yoouutt.ui.common.CyberpunkAppBackground
+import com.example.yoouutt.ui.language.LanguageManager
 import com.example.yoouutt.ui.player.PipActionHelper
 import com.example.yoouutt.ui.player.PipBroadcastReceiver
 import com.example.yoouutt.ui.player.enterPipMode
@@ -55,7 +59,20 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val currentTheme by ThemeManager.currentTheme.collectAsState()
-            CompositionLocalProvider(LocalInPipMode provides inPipModeState.value) {
+            val currentLanguage by LanguageManager.currentLanguage.collectAsState()
+            val baseContext = LocalContext.current
+            val localizedContext = remember(currentLanguage) {
+                LanguageManager.createLocalizedContext(baseContext, currentLanguage)
+            }
+            val localizedConfig = remember(currentLanguage) {
+                localizedContext.resources.configuration
+            }
+
+            CompositionLocalProvider(
+                LocalInPipMode provides inPipModeState.value,
+                LocalContext provides localizedContext,
+                LocalConfiguration provides localizedConfig
+            ) {
                 YoouuttTheme(appTheme = currentTheme) {
                     CyberpunkAppBackground {
                         Surface(

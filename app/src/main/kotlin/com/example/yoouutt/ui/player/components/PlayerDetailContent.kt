@@ -11,20 +11,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.feed.VideoCard
-import com.example.yoouutt.ui.theme.ElectricCyan
 
 @Composable
 fun PlayerDetailContent(
@@ -136,7 +138,7 @@ fun PlayerDetailContent(
                 item(key = "related_header") {
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
-                        text = "Rekomendasi Video",
+                        text = stringResource(R.string.player_recommendations_title),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -164,7 +166,7 @@ fun PlayerDetailContent(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = ElectricCyan,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(28.dp),
                             strokeWidth = 2.5.dp
                         )

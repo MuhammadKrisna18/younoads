@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,15 +49,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.SavedVideo
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.history.components.HistoryItemRow
+import com.example.yoouutt.ui.language.LanguageManager
+import com.example.yoouutt.ui.language.components.LanguageSelectionDialog
 import com.example.yoouutt.ui.library.components.CustomPlaylistCard
 import com.example.yoouutt.ui.library.components.LibraryEmptyTabState
 import com.example.yoouutt.ui.library.components.SavedVideoItemRow
@@ -83,16 +88,22 @@ fun LibraryScreen(
     var showClearSavedDialog by remember { mutableStateOf(false) }
     var showClearHistoryDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var playlistToDeleteId by remember { mutableStateOf<Long?>(null) }
     val currentTheme by ThemeManager.currentTheme.collectAsStateWithLifecycle()
+    val currentLanguage by LanguageManager.currentLanguage.collectAsStateWithLifecycle()
 
     val view = LocalView.current
-    val tabs = listOf("Disimpan (${savedVideos.size})", "Playlist (${customPlaylists.size})", "Riwayat (${historyItems.size})")
+    val tabs = listOf(
+        stringResource(R.string.library_tab_saved, savedVideos.size),
+        stringResource(R.string.library_tab_playlists, customPlaylists.size),
+        stringResource(R.string.library_tab_history, historyItems.size)
+    )
 
     if (showClearSavedDialog) {
         AppConfirmDialog(
-            title = "Hapus Semua Simpanan?",
-            message = "Seluruh daftar video tersimpan akan dihapus dari perangkat.",
+            title = stringResource(R.string.library_clear_saved_title),
+            message = stringResource(R.string.library_clear_saved_msg),
             onConfirm = {
                 viewModel.clearAllSaved()
                 showClearSavedDialog = false
@@ -103,8 +114,8 @@ fun LibraryScreen(
 
     if (showClearHistoryDialog) {
         AppConfirmDialog(
-            title = "Hapus Riwayat Tontonan?",
-            message = "Seluruh riwayat tontonan akan dihapus permanen.",
+            title = stringResource(R.string.library_clear_history_title),
+            message = stringResource(R.string.library_clear_history_msg),
             onConfirm = {
                 viewModel.clearAllHistory()
                 showClearHistoryDialog = false
@@ -115,8 +126,8 @@ fun LibraryScreen(
 
     if (playlistToDeleteId != null) {
         AppConfirmDialog(
-            title = "Hapus Playlist?",
-            message = "Playlist ini beserta seluruh daftar videonya akan dihapus.",
+            title = stringResource(R.string.library_delete_playlist_title),
+            message = stringResource(R.string.library_delete_playlist_msg),
             onConfirm = {
                 playlistToDeleteId?.let { viewModel.deletePlaylist(it) }
                 playlistToDeleteId = null
@@ -142,6 +153,16 @@ fun LibraryScreen(
         )
     }
 
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = { newLanguage ->
+                LanguageManager.setLanguage(newLanguage)
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = Color.Transparent,
@@ -149,7 +170,7 @@ fun LibraryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Pustaka & Koleksi",
+                        text = stringResource(R.string.library_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -159,16 +180,23 @@ fun LibraryScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Kembali",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = Color.White
                         )
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showLanguageDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Translate,
+                            contentDescription = stringResource(R.string.settings_language),
+                            tint = Color.White
+                        )
+                    }
                     IconButton(onClick = { showThemeDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Palette,
-                            contentDescription = "Pilih Tema",
+                            contentDescription = stringResource(R.string.settings_theme),
                             tint = Color.White
                         )
                     }
@@ -247,9 +275,9 @@ fun LibraryScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 LibraryEmptyTabState(
-                                    title = "Belum Ada Video Tersimpan",
-                                    message = "Simpan video favorit Anda dengan menekan tombol Simpan pada pemutar video.",
-                                    actionButtonText = "Jelajahi Beranda",
+                                    title = stringResource(R.string.library_empty_saved_title),
+                                    message = stringResource(R.string.library_empty_saved_desc),
+                                    actionButtonText = stringResource(R.string.library_btn_explore),
                                     onActionClick = onBack
                                 )
                             }
@@ -268,7 +296,7 @@ fun LibraryScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "${savedVideos.size} video tersimpan",
+                                            text = stringResource(R.string.library_saved_count, savedVideos.size),
                                             color = Color(0xFFAAAAAA),
                                             fontSize = 12.5.sp
                                         )
@@ -289,7 +317,7 @@ fun LibraryScreen(
                                                 modifier = Modifier.size(18.dp)
                                             )
                                             Text(
-                                                text = "Putar Semua",
+                                                text = stringResource(R.string.library_btn_play_all),
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 12.5.sp
                                             )
@@ -339,7 +367,7 @@ fun LibraryScreen(
                                     )
                                     Spacer(modifier = Modifier.size(8.dp))
                                     Text(
-                                        text = "Buat Playlist Baru",
+                                        text = stringResource(R.string.library_btn_create_playlist),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp
                                     )
@@ -355,8 +383,8 @@ fun LibraryScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         LibraryEmptyTabState(
-                                            title = "Belum Ada Playlist Kustom",
-                                            message = "Kumpulkan video favorit Anda ke dalam daftar putar khusus buatan sendiri."
+                                            title = stringResource(R.string.library_empty_playlists_title),
+                                            message = stringResource(R.string.library_empty_playlists_desc)
                                         )
                                     }
                                 }
@@ -382,9 +410,9 @@ fun LibraryScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 LibraryEmptyTabState(
-                                    title = "Riwayat Tontonan Kosong",
-                                    message = "Video yang Anda tonton akan tersimpan secara otomatis di sini.",
-                                    actionButtonText = "Jelajahi Beranda",
+                                    title = stringResource(R.string.library_empty_history_title),
+                                    message = stringResource(R.string.library_empty_history_desc),
+                                    actionButtonText = stringResource(R.string.library_btn_explore),
                                     onActionClick = onBack
                                 )
                             }

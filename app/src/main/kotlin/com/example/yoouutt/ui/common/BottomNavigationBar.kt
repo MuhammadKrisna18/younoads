@@ -37,9 +37,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
@@ -69,7 +71,7 @@ fun BottomNavigationBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BottomNavItem(
-                title = "Beranda",
+                title = stringResource(R.string.nav_home),
                 selectedIcon = Icons.Filled.Home,
                 unselectedIcon = Icons.Outlined.Home,
                 selected = isHomeSelected,
@@ -80,7 +82,7 @@ fun BottomNavigationBar(
             )
 
             BottomNavItem(
-                title = "Koleksi",
+                title = stringResource(R.string.nav_library),
                 selectedIcon = Icons.AutoMirrored.Filled.QueueMusic,
                 unselectedIcon = Icons.AutoMirrored.Outlined.QueueMusic,
                 selected = isHistorySelected,

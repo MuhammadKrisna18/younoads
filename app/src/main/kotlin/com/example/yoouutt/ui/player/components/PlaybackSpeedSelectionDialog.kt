@@ -25,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,11 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.R
 
 @Composable
 fun PlaybackSpeedSelectionDialog(
@@ -48,11 +50,13 @@ fun PlaybackSpeedSelectionDialog(
 ) {
     val view = LocalView.current
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF222222)
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = modifier
                 .fillMaxWidth()
@@ -76,14 +80,14 @@ fun PlaybackSpeedSelectionDialog(
                         Icon(
                             imageVector = Icons.Default.Speed,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            text = "Kecepatan Pemutaran",
+                            text = stringResource(R.string.settings_speed),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -93,8 +97,8 @@ fun PlaybackSpeedSelectionDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Tutup",
-                            tint = Color.White.copy(alpha = 0.7f),
+                            contentDescription = stringResource(R.string.common_close),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -108,13 +112,13 @@ fun PlaybackSpeedSelectionDialog(
                 ) {
                     itemsIndexed(availableSpeeds) { index, speed ->
                         val isSelected = index == currentSpeedIndex
-                        val label = if (speed == 1.0f) "Normal (1.0x)" else "${speed}x"
+                        val label = if (speed == 1.0f) stringResource(R.string.settings_speed_normal) else "${speed}x"
 
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(if (isSelected) Color(0xFF2E2E36) else Color.Transparent)
+                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else Color.Transparent)
                                 .clickable {
                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                                     onSelectSpeed(index)
@@ -127,14 +131,14 @@ fun PlaybackSpeedSelectionDialog(
                                 text = label,
                                 fontSize = 14.5.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) ElectricCyan else Color.White
+                                color = if (isSelected) primaryColor else MaterialTheme.colorScheme.onSurface
                             )
 
                             if (isSelected) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Terpilih",
-                                    tint = ElectricCyan,
+                                    contentDescription = null,
+                                    tint = primaryColor,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }

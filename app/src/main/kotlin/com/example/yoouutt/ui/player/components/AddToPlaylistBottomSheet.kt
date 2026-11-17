@@ -28,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,12 +39,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.CustomPlaylist
-import com.example.yoouutt.ui.theme.ElectricCyan
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,10 +60,12 @@ fun AddToPlaylistBottomSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val view = LocalView.current
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF16161C),
+        containerColor = MaterialTheme.colorScheme.surface,
         scrimColor = Color.Black.copy(alpha = 0.65f),
         dragHandle = {
             Box(
@@ -89,23 +93,23 @@ fun AddToPlaylistBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Simpan video ke...",
+                    text = stringResource(R.string.playlist_add_to_title),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Tutup",
-                        tint = Color.White
+                        contentDescription = stringResource(R.string.common_close),
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
 
             HorizontalDivider(
-                color = Color.White.copy(alpha = 0.08f),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 6.dp)
             )
@@ -126,13 +130,13 @@ fun AddToPlaylistBottomSheet(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        tint = ElectricCyan,
+                        tint = primaryColor,
                         modifier = Modifier.size(22.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Buat playlist baru",
-                        color = ElectricCyan,
+                        text = stringResource(R.string.playlist_create_title),
+                        color = primaryColor,
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -147,8 +151,8 @@ fun AddToPlaylistBottomSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Belum ada playlist buatan sendiri.",
-                        color = Color(0xFF888888),
+                        text = stringResource(R.string.playlist_empty_desc),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.5.sp
                     )
                 }
@@ -177,9 +181,9 @@ fun AddToPlaylistBottomSheet(
                                     onTogglePlaylist(playlist.id)
                                 },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = ElectricCyan,
-                                    uncheckedColor = Color(0xFF666677),
-                                    checkmarkColor = Color.Black
+                                    checkedColor = primaryColor,
+                                    uncheckedColor = MaterialTheme.colorScheme.outline,
+                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
                                 )
                             )
 
@@ -188,15 +192,15 @@ fun AddToPlaylistBottomSheet(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = playlist.title,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = "${playlist.itemCount} video",
-                                    color = Color(0xFFAAAAAA),
+                                    text = stringResource(R.string.library_video_count, playlist.itemCount),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 12.sp
                                 )
                             }
@@ -210,15 +214,15 @@ fun AddToPlaylistBottomSheet(
             Button(
                 onClick = onDismiss,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ElectricCyan,
-                    contentColor = Color.Black
+                    containerColor = primaryColor,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             ) {
-                Text("Selesai", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(stringResource(R.string.common_close), fontWeight = FontWeight.Bold, fontSize = 14.sp)
             }
         }
     }

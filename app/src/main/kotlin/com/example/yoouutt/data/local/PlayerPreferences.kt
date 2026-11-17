@@ -22,11 +22,16 @@ class PlayerPreferences(context: Context) {
         get() = prefs.getString(KEY_APP_THEME, "CYBERPUNK") ?: "CYBERPUNK"
         set(value) = prefs.edit().putString(KEY_APP_THEME, value).apply()
 
+    var appLanguage: String
+        get() = prefs.getString(KEY_APP_LANGUAGE, "SYSTEM") ?: "SYSTEM"
+        set(value) = prefs.edit().putString(KEY_APP_LANGUAGE, value).apply()
+
     companion object {
         private const val PREFS_NAME = "younoads_player_prefs"
         private const val KEY_AUTOPLAY = "is_autoplay_enabled"
         private const val KEY_LOOP = "is_loop_enabled"
         private const val KEY_SEEK_INTERVAL = "seek_interval_seconds"
         private const val KEY_APP_THEME = "app_theme"
+        private const val KEY_APP_LANGUAGE = "app_language"
     }
 }

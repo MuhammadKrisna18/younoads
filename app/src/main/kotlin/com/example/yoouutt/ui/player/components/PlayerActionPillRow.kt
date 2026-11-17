@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.yoouutt.R
 
 @Composable
 fun PlayerActionPillRow(
@@ -43,7 +45,7 @@ fun PlayerActionPillRow(
     ) {
         ActionPill(
             icon = Icons.Outlined.Share,
-            label = "Bagikan",
+            label = stringResource(R.string.player_action_share),
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onShareClick()
@@ -52,7 +54,7 @@ fun PlayerActionPillRow(
 
         ActionPill(
             icon = Icons.Outlined.ContentCopy,
-            label = "Salin",
+            label = stringResource(R.string.player_action_copy),
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onCopyLinkClick()
@@ -61,7 +63,7 @@ fun PlayerActionPillRow(
 
         ActionPill(
             icon = if (isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-            label = if (isSaved) "Tersimpan" else "Simpan",
+            label = if (isSaved) stringResource(R.string.player_action_saved) else stringResource(R.string.player_action_save),
             isActive = isSaved,
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
@@ -71,7 +73,7 @@ fun PlayerActionPillRow(
 
         ActionPill(
             icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-            label = "Playlist",
+            label = stringResource(R.string.player_action_playlist),
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onAddToPlaylistClick()
@@ -80,7 +82,7 @@ fun PlayerActionPillRow(
 
         ActionPill(
             icon = Icons.Default.Settings,
-            label = "Pengaturan",
+            label = stringResource(R.string.player_action_settings),
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onSettingsClick()

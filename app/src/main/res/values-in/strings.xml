@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">YounoAds</string>
+    <string name="common_cancel">Batal</string>
+    <string name="common_save">Simpan</string>
+    <string name="common_delete">Hapus</string>
+    <string name="common_close">Tutup</string>
+    <string name="common_confirm">Konfirmasi</string>
+    <string name="common_back">Kembali</string>
+    <string name="common_retry">Coba Lagi</string>
+    <string name="common_error">Terjadi kesalahan</string>
+
+    <string name="nav_home">Beranda</string>
+    <string name="nav_library">Koleksi</string>
+
+    <string name="search_placeholder">Cari di YouTube...</string>
+    <string name="search_clear">Hapus</string>
+    <string name="search_history_title">Riwayat Pencarian</string>
+    <string name="search_empty_title">Tidak Ada Hasil</string>
+    <string name="search_empty_desc">Coba kata kunci lain atau periksa koneksi internet Anda.</string>
+
+    <string name="category_all">Semua</string>
+    <string name="category_music">Musik</string>
+    <string name="category_gaming">Gaming</string>
+    <string name="category_news">Berita</string>
+    <string name="category_movies">Film &amp; Animasi</string>
+    <string name="category_tech">Teknologi</string>
+
+    <string name="library_title">Pustaka &amp; Koleksi</string>
+    <string name="library_tab_saved">Disimpan (%1$d)</string>
+    <string name="library_tab_playlists">Playlist (%1$d)</string>
+    <string name="library_tab_history">Riwayat (%1$d)</string>
+    <string name="library_empty_saved_title">Belum Ada Video Tersimpan</string>
+    <string name="library_empty_saved_desc">Simpan video favorit Anda dengan menekan tombol Simpan pada pemutar video.</string>
+    <string name="library_empty_playlists_title">Belum Ada Playlist Kustom</string>
+    <string name="library_empty_playlists_desc">Kumpulkan video favorit Anda ke dalam daftar putar khusus buatan sendiri.</string>
+    <string name="library_empty_history_title">Riwayat Tontonan Kosong</string>
+    <string name="library_empty_history_desc">Video yang Anda tonton akan tersimpan secara otomatis di sini.</string>
+    <string name="library_btn_explore">Jelajahi Beranda</string>
+    <string name="library_btn_play_all">Putar Semua</string>
+    <string name="library_btn_shuffle">Acak</string>
+    <string name="library_btn_create_playlist">Buat Playlist Baru</string>
+    <string name="library_clear_saved_title">Hapus Semua Simpanan?</string>
+    <string name="library_clear_saved_msg">Seluruh daftar video tersimpan akan dihapus dari perangkat.</string>
+    <string name="library_clear_history_title">Hapus Riwayat Tontonan?</string>
+    <string name="library_clear_history_msg">Seluruh riwayat tontonan akan dihapus permanen.</string>
+    <string name="library_delete_playlist_title">Hapus Playlist?</string>
+    <string name="library_delete_playlist_msg">Playlist ini beserta seluruh daftar videonya akan dihapus.</string>
+    <string name="library_saved_count">%1$d video tersimpan</string>
+    <string name="library_video_count">%1$d video</string>
+    <string name="library_custom_playlist_label">Playlist Kustom</string>
+
+    <string name="playlist_create_title">Buat Playlist Baru</string>
+    <string name="playlist_title_placeholder">Judul Playlist (Wajib)</string>
+    <string name="playlist_desc_placeholder">Deskripsi (Opsional)</string>
+    <string name="playlist_add_to_title">Simpan ke Playlist</string>
+    <string name="playlist_new_button">Playlist Baru</string>
+    <string name="playlist_empty_title">Belum ada playlist</string>
+    <string name="playlist_empty_desc">Buat playlist kustom pertama Anda sekarang</string>
+
+    <string name="player_action_share">Bagikan</string>
+    <string name="player_action_copy">Salin</string>
+    <string name="player_action_save">Simpan</string>
+    <string name="player_action_saved">Tersimpan</string>
+    <string name="player_action_playlist">Playlist</string>
+    <string name="player_action_settings">Pengaturan</string>
+
+    <string name="settings_quality">Kualitas</string>
+    <string name="settings_speed">Kecepatan pemutaran</string>
+    <string name="settings_seek_interval">Ketuk ganda untuk melompat</string>
+    <string name="settings_audio_track">Trek audio</string>
+    <string name="settings_add_to_playlist">Tambahkan ke playlist</string>
+    <string name="settings_theme">Tema aplikasi</string>
+    <string name="settings_language">Bahasa aplikasi</string>
+    <string name="settings_loop">Putar ulang video (Loop)</string>
+    <string name="settings_autoplay">Putar otomatis (Autoplay)</string>
+    <string name="settings_speed_normal">Normal (1.0x)</string>
+    <string name="settings_seconds_suffix">%1$d detik</string>
+    <string name="settings_auto">Otomatis</string>
+    <string name="player_recommendations_title">Rekomendasi Video</string>
+
+    <string name="theme_dialog_title">Pilih Tema Aplikasi</string>
+    <string name="theme_dialog_subtitle">Pilih skema visual &amp; atmosfer aplikasi</string>
+
+    <string name="language_dialog_title">Pilih Bahasa Aplikasi</string>
+    <string name="language_dialog_subtitle">Pilih bahasa tampilan antarmuka</string>
+    <string name="language_system_title">Mengikuti Sistem</string>
+    <string name="language_system_desc">Gunakan bahasa default perangkat</string>
+    <string name="language_in_title">Bahasa Indonesia</string>
+    <string name="language_in_desc">Bahasa Indonesia baku dan natural</string>
+    <string name="language_en_title">English</string>
+    <string name="language_en_desc">Antarmuka berbahasa Inggris</string>
+</resources>

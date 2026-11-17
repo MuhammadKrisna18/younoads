@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -23,10 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.R
 
 @Composable
 fun CreatePlaylistDialog(
@@ -37,16 +39,18 @@ fun CreatePlaylistDialog(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = Color(0xFF16161C),
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         title = {
             Text(
-                text = "Playlist Baru",
+                text = stringResource(R.string.playlist_create_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -54,14 +58,14 @@ fun CreatePlaylistDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    placeholder = { Text("Judul playlist", color = Color(0xFF888888)) },
+                    placeholder = { Text(stringResource(R.string.playlist_title_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = ElectricCyan,
-                        unfocusedBorderColor = Color(0xFF333340),
-                        cursorColor = ElectricCyan
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = primaryColor,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        cursorColor = primaryColor
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -71,14 +75,14 @@ fun CreatePlaylistDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    placeholder = { Text("Deskripsi (opsional)", color = Color(0xFF888888)) },
+                    placeholder = { Text(stringResource(R.string.playlist_desc_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     maxLines = 2,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = ElectricCyan,
-                        unfocusedBorderColor = Color(0xFF333340),
-                        cursorColor = ElectricCyan
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = primaryColor,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        cursorColor = primaryColor
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -93,24 +97,24 @@ fun CreatePlaylistDialog(
                 },
                 enabled = title.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ElectricCyan,
-                    contentColor = Color.Black,
-                    disabledContainerColor = Color(0xFF2A2A35),
-                    disabledContentColor = Color(0xFF666666)
+                    containerColor = primaryColor,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Buat", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.common_confirm), fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             OutlinedButton(
                 onClick = onDismiss,
-                border = BorderStroke(1.dp, Color(0xFF444455)),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Batal")
+                Text(stringResource(R.string.common_cancel))
             }
         },
         modifier = modifier

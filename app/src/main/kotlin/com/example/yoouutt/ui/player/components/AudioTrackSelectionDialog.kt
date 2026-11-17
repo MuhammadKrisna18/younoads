@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,17 +36,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.AudioTrackOption
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.DarkOutline
-import com.example.yoouutt.ui.theme.DarkSurface
-import com.example.yoouutt.ui.theme.DarkSurfaceVariant
-import com.example.yoouutt.ui.theme.ElectricCyan
-import com.example.yoouutt.ui.theme.NeonMagenta
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun AudioTrackSelectionDialog(
@@ -56,13 +54,16 @@ fun AudioTrackSelectionDialog(
 ) {
     val view = LocalView.current
 
+    val themeGradient = LocalYoouuttGradient.current
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = DarkSurface
+                containerColor = MaterialTheme.colorScheme.surface
             ),
-            border = BorderStroke(1.dp, DarkOutline),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 380.dp)
@@ -86,28 +87,28 @@ fun AudioTrackSelectionDialog(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(DarkSurfaceVariant)
-                                .border(BorderStroke(1.dp, CyberpunkGradient), RoundedCornerShape(10.dp)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .border(BorderStroke(1.dp, themeGradient), RoundedCornerShape(10.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Audiotrack,
                                 contentDescription = null,
-                                tint = ElectricCyan,
+                                tint = primaryColor,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         Column {
                             Text(
-                                text = "Trek Audio",
+                                text = stringResource(R.string.settings_audio_track),
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Bahasa & Sulih Suara",
+                                text = "Audio & Dubbing",
                                 fontSize = 11.5.sp,
-                                color = Color(0xFF9DA4B8)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -118,15 +119,15 @@ fun AudioTrackSelectionDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Tutup",
-                            tint = Color(0xFFAAAAAA),
+                            contentDescription = stringResource(R.string.common_close),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             modifier = Modifier.size(20.dp)
                         )
                     }
                 }
 
                 HorizontalDivider(
-                    color = DarkOutline,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                     thickness = 0.8.dp,
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
@@ -139,8 +140,8 @@ fun AudioTrackSelectionDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Hanya tersedia 1 trek audio standar",
-                            color = Color(0xFF9DA4B8),
+                            text = "Standard audio track",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.5.sp
                         )
                     }
@@ -157,13 +158,13 @@ fun AudioTrackSelectionDialog(
                                 (currentAudioTrack == null && track.isOriginal)
 
                             val borderModifier = if (isSelected) {
-                                Modifier.border(BorderStroke(1.2.dp, CyberpunkGradient), RoundedCornerShape(12.dp))
+                                Modifier.border(BorderStroke(1.2.dp, themeGradient), RoundedCornerShape(12.dp))
                             } else {
-                                Modifier.border(BorderStroke(0.6.dp, DarkOutline), RoundedCornerShape(12.dp))
+                                Modifier.border(BorderStroke(0.6.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), RoundedCornerShape(12.dp))
                             }
 
                             val bgModifier = if (isSelected) {
-                                Modifier.background(DarkSurfaceVariant)
+                                Modifier.background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f))
                             } else {
                                 Modifier.background(Color.Transparent)
                             }
@@ -187,7 +188,7 @@ fun AudioTrackSelectionDialog(
                                         text = track.displayName,
                                         fontSize = 14.5.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                        color = if (isSelected) ElectricCyan else Color.White
+                                        color = if (isSelected) primaryColor else MaterialTheme.colorScheme.onSurface
                                     )
                                     val meta = buildString {
                                         if (track.format.isNotBlank()) append(track.format)
@@ -197,7 +198,7 @@ fun AudioTrackSelectionDialog(
                                         }
                                         if (track.isOriginal) {
                                             if (isNotEmpty()) append(" • ")
-                                            append("Asli")
+                                            append("Original")
                                         }
                                     }
                                     if (meta.isNotBlank()) {
@@ -205,7 +206,7 @@ fun AudioTrackSelectionDialog(
                                         Text(
                                             text = meta,
                                             fontSize = 11.5.sp,
-                                            color = Color(0xFF9DA4B8)
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                 }
@@ -213,8 +214,8 @@ fun AudioTrackSelectionDialog(
                                 if (isSelected) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
-                                        contentDescription = "Dipilih",
-                                        tint = NeonMagenta,
+                                        contentDescription = null,
+                                        tint = primaryColor,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }

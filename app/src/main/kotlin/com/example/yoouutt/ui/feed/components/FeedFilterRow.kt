@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
@@ -43,6 +45,12 @@ fun FeedFilterRow(
             val chipShape = RoundedCornerShape(50.dp)
             val themeGradient = LocalYoouuttGradient.current
             val primaryColor = MaterialTheme.colorScheme.primary
+
+            val displayCategory = if (category.equals("Semua", ignoreCase = true) || category.equals("All", ignoreCase = true)) {
+                stringResource(R.string.category_all)
+            } else {
+                category
+            }
 
             Box(
                 modifier = Modifier
@@ -66,7 +74,7 @@ fun FeedFilterRow(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = category,
+                    text = displayCategory,
                     color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                     fontSize = 12.5.sp,
                     fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium

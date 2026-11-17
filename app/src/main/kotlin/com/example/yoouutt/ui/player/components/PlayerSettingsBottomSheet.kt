@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,9 +40,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.theme.ElectricCyan
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +56,7 @@ fun PlayerSettingsBottomSheet(
     audioTrackText: String = "",
     hasMultipleAudioTracks: Boolean = false,
     themeText: String = "Cyberpunk Neo-Tokyo",
+    languageText: String = "Mengikuti Sistem",
     isLoopEnabled: Boolean,
     isAutoplayEnabled: Boolean,
     onSelectQualityClick: () -> Unit,
@@ -60,6 +64,7 @@ fun PlayerSettingsBottomSheet(
     onSelectSeekIntervalClick: () -> Unit = {},
     onSelectAudioTrackClick: () -> Unit = {},
     onSelectThemeClick: () -> Unit = {},
+    onSelectLanguageClick: () -> Unit = {},
     onAddToPlaylistClick: () -> Unit = {},
     onToggleLoop: () -> Unit,
     onToggleAutoplay: () -> Unit,
@@ -93,21 +98,21 @@ fun PlayerSettingsBottomSheet(
         ) {
             SettingsNavigationRow(
                 icon = Icons.Default.HighQuality,
-                title = "Kualitas",
-                value = resolutionLabel.ifBlank { "Otomatis" },
+                title = stringResource(R.string.settings_quality),
+                value = resolutionLabel.ifBlank { stringResource(R.string.settings_auto) },
                 onClick = onSelectQualityClick
             )
 
             SettingsNavigationRow(
                 icon = Icons.Default.Speed,
-                title = "Kecepatan pemutaran",
+                title = stringResource(R.string.settings_speed),
                 value = speedText,
                 onClick = onSelectSpeedClick
             )
 
             SettingsNavigationRow(
                 icon = Icons.Default.FastForward,
-                title = "Ketuk ganda untuk melompat",
+                title = stringResource(R.string.settings_seek_interval),
                 value = seekIntervalText,
                 onClick = onSelectSeekIntervalClick
             )
@@ -115,7 +120,7 @@ fun PlayerSettingsBottomSheet(
             if (hasMultipleAudioTracks && audioTrackText.isNotBlank()) {
                 SettingsNavigationRow(
                     icon = Icons.Default.Audiotrack,
-                    title = "Trek audio",
+                    title = stringResource(R.string.settings_audio_track),
                     value = audioTrackText,
                     onClick = onSelectAudioTrackClick
                 )
@@ -123,7 +128,7 @@ fun PlayerSettingsBottomSheet(
 
             SettingsNavigationRow(
                 icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-                title = "Tambahkan ke playlist",
+                title = stringResource(R.string.settings_add_to_playlist),
                 value = "",
                 onClick = {
                     onDismiss()
@@ -133,9 +138,16 @@ fun PlayerSettingsBottomSheet(
 
             SettingsNavigationRow(
                 icon = Icons.Default.Palette,
-                title = "Tema aplikasi",
+                title = stringResource(R.string.settings_theme),
                 value = themeText,
                 onClick = onSelectThemeClick
+            )
+
+            SettingsNavigationRow(
+                icon = Icons.Default.Translate,
+                title = stringResource(R.string.settings_language),
+                value = languageText,
+                onClick = onSelectLanguageClick
             )
 
             HorizontalDivider(
@@ -146,14 +158,14 @@ fun PlayerSettingsBottomSheet(
 
             SettingsToggleRow(
                 icon = Icons.Default.Repeat,
-                title = "Putar ulang video (Loop)",
+                title = stringResource(R.string.settings_loop),
                 isChecked = isLoopEnabled,
                 onToggle = onToggleLoop
             )
 
             SettingsToggleRow(
                 icon = Icons.Default.AutoMode,
-                title = "Putar otomatis (Autoplay)",
+                title = stringResource(R.string.settings_autoplay),
                 isChecked = isAutoplayEnabled,
                 onToggle = onToggleAutoplay
             )

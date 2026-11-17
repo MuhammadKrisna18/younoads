@@ -33,9 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.theme.AppTheme
 import com.example.yoouutt.ui.theme.CityPopBackground
 import com.example.yoouutt.ui.theme.DarkBackground
@@ -80,13 +82,13 @@ fun ThemeSelectionDialog(
                     .padding(20.dp)
             ) {
                 Text(
-                    text = "Pilih Tema Aplikasi",
+                    text = stringResource(R.string.theme_dialog_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Pilih skema visual & atmosfer aplikasi",
+                    text = stringResource(R.string.theme_dialog_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
@@ -188,7 +190,7 @@ fun ThemeSelectionDialog(
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text(
-                            text = "Tutup",
+                            text = stringResource(R.string.common_close),
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold
                         )

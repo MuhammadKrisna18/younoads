@@ -47,12 +47,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.library.components.LibraryEmptyTabState
@@ -75,8 +77,8 @@ fun CustomPlaylistDetailScreen(
 
     if (showDeleteConfirmDialog) {
         AppConfirmDialog(
-            title = "Hapus Playlist?",
-            message = "Playlist ini beserta seluruh daftar videonya akan dihapus permanen.",
+            title = stringResource(R.string.library_delete_playlist_title),
+            message = stringResource(R.string.library_delete_playlist_msg),
             onConfirm = {
                 showDeleteConfirmDialog = false
                 viewModel.deletePlaylist(onDeleted = onBack)
@@ -116,7 +118,7 @@ fun CustomPlaylistDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Kembali",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = Color.White
                         )
                     }
@@ -125,7 +127,7 @@ fun CustomPlaylistDetailScreen(
                     IconButton(onClick = { showDeleteConfirmDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.DeleteOutline,
-                            contentDescription = "Hapus Playlist",
+                            contentDescription = stringResource(R.string.common_delete),
                             tint = Color.White
                         )
                     }
@@ -205,7 +207,7 @@ fun CustomPlaylistDetailScreen(
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "${items.size} video • Playlist Kustom",
+                        text = "${stringResource(R.string.library_video_count, items.size)} • ${stringResource(R.string.library_custom_playlist_label)}",
                         fontSize = 12.5.sp,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
@@ -237,7 +239,7 @@ fun CustomPlaylistDetailScreen(
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Putar Semua", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                Text(stringResource(R.string.library_btn_play_all), fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             }
 
                             OutlinedButton(
@@ -257,7 +259,7 @@ fun CustomPlaylistDetailScreen(
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Acak", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                Text(stringResource(R.string.library_btn_shuffle), fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             }
                         }
                     }
@@ -273,9 +275,9 @@ fun CustomPlaylistDetailScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         LibraryEmptyTabState(
-                            title = "Playlist Masih Kosong",
-                            message = "Buka video favorit Anda dan tekan tombol Playlist untuk menambahkannya ke sini.",
-                            actionButtonText = "Jelajahi Beranda",
+                            title = stringResource(R.string.playlist_empty_title),
+                            message = stringResource(R.string.playlist_empty_desc),
+                            actionButtonText = stringResource(R.string.library_btn_explore),
                             onActionClick = onBack
                         )
                     }

@@ -27,8 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.R
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun LibraryEmptyTabState(
@@ -42,11 +41,13 @@ fun LibraryEmptyTabState(
         modifier = modifier.padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val themeGradient = LocalYoouuttGradient.current
+
         Box(
             modifier = Modifier
                 .size(170.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .border(BorderStroke(1.dp, CyberpunkGradient), RoundedCornerShape(24.dp))
+                .border(BorderStroke(1.dp, themeGradient), RoundedCornerShape(24.dp))
         ) {
             Image(
                 painter = painterResource(id = R.drawable.youno_empty_history),
@@ -62,7 +63,7 @@ fun LibraryEmptyTabState(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
 
@@ -71,7 +72,7 @@ fun LibraryEmptyTabState(
         Text(
             text = message,
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFFAAAAAA),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             lineHeight = 18.sp
         )
@@ -81,8 +82,8 @@ fun LibraryEmptyTabState(
             Button(
                 onClick = onActionClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ElectricCyan,
-                    contentColor = Color.Black
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {

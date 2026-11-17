@@ -33,10 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoResolutionOption
 
 @Composable
@@ -48,11 +50,13 @@ fun ResolutionSelectionDialog(
 ) {
     val view = LocalView.current
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF222222)
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,14 +80,14 @@ fun ResolutionSelectionDialog(
                         Icon(
                             imageVector = Icons.Default.HighQuality,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            text = "Kualitas Video",
+                            text = stringResource(R.string.settings_quality),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -93,8 +97,8 @@ fun ResolutionSelectionDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Tutup",
-                            tint = Color.White.copy(alpha = 0.7f),
+                            contentDescription = stringResource(R.string.common_close),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -105,7 +109,7 @@ fun ResolutionSelectionDialog(
                 if (availableResolutions.isEmpty()) {
                     Text(
                         text = "Tidak ada pilihan resolusi manual untuk video ini.",
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
@@ -123,7 +127,7 @@ fun ResolutionSelectionDialog(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(
-                                        if (isSelected) Color.White.copy(alpha = 0.12f)
+                                        if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
                                         else Color.Transparent
                                     )
                                     .clickable {
@@ -143,19 +147,19 @@ fun ResolutionSelectionDialog(
                                         text = option.label,
                                         fontSize = 15.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) Color(0xFFFF4E45) else Color.White
+                                        color = if (isSelected) primaryColor else MaterialTheme.colorScheme.onSurface
                                     )
 
                                     if (option.height >= 720) {
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(4.dp))
-                                                .background(Color(0xFFCC0000))
+                                                .background(primaryColor)
                                                 .padding(horizontal = 5.dp, vertical = 1.dp)
                                         ) {
                                             Text(
                                                 text = "HD",
-                                                color = Color.White,
+                                                color = MaterialTheme.colorScheme.onPrimary,
                                                 fontSize = 10.sp,
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -166,8 +170,8 @@ fun ResolutionSelectionDialog(
                                 if (isSelected) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
-                                        contentDescription = "Terpilih",
-                                        tint = Color(0xFFFF4E45),
+                                        contentDescription = null,
+                                        tint = primaryColor,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }

@@ -28,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.ui.common.BrandRed
 import com.example.yoouutt.util.TextFormatters
@@ -123,7 +125,7 @@ fun HistoryItemRow(
         IconButton(onClick = onDelete) {
             Icon(
                 imageVector = Icons.Default.DeleteOutline,
-                contentDescription = "Hapus",
+                contentDescription = stringResource(R.string.common_delete),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
