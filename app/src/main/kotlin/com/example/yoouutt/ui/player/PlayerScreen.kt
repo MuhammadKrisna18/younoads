@@ -27,7 +27,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.ui.common.AppViewModelProvider
+import com.example.yoouutt.ui.player.components.AddToPlaylistBottomSheet
 import com.example.yoouutt.ui.player.components.AudioTrackSelectionDialog
+import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
 import com.example.yoouutt.ui.player.components.PlaybackSpeedSelectionDialog
 import com.example.yoouutt.ui.player.components.PlayerDetailContent
 import com.example.yoouutt.ui.player.components.PlayerSettingsBottomSheet
@@ -73,6 +75,10 @@ fun PlayerScreen(
     val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
     val recommendedVideos by viewModel.recommendedVideos.collectAsStateWithLifecycle()
     val isLoadingRecommendations by viewModel.isLoadingRecommendations.collectAsStateWithLifecycle()
+    val customPlaylists by viewModel.customPlaylists.collectAsStateWithLifecycle()
+    val isAddToPlaylistSheetVisible by viewModel.isAddToPlaylistSheetVisible.collectAsStateWithLifecycle()
+    val isCreatePlaylistDialogVisible by viewModel.isCreatePlaylistDialogVisible.collectAsStateWithLifecycle()
+    val currentVideoPlaylistIds by viewModel.currentVideoPlaylistIds.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
@@ -191,6 +197,7 @@ fun PlayerScreen(
                     PlayerUtils.copyToClipboard(context, shortUrl, "Tautan berhasil disalin")
                 },
                 onToggleSave = viewModel::toggleSave,
+                onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
                 onSettingsClick = viewModel::showSettingsSheet,
                 onToggleDescription = viewModel::toggleDescription,
                 onPlaylistVideoClick = viewModel::playPlaylistIndex,
@@ -253,6 +260,7 @@ fun PlayerScreen(
                 viewModel.dismissSettingsSheet()
                 viewModel.showAudioTrackDialog()
             },
+            onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
             onToggleLoop = viewModel::toggleLoop,
             onToggleAutoplay = viewModel::toggleAutoplay,
             onDismiss = viewModel::dismissSettingsSheet
@@ -289,6 +297,23 @@ fun PlayerScreen(
             uploaderName = currentUploader,
             currentPositionMs = viewModel.currentPositionMs.value,
             onDismiss = { isShareSheetVisible = false }
+        )
+    }
+
+    if (isAddToPlaylistSheetVisible) {
+        AddToPlaylistBottomSheet(
+            playlists = customPlaylists,
+            selectedPlaylistIds = currentVideoPlaylistIds,
+            onTogglePlaylist = viewModel::toggleVideoInPlaylist,
+            onCreateNewPlaylistClick = viewModel::showCreatePlaylistDialog,
+            onDismiss = viewModel::dismissAddToPlaylistSheet
+        )
+    }
+
+    if (isCreatePlaylistDialogVisible) {
+        CreatePlaylistDialog(
+            onDismiss = viewModel::dismissCreatePlaylistDialog,
+            onCreate = viewModel::createPlaylistAndAddCurrentVideo
         )
     }
 }

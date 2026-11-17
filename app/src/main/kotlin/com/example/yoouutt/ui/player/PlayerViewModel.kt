@@ -5,11 +5,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.yoouutt.data.model.AudioTrackOption
+import com.example.yoouutt.data.model.CustomPlaylist
+import com.example.yoouutt.data.model.CustomPlaylistItem
 import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.PlaylistContext
+import com.example.yoouutt.data.model.SavedVideo
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.data.model.VideoResolutionOption
+import com.example.yoouutt.data.repository.CustomPlaylistRepository
+import com.example.yoouutt.data.repository.SavedVideoRepository
 import com.example.yoouutt.data.repository.VideoRepository
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import com.example.yoouutt.playback.ActivePlayback
@@ -20,9 +25,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class SeekFeedback(
@@ -33,7 +40,9 @@ data class SeekFeedback(
 class PlayerViewModel(
     private val playbackManager: PlaybackManager,
     private val historyRepository: WatchHistoryRepository,
-    private val videoRepository: VideoRepository
+    private val videoRepository: VideoRepository,
+    private val savedVideoRepository: SavedVideoRepository,
+    private val customPlaylistRepository: CustomPlaylistRepository
 ) : ViewModel() {
 
     val currentPlayback: StateFlow<ActivePlayback?> = playbackManager.currentPlayback
@@ -52,6 +61,19 @@ class PlayerViewModel(
     val autoplayCountdown: StateFlow<AutoplayCountdown?> = playbackManager.autoplayCountdown
     val seekIntervalSeconds: StateFlow<Int> = playbackManager.seekIntervalSeconds
     val availableSeekIntervals = listOf(5, 10, 15, 20)
+
+    val customPlaylists: StateFlow<List<CustomPlaylist>> = customPlaylistRepository
+        .getCustomPlaylists()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _isAddToPlaylistSheetVisible = MutableStateFlow(false)
+    val isAddToPlaylistSheetVisible: StateFlow<Boolean> = _isAddToPlaylistSheetVisible.asStateFlow()
+
+    private val _isCreatePlaylistDialogVisible = MutableStateFlow(false)
+    val isCreatePlaylistDialogVisible: StateFlow<Boolean> = _isCreatePlaylistDialogVisible.asStateFlow()
+
+    private val _currentVideoPlaylistIds = MutableStateFlow<Set<Long>>(emptySet())
+    val currentVideoPlaylistIds: StateFlow<Set<Long>> = _currentVideoPlaylistIds.asStateFlow()
 
     fun playNextInPlaylist() {
         playbackManager.playNextInPlaylist()
@@ -142,8 +164,9 @@ class PlayerViewModel(
         viewModelScope.launch {
             playbackManager.currentPlayback.collect { playback ->
                 if (playback != null) {
+                    val videoKey = playback.videoId.ifBlank { playback.videoUrl }
+                    checkSavedStatus(videoKey)
                     if (playback.streamData != null) {
-                        val videoKey = playback.videoId.ifBlank { playback.videoUrl }
                         if (currentLoadedRecommendationVideoId != videoKey) {
                             currentLoadedRecommendationVideoId = videoKey
                             loadRecommendations(playback)
@@ -152,6 +175,7 @@ class PlayerViewModel(
                         _isLoadingRecommendations.value = true
                     }
                 } else {
+                    _isSaved.value = false
                     currentLoadedRecommendationVideoId = null
                     recommendationJob?.cancel()
                     _recommendedVideos.value = emptyList()
@@ -496,8 +520,112 @@ class PlayerViewModel(
         _isDescriptionExpanded.value = !_isDescriptionExpanded.value
     }
 
+    private fun checkSavedStatus(videoId: String) {
+        viewModelScope.launch {
+            _isSaved.value = savedVideoRepository.isSaved(videoId)
+        }
+    }
+
     fun toggleSave() {
-        _isSaved.value = !_isSaved.value
+        val playback = playbackManager.currentPlayback.value ?: return
+        val id = playback.videoId.ifBlank { PlayerUtils.extractVideoId(playback.videoUrl) }
+        val thumbUrl = if (id.isNotBlank()) "https://i.ytimg.com/vi/$id/hqdefault.jpg" else ""
+        viewModelScope.launch {
+            if (_isSaved.value) {
+                savedVideoRepository.removeSavedVideo(id)
+                _isSaved.value = false
+            } else {
+                val video = SavedVideo(
+                    videoId = id,
+                    url = playback.videoUrl,
+                    title = playback.title,
+                    uploader = playback.uploaderName,
+                    thumbnailUrl = thumbUrl,
+                    savedAt = System.currentTimeMillis()
+                )
+                savedVideoRepository.saveVideo(video)
+                _isSaved.value = true
+            }
+        }
+    }
+
+    fun showAddToPlaylistSheet() {
+        val playback = playbackManager.currentPlayback.value ?: return
+        val id = playback.videoId.ifBlank { PlayerUtils.extractVideoId(playback.videoUrl) }
+        viewModelScope.launch {
+            updateCurrentVideoPlaylists(id)
+            _isAddToPlaylistSheetVisible.value = true
+        }
+    }
+
+    fun dismissAddToPlaylistSheet() {
+        _isAddToPlaylistSheetVisible.value = false
+    }
+
+    fun showCreatePlaylistDialog() {
+        _isCreatePlaylistDialogVisible.value = true
+    }
+
+    fun dismissCreatePlaylistDialog() {
+        _isCreatePlaylistDialogVisible.value = false
+    }
+
+    fun createPlaylistAndAddCurrentVideo(title: String, description: String = "") {
+        val playback = playbackManager.currentPlayback.value ?: return
+        val id = playback.videoId.ifBlank { PlayerUtils.extractVideoId(playback.videoUrl) }
+        val thumbUrl = if (id.isNotBlank()) "https://i.ytimg.com/vi/$id/hqdefault.jpg" else ""
+        val durFormatted = if (exoPlayer.duration > 0) PlayerUtils.formatTime(exoPlayer.duration) else ""
+        viewModelScope.launch {
+            val newPlaylistId = customPlaylistRepository.createPlaylist(title, description)
+            val item = CustomPlaylistItem(
+                playlistId = newPlaylistId,
+                videoId = id,
+                url = playback.videoUrl,
+                title = playback.title,
+                uploader = playback.uploaderName,
+                thumbnailUrl = thumbUrl,
+                duration = durFormatted
+            )
+            customPlaylistRepository.addVideoToPlaylist(newPlaylistId, item)
+            updateCurrentVideoPlaylists(id)
+            _isCreatePlaylistDialogVisible.value = false
+        }
+    }
+
+    fun toggleVideoInPlaylist(playlistId: Long) {
+        val playback = playbackManager.currentPlayback.value ?: return
+        val id = playback.videoId.ifBlank { PlayerUtils.extractVideoId(playback.videoUrl) }
+        val thumbUrl = if (id.isNotBlank()) "https://i.ytimg.com/vi/$id/hqdefault.jpg" else ""
+        val durFormatted = if (exoPlayer.duration > 0) PlayerUtils.formatTime(exoPlayer.duration) else ""
+        viewModelScope.launch {
+            val isInPlaylist = customPlaylistRepository.isVideoInPlaylist(playlistId, id)
+            if (isInPlaylist) {
+                customPlaylistRepository.removeVideoFromPlaylist(playlistId, id)
+            } else {
+                val item = CustomPlaylistItem(
+                    playlistId = playlistId,
+                    videoId = id,
+                    url = playback.videoUrl,
+                    title = playback.title,
+                    uploader = playback.uploaderName,
+                    thumbnailUrl = thumbUrl,
+                    duration = durFormatted
+                )
+                customPlaylistRepository.addVideoToPlaylist(playlistId, item)
+            }
+            updateCurrentVideoPlaylists(id)
+        }
+    }
+
+    private suspend fun updateCurrentVideoPlaylists(videoId: String) {
+        val playlists = customPlaylistRepository.getCustomPlaylists().firstOrNull().orEmpty()
+        val containingIds = mutableSetOf<Long>()
+        for (p in playlists) {
+            if (customPlaylistRepository.isVideoInPlaylist(p.id, videoId)) {
+                containingIds.add(p.id)
+            }
+        }
+        _currentVideoPlaylistIds.value = containingIds
     }
 
     fun playRelatedVideo(url: String, title: String, uploader: String) {

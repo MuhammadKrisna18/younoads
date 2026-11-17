@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FastForward
@@ -56,6 +57,7 @@ fun PlayerSettingsBottomSheet(
     onSelectSpeedClick: () -> Unit,
     onSelectSeekIntervalClick: () -> Unit = {},
     onSelectAudioTrackClick: () -> Unit = {},
+    onAddToPlaylistClick: () -> Unit = {},
     onToggleLoop: () -> Unit,
     onToggleAutoplay: () -> Unit,
     onDismiss: () -> Unit,
@@ -115,6 +117,16 @@ fun PlayerSettingsBottomSheet(
                     onClick = onSelectAudioTrackClick
                 )
             }
+
+            SettingsNavigationRow(
+                icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+                title = "Tambahkan ke playlist",
+                value = "",
+                onClick = {
+                    onDismiss()
+                    onAddToPlaylistClick()
+                }
+            )
 
             HorizontalDivider(
                 color = Color.White.copy(alpha = 0.08f),

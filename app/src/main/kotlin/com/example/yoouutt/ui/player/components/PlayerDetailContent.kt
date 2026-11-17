@@ -38,6 +38,7 @@ fun PlayerDetailContent(
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
+    onAddToPlaylistClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onToggleDescription: () -> Unit,
     onPlaylistVideoClick: ((Int) -> Unit)? = null,
@@ -112,6 +113,7 @@ fun PlayerDetailContent(
                     onShareClick = onShareClick,
                     onCopyLinkClick = onCopyLinkClick,
                     onToggleSave = onToggleSave,
+                    onAddToPlaylistClick = onAddToPlaylistClick,
                     onSettingsClick = onSettingsClick
                 )
             }

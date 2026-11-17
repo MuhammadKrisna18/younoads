@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BookmarkBorder
@@ -26,6 +27,7 @@ fun PlayerActionPillRow(
     onShareClick: () -> Unit,
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
+    onAddToPlaylistClick: () -> Unit,
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,6 +66,15 @@ fun PlayerActionPillRow(
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onToggleSave()
+            }
+        )
+
+        ActionPill(
+            icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+            label = "Playlist",
+            onClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onAddToPlaylistClick()
             }
         )
 
