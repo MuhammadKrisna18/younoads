@@ -2,6 +2,7 @@ package com.example.yoouutt.ui.player
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Rect
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.LocalInPipMode
+import com.example.yoouutt.MainActivity
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.components.AudioTrackSelectionDialog
 import com.example.yoouutt.ui.player.components.PlaybackSpeedSelectionDialog
@@ -66,10 +70,22 @@ fun PlayerScreen(
     val availableAudioTracks by viewModel.availableAudioTracks.collectAsStateWithLifecycle()
     val isAudioTrackDialogVisible by viewModel.isAudioTrackDialogVisible.collectAsStateWithLifecycle()
     val playlistContext by viewModel.playlistContext.collectAsStateWithLifecycle()
+    val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
+    var videoBounds by remember { mutableStateOf<Rect?>(null) }
     var isShareSheetVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isPlaying, videoBounds) {
+        (activity as? MainActivity)?.setPlayerActive(true, videoBounds)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            (activity as? MainActivity)?.setPlayerActive(false, null)
+        }
+    }
 
     LaunchedEffect(videoUrl) {
         viewModel.initVideo(videoUrl)
@@ -118,13 +134,22 @@ fun PlayerScreen(
             .fillMaxSize()
             .background(if (isEffectiveFullscreen) Color.Black else Color.Transparent)
     ) {
-        val videoBoxModifier = if (isEffectiveFullscreen) {
+        val baseModifier = if (isEffectiveFullscreen) {
             Modifier.fillMaxSize()
         } else {
             Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
                 .background(Color.Black)
+        }
+        val videoBoxModifier = baseModifier.onGloballyPositioned { coordinates ->
+            val bounds = coordinates.boundsInWindow()
+            videoBounds = Rect(
+                bounds.left.toInt(),
+                bounds.top.toInt(),
+                bounds.right.toInt(),
+                bounds.bottom.toInt()
+            )
         }
 
         VideoPlayerSection(
