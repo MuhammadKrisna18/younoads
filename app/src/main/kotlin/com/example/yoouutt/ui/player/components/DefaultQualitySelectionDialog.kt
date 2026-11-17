@@ -128,20 +128,8 @@ fun DefaultQualitySelectionDialog(
                 ) {
                     items(DefaultVideoQuality.entries) { quality ->
                         val isSelected = quality == currentQuality
-                        val title = when (quality) {
-                            DefaultVideoQuality.AUTO -> stringResource(R.string.quality_auto_title)
-                            DefaultVideoQuality.P1080 -> "1080p (Full HD)"
-                            DefaultVideoQuality.P720 -> "720p (HD)"
-                            DefaultVideoQuality.P480 -> "480p (Standar)"
-                            DefaultVideoQuality.P360 -> "360p (Hemat Data)"
-                        }
-                        val desc = when (quality) {
-                            DefaultVideoQuality.AUTO -> stringResource(R.string.quality_auto_desc)
-                            DefaultVideoQuality.P1080 -> stringResource(R.string.quality_1080p_desc)
-                            DefaultVideoQuality.P720 -> stringResource(R.string.quality_720p_desc)
-                            DefaultVideoQuality.P480 -> stringResource(R.string.quality_480p_desc)
-                            DefaultVideoQuality.P360 -> stringResource(R.string.quality_360p_desc)
-                        }
+                        val title = stringResource(quality.titleRes)
+                        val desc = stringResource(quality.descRes)
 
                         Row(
                             modifier = Modifier

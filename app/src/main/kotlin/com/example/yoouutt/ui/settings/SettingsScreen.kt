@@ -137,7 +137,7 @@ fun SettingsScreen(
                     icon = Icons.Default.HighQuality,
                     title = stringResource(R.string.settings_default_quality),
                     subtitle = stringResource(R.string.default_quality_dialog_subtitle),
-                    value = defaultQuality.label,
+                    value = stringResource(defaultQuality.titleRes),
                     onClick = { showQualityDialog = true }
                 )
             }

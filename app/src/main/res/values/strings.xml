@@ -69,7 +69,6 @@
     <string name="settings_quality">Quality</string>
     <string name="settings_speed">Playback speed</string>
     <string name="settings_seek_interval">Double tap to seek</string>
-    <string name="settings_audio_track">Audio track</string>
     <string name="settings_add_to_playlist">Add to playlist</string>
     <string name="settings_theme">App theme</string>
     <string name="settings_language">App language</string>
@@ -97,9 +96,13 @@
     <string name="default_quality_dialog_subtitle">Target playback resolution for new videos</string>
     <string name="quality_auto_title">Auto (Optimal)</string>
     <string name="quality_auto_desc">Selects best resolution based on stream availability</string>
+    <string name="quality_1080p_title">1080p (Full HD)</string>
     <string name="quality_1080p_desc">Full HD 1080p (Highest clarity, higher data usage)</string>
+    <string name="quality_720p_title">720p (HD)</string>
     <string name="quality_720p_desc">HD 720p (Balanced clarity and data usage)</string>
+    <string name="quality_480p_title">480p (Standard)</string>
     <string name="quality_480p_desc">Standard 480p (Fast loading, low data usage)</string>
+    <string name="quality_360p_title">360p (Data Saver)</string>
     <string name="quality_360p_desc">Data Saver 360p (Minimal data usage)</string>
 
     <string name="settings_title">Settings</string>

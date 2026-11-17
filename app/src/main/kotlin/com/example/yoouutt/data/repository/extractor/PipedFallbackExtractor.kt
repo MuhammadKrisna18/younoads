@@ -165,13 +165,27 @@ class PipedFallbackExtractor(
             return null
         }
 
-        val selectedResolution = resolutionOptions.firstOrNull { it.height == 720 }
-            ?: resolutionOptions.firstOrNull { it.height == 1080 }
-            ?: resolutionOptions.firstOrNull()
+        val sortedResolutions = if (isLive) {
+            resolutionOptions
+        } else {
+            resolutionOptions
+                .groupBy { it.height }
+                .mapNotNull { (_, options) ->
+                    options.maxWithOrNull(
+                        compareBy<VideoResolutionOption> { !it.isVideoOnly }
+                            .thenBy { it.format.equals("MPEG_4", ignoreCase = true) }
+                    )
+                }
+                .sortedByDescending { it.height }
+        }
+
+        val selectedResolution = sortedResolutions.firstOrNull { it.height == 720 }
+            ?: sortedResolutions.firstOrNull { it.height == 1080 }
+            ?: sortedResolutions.firstOrNull()
             ?: VideoResolutionOption(
                 label = if (isLive) "Live" else "Auto",
                 height = 720,
-                videoUrl = if (isLive) hlsUrl.orEmpty() else (resolutionOptions.firstOrNull()?.videoUrl ?: ""),
+                videoUrl = if (isLive) hlsUrl.orEmpty() else (sortedResolutions.firstOrNull()?.videoUrl ?: ""),
                 isVideoOnly = false,
                 audioUrl = null,
                 isHls = isLive && !hlsUrl.isNullOrBlank()
@@ -228,7 +242,7 @@ class PipedFallbackExtractor(
             viewCountText = viewText,
             uploadDateText = uploadDateText,
             relatedVideos = relatedVideos,
-            availableResolutions = resolutionOptions,
+            availableResolutions = sortedResolutions,
             selectedResolution = selectedResolution,
             availableAudioTracks = audioOptions,
             selectedAudioTrack = audioOptions.firstOrNull()
@@ -327,13 +341,27 @@ class PipedFallbackExtractor(
             return null
         }
 
-        val selectedResolution = resolutionOptions.firstOrNull { it.height == 720 }
-            ?: resolutionOptions.firstOrNull { it.height == 1080 }
-            ?: resolutionOptions.firstOrNull()
+        val sortedResolutions = if (isLive) {
+            resolutionOptions
+        } else {
+            resolutionOptions
+                .groupBy { it.height }
+                .mapNotNull { (_, options) ->
+                    options.maxWithOrNull(
+                        compareBy<VideoResolutionOption> { !it.isVideoOnly }
+                            .thenBy { it.format.equals("MPEG_4", ignoreCase = true) }
+                    )
+                }
+                .sortedByDescending { it.height }
+        }
+
+        val selectedResolution = sortedResolutions.firstOrNull { it.height == 720 }
+            ?: sortedResolutions.firstOrNull { it.height == 1080 }
+            ?: sortedResolutions.firstOrNull()
             ?: VideoResolutionOption(
                 label = if (isLive) "Live" else "Auto",
                 height = 720,
-                videoUrl = if (isLive) hlsUrl.orEmpty() else (resolutionOptions.firstOrNull()?.videoUrl ?: ""),
+                videoUrl = if (isLive) hlsUrl.orEmpty() else (sortedResolutions.firstOrNull()?.videoUrl ?: ""),
                 isVideoOnly = false,
                 audioUrl = null,
                 isHls = isLive && !hlsUrl.isNullOrBlank()
@@ -389,7 +417,7 @@ class PipedFallbackExtractor(
             viewCountText = viewText,
             uploadDateText = publishedText,
             relatedVideos = relatedVideos,
-            availableResolutions = resolutionOptions,
+            availableResolutions = sortedResolutions,
             selectedResolution = selectedResolution,
             availableAudioTracks = audioOptions,
             selectedAudioTrack = audioOptions.firstOrNull()

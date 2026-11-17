@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.HighQuality
@@ -50,14 +49,11 @@ fun PlayerSettingsBottomSheet(
     resolutionLabel: String,
     speedText: String,
     seekIntervalText: String = "10 detik",
-    audioTrackText: String = "",
-    hasMultipleAudioTracks: Boolean = false,
     isLoopEnabled: Boolean,
     isAutoplayEnabled: Boolean,
     onSelectQualityClick: () -> Unit,
     onSelectSpeedClick: () -> Unit,
     onSelectSeekIntervalClick: () -> Unit = {},
-    onSelectAudioTrackClick: () -> Unit = {},
     onToggleLoop: () -> Unit,
     onToggleAutoplay: () -> Unit,
     onDismiss: () -> Unit,
@@ -108,15 +104,6 @@ fun PlayerSettingsBottomSheet(
                 value = seekIntervalText,
                 onClick = onSelectSeekIntervalClick
             )
-
-            if (hasMultipleAudioTracks && audioTrackText.isNotBlank()) {
-                SettingsNavigationRow(
-                    icon = Icons.Default.Audiotrack,
-                    title = stringResource(R.string.settings_audio_track),
-                    value = audioTrackText,
-                    onClick = onSelectAudioTrackClick
-                )
-            }
 
             HorizontalDivider(
                 color = Color.White.copy(alpha = 0.08f),

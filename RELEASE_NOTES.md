@@ -1,3 +1,22 @@
+### YounoAds v4.5 - Catatan Rilis & Pembaruan
+
+Pembaruan eliminasi fitur audio track dan penyempurnaan pemilih kualitas video:
+
+1. Penghapusan Menyeluruh Fitur Audio Track (Clean UI & Dead Code Removal)
+- Menghapus baris Audio Track dari bilah bawah pengaturan pemutar video (PlayerSettingsBottomSheet), menyederhanakan menu kontrol hanya untuk Kualitas, Kecepatan, dan Lompat Waktu.
+- Menghapus dialog AudioTrackSelectionDialog beserta seluruh state, event handler, dan pemanggilan terkait di PlayerScreen dan PlayerViewModel.
+- Sistem pemutar tetap mempertahankan seleksi audio terbaik/asli secara senyap di latar belakang untuk merging stream video-only tanpa mengekspos UI pemilih audio ke pengguna.
+
+2. Penyempurnaan Spektrum Pemilih Kualitas Video (Lowest to Highest)
+- Memastikan katalog seluruh resolusi video (144p, 240p, 360p, 480p, 720p, 1080p) terurut secara konsisten dari tertinggi ke terendah pada ResolutionSelectionDialog, memudahkan pengguna beralih kualitas manual secara presisi saat video sedang tayang.
+- Mengeliminasi duplikasi resolusi pada extractor cadangan (PipedFallbackExtractor) dan memprioritaskan format progressive terbaik.
+
+3. Penyelarasan Dwibahasa pada Default Video Quality
+- Menghubungkan seluruh label kualitas default (Otomatis, 1080p Full HD, 720p HD, 480p Standar, 360p Hemat Data) ke sumber daya terjemahan resmi (strings.xml dan values-in/strings.xml).
+- Menghilangkan anomali teks campuran (bahasa Indonesia pada antarmuka berbahasa Inggris) pada dialog DefaultQualitySelectionDialog dan layar SettingsScreen.
+
+---
+
 ### YounoAds v4.4 - Catatan Rilis & Pembaruan
 
 Pembaruan struktur navigasi dan penyempurnaan pemutar instan (Level Hard - Bug 2 & Eliminasi HLS):

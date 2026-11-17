@@ -69,11 +69,8 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Pemutaran Berkelanjutan (Auto-Next)**: Video berikutnya dalam daftar putar akan otomatis diputar saat video saat ini selesai diputar.
 - **Kontrol Navigasi Trek**: Tombol Lewati Berikutnya (Next) dan Lewati Sebelumnya (Previous) terintegrasi pada kontrol pemutar video saat playlist aktif.
 
-### 14. Pemilih Trek Audio & Sulih Suara (Multi-Language Audio Track Selector)
-- **Prioritas Cerdas Suara Asli (Original Audio Priority)**: Sistem secara cerdas memprioritaskan trek audio asli (`ORIGINAL`) saat video diputar, mencegah video kreator Indonesia tertukar secara otomatis dengan dubbing AI/Bahasa Inggris.
-- **Dukungan Multi-Language Track YouTube**: Mengekstraksi seluruh varian audio (asli, dubbing sulih suara, deskriptif) dari YouTube backend dan mengelompokkannya secara terstruktur.
-- **Dialog Pemilih Trek Cyberpunk**: Antarmuka dialog interaktif untuk beralih bahasa audio yang dapat diakses langsung dari kontrol pemutar video dan tombol aksi cepat (*action pills*).
-- **Transisi Audio Mulus**: Beralih antar bahasa audio secara instan di latar belakang tanpa me-reset posisi pemutaran video aktif.
+### 14. Prioritas Cerdas Suara Asli (Original Audio Priority)
+- **Prioritas Cerdas Suara Asli (Original Audio Priority)**: Sistem secara cerdas memprioritaskan trek audio asli (`ORIGINAL`) saat video diputar, mencegah video kreator Indonesia tertukar secara otomatis dengan dubbing AI/Bahasa Inggris, bekerja secara otomatis di latar belakang tanpa membebani antarmuka pemutar.
 
 ### 15. Pemutaran Otomatis (Autoplay) & Pengulangan Video Tunggal (Loop)
 - **Autoplay Instan Rekomendasi Teratas & Transisi Playlist**: Saat video yang sedang diputar selesai (`STATE_ENDED`), sistem langsung memutar video berikutnya secara instan dan mulus tanpa jeda hitung mundur atau banner konfirmasi manual. Video berikutnya diambil secara cerdas: memprioritaskan trek antrean playlist aktif berikutnya; jika playlist selesai atau sedang memutar video biasa, pemutar otomatis memutar video rekomendasi posisi teratas (Index 0).
@@ -82,7 +79,7 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Penyimpanan Preferensi Lokal (SharedPreferences)**: Preferensi status Autoplay dan Loop disimpan secara persisten di penyimpanan lokal perangkat melalui `PlayerPreferences`.
 
 ### 16. Lembar Pengaturan Pemutar Terpadu ala YouTube (Player Settings Bottom Sheet)
-- **Konsolidasi Kontrol Pemutar Murni**: Mengelompokkan opsi konfigurasi pemutaran esensial (Kualitas Resolusi, Kecepatan Pemutaran, Interval Lompatan Cepat, Trek Audio, Pengulangan Loop, dan Autoplay) ke dalam satu lembar modal terpadu, bersih dari opsi global seperti tema dan bahasa yang dialokasikan ke menu aplikasi.
+- **Konsolidasi Kontrol Pemutar Murni**: Mengelompokkan opsi konfigurasi pemutaran esensial (Kualitas Resolusi, Kecepatan Pemutaran, Interval Lompatan Cepat, Pengulangan Loop, dan Autoplay) ke dalam satu lembar modal terpadu, bersih dari opsi global seperti tema dan bahasa yang dialokasikan ke menu aplikasi.
 - **Akses Cepat Ganda**: Dapat diakses melalui ikon roda gigi di pemutar video maupun melalui pil aksi "Pengaturan" di bawah judul video.
 - **Konfigurasi Interval Lompatan Seek (5, 10, 15, 20 detik)**: Pilihan interval lompatan cepat ketuk ganda langsung dari lembar pengaturan melalui modal `SeekIntervalSelectionDialog` dengan penanda centang aktif, disimpan secara persisten di penyimpanan lokal perangkat.
 - **Komponen Switch Interaktif**: Fitur Loop video dan Autoplay disematkan dengan sakelar toggle `Switch` Material 3 beraksen neon Electric Cyan yang dapat dinyalakan/dimatikan secara instan dengan satu sentuhan.

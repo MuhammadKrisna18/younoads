@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -114,11 +115,14 @@ fun ResolutionSelectionDialog(
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                 } else {
+                    val sortedResolutions = remember(availableResolutions) {
+                        availableResolutions.sortedByDescending { it.height }
+                    }
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        items(availableResolutions) { option ->
+                        items(sortedResolutions) { option ->
                             val isSelected = currentResolution?.height == option.height &&
                                     currentResolution.label == option.label
 
