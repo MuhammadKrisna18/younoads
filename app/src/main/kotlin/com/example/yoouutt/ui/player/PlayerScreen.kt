@@ -160,7 +160,6 @@ fun PlayerScreen(
             isFullscreen = isEffectiveFullscreen,
             isInPipMode = isInPipMode,
             resolutionLabel = resolutionLabel,
-            hasAudioTracks = availableAudioTracks.size > 1,
             hasPlaylist = playlistContext != null,
             hasPrevious = (playlistContext?.currentIndex ?: 0) > 0,
             hasNext = (playlistContext?.let { it.currentIndex + 1 < it.videos.size } ?: false),
@@ -168,7 +167,6 @@ fun PlayerScreen(
             onNextClick = viewModel::playNextInPlaylist,
             onBack = onBack,
             onToggleFullscreen = handleToggleFullscreen,
-            onAudioTrackClick = viewModel::showAudioTrackDialog,
             modifier = videoBoxModifier
         )
 
@@ -192,7 +190,6 @@ fun PlayerScreen(
                 },
                 onToggleSave = viewModel::toggleSave,
                 onSettingsClick = viewModel::showSettingsSheet,
-                onToggleFullscreen = handleToggleFullscreen,
                 onToggleDescription = viewModel::toggleDescription,
                 onPlaylistVideoClick = viewModel::playPlaylistIndex,
                 onChannelClick = onChannelClick,

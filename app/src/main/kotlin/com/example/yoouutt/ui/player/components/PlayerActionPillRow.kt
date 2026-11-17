@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -28,7 +27,6 @@ fun PlayerActionPillRow(
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
     onSettingsClick: () -> Unit,
-    onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -76,12 +74,6 @@ fun PlayerActionPillRow(
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onSettingsClick()
             }
-        )
-
-        ActionPill(
-            icon = Icons.Default.Fullscreen,
-            label = "Layar Penuh",
-            onClick = onToggleFullscreen
         )
     }
 }

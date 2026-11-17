@@ -47,7 +47,6 @@ fun VideoPlayerSection(
     isFullscreen: Boolean,
     isInPipMode: Boolean,
     resolutionLabel: String,
-    hasAudioTracks: Boolean = false,
     hasPlaylist: Boolean = false,
     hasPrevious: Boolean = false,
     hasNext: Boolean = false,
@@ -55,7 +54,6 @@ fun VideoPlayerSection(
     onNextClick: () -> Unit = {},
     onBack: () -> Unit,
     onToggleFullscreen: () -> Unit,
-    onAudioTrackClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -70,9 +68,6 @@ fun VideoPlayerSection(
     val scrubPositionMs by viewModel.scrubPositionMs.collectAsStateWithLifecycle()
     val controlsVisible by viewModel.controlsVisible.collectAsStateWithLifecycle()
     val seekFeedback by viewModel.seekFeedback.collectAsStateWithLifecycle()
-    val resumeBannerVisible by viewModel.resumeBannerVisible.collectAsStateWithLifecycle()
-    val resumeSavedPosition by viewModel.resumeSavedPosition.collectAsStateWithLifecycle()
-    val isAutoplayEnabled by viewModel.isAutoplayEnabled.collectAsStateWithLifecycle()
     val autoplayCountdown by viewModel.autoplayCountdown.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
@@ -156,17 +151,12 @@ fun VideoPlayerSection(
                 bufferedPositionMs = bufferedPositionMs,
                 durationMs = durationMs,
                 currentResolutionText = resolutionLabel,
-                hasAudioTracks = hasAudioTracks,
-                isAutoplayEnabled = isAutoplayEnabled,
-                onToggleAutoplay = viewModel::toggleAutoplay,
                 onBackClick = {
                     if (isFullscreen) onToggleFullscreen() else onBack()
                 },
                 onPlayPauseClick = viewModel::togglePlayPause,
                 onToggleFullscreen = onToggleFullscreen,
                 onResolutionClick = viewModel::showResolutionDialog,
-                onSettingsClick = viewModel::showSettingsSheet,
-                onAudioTrackClick = onAudioTrackClick,
                 onScrubbing = viewModel::onScrubbing,
                 onSeek = viewModel::seekTo,
                 hasPlaylist = hasPlaylist,
@@ -198,44 +188,6 @@ fun VideoPlayerSection(
                     durationMs = durationMs,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
-            }
-
-            if (resumeBannerVisible) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 54.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(Color.Black.copy(alpha = 0.88f))
-                        .border(
-                            BorderStroke(0.5.dp, Color.White.copy(alpha = 0.25f)),
-                            RoundedCornerShape(50.dp)
-                        )
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Lanjutkan dari ${PlayerUtils.formatTime(resumeSavedPosition)}?",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Ya",
-                        color = YouTubeRed,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable { viewModel.applyResume() }
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Batal",
-                        color = Color(0xFFAAAAAA),
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.clickable { viewModel.dismissResume() }
-                    )
-                }
             }
         }
     }

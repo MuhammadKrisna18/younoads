@@ -87,12 +87,6 @@ class PlayerViewModel(
     private val _isFullscreen = MutableStateFlow(false)
     val isFullscreen: StateFlow<Boolean> = _isFullscreen.asStateFlow()
 
-    private val _resumeBannerVisible = MutableStateFlow(false)
-    val resumeBannerVisible: StateFlow<Boolean> = _resumeBannerVisible.asStateFlow()
-
-    private val _resumeSavedPosition = MutableStateFlow(0L)
-    val resumeSavedPosition: StateFlow<Long> = _resumeSavedPosition.asStateFlow()
-
     private val _isDescriptionExpanded = MutableStateFlow(false)
     val isDescriptionExpanded: StateFlow<Boolean> = _isDescriptionExpanded.asStateFlow()
 
@@ -126,16 +120,6 @@ class PlayerViewModel(
     }
 
     fun initVideo(videoUrl: String) {
-        val videoId = videoUrl.substringAfter("v=").substringBefore("&")
-        viewModelScope.launch {
-            val item = historyRepository.getWatchHistory(videoId)
-            val pos = item?.lastPlaybackPositionMs ?: 0L
-            val dur = item?.totalDurationMs ?: 0L
-            if (pos > 5000L && (dur <= 0L || pos < dur - 10000L)) {
-                _resumeSavedPosition.value = pos
-                _resumeBannerVisible.value = true
-            }
-        }
     }
 
     private fun startProgressTracking() {
@@ -375,16 +359,6 @@ class PlayerViewModel(
 
     fun toggleSave() {
         _isSaved.value = !_isSaved.value
-    }
-
-    fun applyResume() {
-        val pos = _resumeSavedPosition.value
-        seekTo(pos)
-        _resumeBannerVisible.value = false
-    }
-
-    fun dismissResume() {
-        _resumeBannerVisible.value = false
     }
 
     fun playRelatedVideo(url: String, title: String, uploader: String) {

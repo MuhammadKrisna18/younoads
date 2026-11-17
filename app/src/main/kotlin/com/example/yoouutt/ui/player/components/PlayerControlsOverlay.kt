@@ -22,8 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Audiotrack
-import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -60,15 +58,10 @@ fun BoxScope.PlayerControlsOverlay(
     bufferedPositionMs: Long,
     durationMs: Long,
     currentResolutionText: String,
-    hasAudioTracks: Boolean = false,
-    isAutoplayEnabled: Boolean = true,
-    onToggleAutoplay: () -> Unit = {},
     onBackClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     onResolutionClick: () -> Unit,
-    onSettingsClick: () -> Unit = onResolutionClick,
-    onAudioTrackClick: () -> Unit = {},
     onScrubbing: (Boolean, Long) -> Unit,
     onSeek: (Long) -> Unit,
     hasPlaylist: Boolean = false,
@@ -126,70 +119,6 @@ fun BoxScope.PlayerControlsOverlay(
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
-            }
-
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        onToggleAutoplay()
-                    },
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.5f))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AutoMode,
-                        contentDescription = if (isAutoplayEnabled) "Autoplay Aktif" else "Autoplay Nonaktif",
-                        tint = if (isAutoplayEnabled) ElectricCyan else Color.White.copy(alpha = 0.5f),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                if (hasAudioTracks) {
-                    IconButton(
-                        onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                            onAudioTrackClick()
-                        },
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.5f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Audiotrack,
-                            contentDescription = "Trek Audio",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-
-                IconButton(
-                    onClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        onSettingsClick()
-                    },
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.5f))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Pengaturan",
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
             }
 
             Row(
