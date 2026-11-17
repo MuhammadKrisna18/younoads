@@ -150,6 +150,7 @@ fun FeedScreen(
                     isSearchExpanded = true
                     isSearchOverlayVisible = true
                 },
+                onLibraryClick = onHistoryClick,
                 onBackClick = {
                     if (isSearchOverlayVisible && searchQuery.isNotBlank()) {
                         focusManager.clearFocus()

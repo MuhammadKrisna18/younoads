@@ -10,6 +10,15 @@ data object Main : NavKey
 data object HistoryKey : NavKey
 
 @Serializable
+data object LibraryKey : NavKey
+
+@Serializable
+data class CustomPlaylistDetailKey(
+    val playlistId: Long,
+    val playlistTitle: String
+) : NavKey
+
+@Serializable
 data class PlayerKey(
     val videoUrl: String,
     val title: String,

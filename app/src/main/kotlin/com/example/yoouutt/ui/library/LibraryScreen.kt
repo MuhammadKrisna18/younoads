@@ -1,0 +1,393 @@
+package com.example.yoouutt.ui.library
+
+import android.view.HapticFeedbackConstants
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.data.model.SavedVideo
+import com.example.yoouutt.ui.common.AppConfirmDialog
+import com.example.yoouutt.ui.common.AppViewModelProvider
+import com.example.yoouutt.ui.history.components.HistoryItemRow
+import com.example.yoouutt.ui.library.components.CustomPlaylistCard
+import com.example.yoouutt.ui.library.components.LibraryEmptyTabState
+import com.example.yoouutt.ui.library.components.SavedVideoItemRow
+import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
+import com.example.yoouutt.ui.theme.ElectricCyan
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LibraryScreen(
+    onVideoClick: (String, String, String) -> Unit,
+    onPlayAllSaved: (List<SavedVideo>) -> Unit,
+    onCustomPlaylistClick: (playlistId: Long, playlistTitle: String) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LibraryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
+    val savedVideos by viewModel.savedVideos.collectAsStateWithLifecycle()
+    val customPlaylists by viewModel.customPlaylists.collectAsStateWithLifecycle()
+    val historyItems by viewModel.historyItems.collectAsStateWithLifecycle()
+    val isCreatePlaylistDialogVisible by viewModel.isCreatePlaylistDialogVisible.collectAsStateWithLifecycle()
+
+    var showClearSavedDialog by remember { mutableStateOf(false) }
+    var showClearHistoryDialog by remember { mutableStateOf(false) }
+    var playlistToDeleteId by remember { mutableStateOf<Long?>(null) }
+
+    val view = LocalView.current
+    val tabs = listOf("Disimpan (${savedVideos.size})", "Playlist (${customPlaylists.size})", "Riwayat (${historyItems.size})")
+
+    if (showClearSavedDialog) {
+        AppConfirmDialog(
+            title = "Hapus Semua Simpanan?",
+            message = "Seluruh daftar video tersimpan akan dihapus dari perangkat.",
+            onConfirm = {
+                viewModel.clearAllSaved()
+                showClearSavedDialog = false
+            },
+            onDismiss = { showClearSavedDialog = false }
+        )
+    }
+
+    if (showClearHistoryDialog) {
+        AppConfirmDialog(
+            title = "Hapus Riwayat Tontonan?",
+            message = "Seluruh riwayat tontonan akan dihapus permanen.",
+            onConfirm = {
+                viewModel.clearAllHistory()
+                showClearHistoryDialog = false
+            },
+            onDismiss = { showClearHistoryDialog = false }
+        )
+    }
+
+    if (playlistToDeleteId != null) {
+        AppConfirmDialog(
+            title = "Hapus Playlist?",
+            message = "Playlist ini beserta seluruh daftar videonya akan dihapus.",
+            onConfirm = {
+                playlistToDeleteId?.let { viewModel.deletePlaylist(it) }
+                playlistToDeleteId = null
+            },
+            onDismiss = { playlistToDeleteId = null }
+        )
+    }
+
+    if (isCreatePlaylistDialogVisible) {
+        CreatePlaylistDialog(
+            onDismiss = viewModel::dismissCreatePlaylistDialog,
+            onCreate = viewModel::createPlaylist
+        )
+    }
+
+    Scaffold(
+        modifier = modifier,
+        containerColor = Color.Transparent,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Pustaka & Koleksi",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Kembali",
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    if (selectedTab == 0 && savedVideos.isNotEmpty()) {
+                        IconButton(onClick = { showClearSavedDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteSweep,
+                                contentDescription = "Hapus Semua Simpanan",
+                                tint = Color.White
+                            )
+                        }
+                    } else if (selectedTab == 2 && historyItems.isNotEmpty()) {
+                        IconButton(onClick = { showClearHistoryDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteSweep,
+                                contentDescription = "Hapus Semua Riwayat",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            SecondaryTabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = Color.Transparent,
+                contentColor = ElectricCyan,
+                divider = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(Color.White.copy(alpha = 0.08f))
+                    )
+                }
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            viewModel.selectTab(index)
+                        },
+                        text = {
+                            Text(
+                                text = title,
+                                fontSize = 13.sp,
+                                fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium,
+                                color = if (selectedTab == index) ElectricCyan else Color(0xFFAAAAAA)
+                            )
+                        }
+                    )
+                }
+            }
+
+            AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    fadeIn(tween(220)) togetherWith fadeOut(tween(160))
+                },
+                label = "library_tab_transition",
+                modifier = Modifier.fillMaxSize()
+            ) { tab ->
+                when (tab) {
+                    0 -> {
+                        if (savedVideos.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LibraryEmptyTabState(
+                                    title = "Belum Ada Video Tersimpan",
+                                    message = "Simpan video favorit Anda dengan menekan tombol Simpan pada pemutar video.",
+                                    actionButtonText = "Jelajahi Beranda",
+                                    onActionClick = onBack
+                                )
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 130.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                item(key = "saved_header") {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 6.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "${savedVideos.size} video tersimpan",
+                                            color = Color(0xFFAAAAAA),
+                                            fontSize = 12.5.sp
+                                        )
+
+                                        Button(
+                                            onClick = { onPlayAllSaved(savedVideos) },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = ElectricCyan,
+                                                contentColor = Color.Black
+                                            ),
+                                            shape = RoundedCornerShape(50.dp),
+                                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.PlayArrow,
+                                                contentDescription = null,
+                                                tint = Color.Black,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Text(
+                                                text = "Putar Semua",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.5.sp
+                                            )
+                                        }
+                                    }
+                                }
+
+                                items(savedVideos, key = { it.videoId }) { item ->
+                                    SavedVideoItemRow(
+                                        item = item,
+                                        onClick = { onVideoClick(item.url, item.title, item.uploader) },
+                                        onDelete = {
+                                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                            viewModel.unsaveVideo(item.videoId)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    1 -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 130.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            item(key = "create_playlist_button") {
+                                Button(
+                                    onClick = {
+                                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                        viewModel.showCreatePlaylistDialog()
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF1C1F2E),
+                                        contentColor = ElectricCyan
+                                    ),
+                                    shape = RoundedCornerShape(14.dp),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(vertical = 12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = null,
+                                        tint = ElectricCyan,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.size(8.dp))
+                                    Text(
+                                        text = "Buat Playlist Baru",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            }
+
+                            if (customPlaylists.isEmpty()) {
+                                item(key = "empty_playlists") {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 40.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        LibraryEmptyTabState(
+                                            title = "Belum Ada Playlist Kustom",
+                                            message = "Kumpulkan video favorit Anda ke dalam daftar putar khusus buatan sendiri."
+                                        )
+                                    }
+                                }
+                            } else {
+                                items(customPlaylists, key = { it.id }) { playlist ->
+                                    CustomPlaylistCard(
+                                        playlist = playlist,
+                                        onClick = { onCustomPlaylistClick(playlist.id, playlist.title) },
+                                        onDelete = {
+                                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                            playlistToDeleteId = playlist.id
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    2 -> {
+                        if (historyItems.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LibraryEmptyTabState(
+                                    title = "Riwayat Tontonan Kosong",
+                                    message = "Video yang Anda tonton akan tersimpan secara otomatis di sini.",
+                                    actionButtonText = "Jelajahi Beranda",
+                                    onActionClick = onBack
+                                )
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 130.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                items(historyItems, key = { it.videoId }) { item ->
+                                    HistoryItemRow(
+                                        item = item,
+                                        onClick = { onVideoClick(item.videoUrl, item.title, item.uploaderName) },
+                                        onDelete = {
+                                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                            viewModel.deleteHistoryItem(item.videoId)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

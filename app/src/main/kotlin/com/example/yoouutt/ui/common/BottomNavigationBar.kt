@@ -20,9 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
+import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -80,9 +80,9 @@ fun BottomNavigationBar(
             )
 
             BottomNavItem(
-                title = "Riwayat",
-                selectedIcon = Icons.Filled.History,
-                unselectedIcon = Icons.Outlined.History,
+                title = "Koleksi",
+                selectedIcon = Icons.AutoMirrored.Filled.QueueMusic,
+                unselectedIcon = Icons.AutoMirrored.Outlined.QueueMusic,
                 selected = isHistorySelected,
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)

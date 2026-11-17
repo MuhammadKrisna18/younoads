@@ -6,8 +6,10 @@ import com.example.yoouutt.YoouuttApp
 import com.example.yoouutt.ui.channel.ChannelViewModel
 import com.example.yoouutt.ui.feed.FeedViewModel
 import com.example.yoouutt.ui.history.HistoryViewModel
+import com.example.yoouutt.ui.library.LibraryViewModel
 import com.example.yoouutt.ui.player.PlayerViewModel
 import com.example.yoouutt.ui.playlist.PlaylistViewModel
+import com.example.yoouutt.ui.playlist.custom.CustomPlaylistDetailViewModel
 
 object AppViewModelProvider {
     val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -35,8 +37,25 @@ object AppViewModelProvider {
                     ) as T
                 modelClass.isAssignableFrom(PlaylistViewModel::class.java) ->
                     PlaylistViewModel(container.videoRepository) as T
+                modelClass.isAssignableFrom(LibraryViewModel::class.java) ->
+                    LibraryViewModel(
+                        container.historyRepository,
+                        container.savedVideoRepository,
+                        container.customPlaylistRepository
+                    ) as T
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
+        }
+    }
+
+    fun customPlaylistDetailFactory(playlistId: Long): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            val container = YoouuttApp.instance.container
+            return CustomPlaylistDetailViewModel(
+                playlistId = playlistId,
+                repository = container.customPlaylistRepository
+            ) as T
         }
     }
 }

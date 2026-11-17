@@ -14,8 +14,11 @@ import androidx.compose.animation.togetherWith
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import com.example.yoouutt.ChannelKey
+import com.example.yoouutt.CustomPlaylistDetailKey
 import com.example.yoouutt.HistoryKey
+import com.example.yoouutt.LibraryKey
 import com.example.yoouutt.PlayerKey
+import com.example.yoouutt.PlaylistKey
 
 object YouTubeScreenTransitions {
 
@@ -41,7 +44,7 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(200)))
             }
 
-            targetKey is ChannelKey || targetKey is HistoryKey -> {
+            targetKey is ChannelKey || targetKey is HistoryKey || targetKey is LibraryKey || targetKey is CustomPlaylistDetailKey || targetKey is PlaylistKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { it },
                     animationSpec = tween(durationMillis = 320, easing = EmphasizedDecelerate)
@@ -51,7 +54,7 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(150)))
             }
 
-            initialKey is ChannelKey || initialKey is HistoryKey -> {
+            initialKey is ChannelKey || initialKey is HistoryKey || initialKey is LibraryKey || initialKey is CustomPlaylistDetailKey || initialKey is PlaylistKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { -it / 3 },
                     animationSpec = tween(durationMillis = 280, easing = EmphasizedDecelerate)
