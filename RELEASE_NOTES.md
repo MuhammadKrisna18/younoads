@@ -1,3 +1,26 @@
+### YounoAds v3.9 - Catatan Rilis & Pembaruan
+
+Pembaruan besar untuk kecerdasan rekomendasi video dan kesinambungan tontonan yang luwes, segar, dan tidak monoton:
+
+1. Mesin Rekomendasi Dinamis & Shuffling Pool (Dynamic Smart Recommendation Engine)
+- Menghilangkan kekakuan rekomendasi video dengan menerapkan sistem pengocokan acak terkontrol (`.shuffled()`) pada kumpulan kandidat relevan.
+- Setiap kali Anda membuka video (atau saat menonton ulang video yang sama di waktu berbeda), daftar rekomendasi dan video teratas (Index 0) akan selalu berganti dan bervariasi secara dinamis, menyajikan alternatif tontonan baru tanpa kejenuhan.
+- Menjamin stabilitas tampilan: daftar rekomendasi tetap tenang dan stabil selama video sedang diputar sehingga pengguna tidak kehilangan video yang sedang diincar.
+
+2. Eliminasi Monopoli Channel & Pencarian Lintas Kreator
+- Membatasi kuota video dari channel kreator aktif menjadi maksimal 3 video, mencegah seluruh feed rekomendasi didominasi oleh satu kreator saja.
+- Menambahkan algoritma pembersih kata kunci topik (`extractTopicQuery`) yang membuang stop words umum dari judul video dan melakukan pencarian cerdas untuk menarik video serupa dari berbagai kreator lain di ekosistem YouTube.
+
+3. Arsitektur Multi-Pilar Paralel (Non-Blocking Multi-Source Curation)
+- Mengambil kandidat rekomendasi dari 4 pilar secara bersamaan menggunakan eksekusi paralel coroutine (`async`):
+  * Pilar 1: Video terkait langsung dari YouTube jika tersedia.
+  * Pilar 2: Video topik serupa dari berbagai kreator lain berdasarkan kata kunci esensial judul.
+  * Pilar 3: Video rekomendasi terpersonalisasi dari histori tontonan lokal pengguna.
+  * Pilar 4: Video pilihan terbaru dari channel kreator aktif.
+- Menyelaraskan seluruh rekomendasi segar ini ke antrean pemutaran otomatis (`Autoplay`), menjamin alur tontonan berikutnya selalu mengalir alami ke kreator dan topik yang relevan.
+
+---
+
 ### YounoAds v3.8 - Catatan Rilis & Pembaruan
 
 Pembaruan menghadirkan kesinambungan pemutaran video otomatis tanpa henti dengan dukungan rekomendasi cerdas teratas, alur playlist standar YouTube, serta penyempurnaan animasi banner hitung mundur:

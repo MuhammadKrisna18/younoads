@@ -89,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Autoplay memutar video rekomendasi teratas untuk video biasa dan akhir playlist\n• Transisi cerdas standar YouTube dengan prioritas trek antrean playlist\n• Banner hitung mundur 3 detik dengan animasi visual dan progress bar neon\n• Integrasi sinkronisasi rekomendasi bertingkat ke engine pemutar"
+                    "• Mesin rekomendasi dinamis cerdas dengan pengocokan acak (dynamic shuffle pool)\n• Eliminasi monopoli channel dengan pembatasan kuota dan pencarian lintas kreator\n• Kurasi topik serupa berdasarkan ekstraksi kata kunci judul video\n• Personalisasi rekomendasi adaptif berbasis riwayat tontonan lokal"
                 }
 
                 Box(

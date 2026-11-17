@@ -88,8 +88,8 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Dialog Pemilih Kecepatan Eksplisit**: Menggantikan siklus kecepatan manual dengan dialog `PlaybackSpeedSelectionDialog` yang menyajikan seluruh opsi (0.5x, 0.75x, Normal 1.0x, 1.25x, 1.5x, 2.0x) lengkap dengan penanda centang aktif.
 - **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol redundan (termasuk tombol PiP manual dan tombol Layar Penuh) untuk menjaga antarmuka tetap bersih dan minimalis, menyisakan 3 tombol aksi esensial yang ringkas dan bebas gulir (`Salin`, `Simpan`, `Pengaturan`).
 
-### 17. Feed Rekomendasi Video Pintar Bertingkat (Smart Fallback Recommendations)
-Menghadirkan feed rekomendasi video cerdas tepat di bawah kartu deskripsi video sehingga area detail pemutar tidak pernah kosong. Mengadopsi arsitektur kurasi 4 tingkatan secara dinamis: video terkait bawaan stream, katalog video terbaru dari channel kreator, pencarian video serupa berdasarkan kata kunci judul/kreator, dan kompilasi feed terpersonalisasi dari histori tontonan lokal pengguna, lengkap dengan deduplikasi otomatis.
+### 17. Feed Rekomendasi Video Pintar Dinamis (Dynamic Smart Shuffled Recommendations)
+Menghadirkan feed rekomendasi video cerdas dan dinamis tepat di bawah kartu deskripsi video. Mengadopsi arsitektur kurasi multi-pilar paralel: pembatasan kuota channel (maksimal 3 video untuk mencegah monopoli), pencarian video topik serupa lintas kreator berdasarkan ekstraksi kata kunci judul, personalisasi histori tontonan lokal pengguna, serta pengocokan acak terkontrol (`.shuffled()`) agar daftar rekomendasi dan target Autoplay selalu segar, variatif, dan tidak pernah monoton setiap kali video dibuka.
 
 ---
 
@@ -225,6 +225,11 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Reactive Recommendation Flow**: `PlayerViewModel` mengalirkan daftar rekomendasi bertingkat ke `PlaybackManager.setUpcomingRecommendations()`. Hal ini memungkinkan `PlaybackManager` mengeksekusi transisi video berikutnya secara mandiri bahkan saat aplikasi berada di latar belakang atau mode Picture-in-Picture.
 - **Standar Transisi YouTube & Dynamic Queue Teardown**: Evaluasi terpadu pada `playNextImmediately()` yang memastikan pemutaran playlist berlanjut hingga trek terakhir, dan beralih secara mulus ke video rekomendasi teratas (`targetVideo`) dengan mereset status playlist lama secara bersih.
 - **Visual Countdown Dynamics**: Banner `AutoplayCountdownBanner` mengintegrasikan `animateFloatAsState` berinterpolasi linear untuk menyusutkan bilah progres gradien cyberpunk secara presisi selama 3 detik, disandingkan dengan transisi `fadeIn + scaleIn(0.85f)` dan `fadeOut + scaleOut(0.85f)`.
+
+#### 19. Arsitektur Dynamic Blended Shuffled Recommendation & Stop-Words Topic Extractor
+- **Ekstraksi Kata Kunci Topik (Topic Query Extraction)**: Mengimplementasikan `extractTopicQuery()` yang membersihkan tanda baca dan menyaring stop words umum (kata sambung) dari judul video aktif guna mengekstrak kata kunci topik yang akurat untuk mencari video serupa dari berbagai kreator lain di ekosistem YouTube.
+- **Eksekusi Multi-Pilar Paralel (Concurrent Async Aggregation)**: Memanfaatkan `coroutineScope` dan coroutine `async` untuk menjalankan penarikan kandidat channel, pencarian topik serupa, dan histori personalisasi secara bersamaan, memangkas latensi kurasi hingga di bawah 1 detik.
+- **Pemberian Kuota Seimbang & Pengocokan Acak (Dynamic Shuffling Pool)**: Membatasi kuota video channel kreator aktif menjadi maksimal 3 item guna mencegah monopoli feed, menggabungkan kandidat lintas pilar, dan menerapkan `.shuffled()` sehingga urutan rekomendasi dan video teratas Autoplay selalu segar dan tidak deterministik saat pengguna membuka kembali video yang sama.
 
 ---
 
