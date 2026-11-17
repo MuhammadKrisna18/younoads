@@ -89,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Auto-resume senyap langsung ke posisi menit/detik terakhir dari histori\n• Viewport pemutar video lebih bersih tanpa tombol overlay di kanan atas\n• Perampingan baris aksi pemutar (Salin, Simpan, Pengaturan)\n• Rekomendasi video pintar bertingkat di bawah deskripsi pemutar"
+                    "• Autoplay memutar video rekomendasi teratas untuk video biasa dan akhir playlist\n• Transisi cerdas standar YouTube dengan prioritas trek antrean playlist\n• Banner hitung mundur 3 detik dengan animasi visual dan progress bar neon\n• Integrasi sinkronisasi rekomendasi bertingkat ke engine pemutar"
                 }
 
                 Box(

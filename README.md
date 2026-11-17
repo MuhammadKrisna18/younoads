@@ -74,8 +74,9 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Transisi Audio Mulus**: Beralih antar bahasa audio secara instan di latar belakang tanpa me-reset posisi pemutaran video aktif.
 
 ### 15. Pemutaran Otomatis (Autoplay) & Pengulangan Video Tunggal (Loop)
-- **Autoplay dengan Transisi Hitung Mundur 3 Detik**: Saat video yang sedang diputar selesai (`STATE_ENDED`), aplikasi memulai hitung mundur 3 detik dengan banner transisi mengambang (*floating banner*) yang menampilkan judul video berikutnya, tombol "Putar Sekarang", dan tombol "Batal". Video berikutnya diambil secara otomatis dari playlist aktif atau video terkait pertama (*related video*).
-- **Kontrol Cepat di Overlay & Bottom Sheet**: Status Autoplay dapat dinyalakan atau dimatikan secara instan melalui ikon *quick toggle* di sudut kanan atas pemutar video (`PlayerControlsOverlay`) maupun sakelar toggle switch di dalam `PlayerSettingsBottomSheet`.
+- **Autoplay Rekomendasi Teratas & Transisi Playlist Standar YouTube**: Saat video yang sedang diputar selesai (`STATE_ENDED`), aplikasi memulai hitung mundur 3 detik dengan banner transisi mengambang (*floating banner*) beranimasi halus. Video berikutnya diambil secara cerdas: memprioritaskan trek antrean playlist berikutnya; jika playlist telah mencapai video terakhir atau sedang memutar video biasa, pemutar otomatis memutar video rekomendasi nomor 1 (posisi teratas / Index 0).
+- **Banner Hitung Mundur 3 Detik dengan Animasi Visual**: Menampilkan animasi skala dan fade (`scaleIn` + `fadeIn`), titik status neon Electric Cyan, serta bilah progres gradien cyberpunk yang menyusut dinamis selama 3 detik. Dilengkapi tombol "Putar Sekarang" dan "Batal".
+- **Kontrol Cepat di Bottom Sheet**: Status Autoplay dapat diaktifkan atau dinonaktifkan secara instan melalui sakelar toggle switch di dalam `PlayerSettingsBottomSheet`.
 - **Fitur Loop Video Tunggal**: Memungkinkan pemutaran ulang video yang sama secara terus-menerus tanpa henti. Fitur Loop memiliki prioritas lebih tinggi daripada Autoplay; ketika Loop aktif, video langsung diputar ulang dari detik ke-0 tanpa memicu hitung mundur transisi ke video lain.
 - **Penyimpanan Preferensi Lokal (SharedPreferences)**: Preferensi status Autoplay dan Loop disimpan secara persisten di penyimpanan lokal perangkat melalui `PlayerPreferences`, sehingga konfigurasi pengguna tetap terjaga saat aplikasi ditutup dan dibuka kembali.
 
@@ -219,6 +220,11 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Kurasi Rekomendasi 4 Tingkatan**: Mengimplementasikan `loadRecommendations()` pada `PlayerViewModel` yang memadukan 4 sumber data secara berjenjang ketika NewPipeExtractor tidak menyajikan cukup video terkait: fallback ke `getChannelDetails()`, ekspansi via `searchVideos()` berbasis kata kunci judul/uploader, dan fallback akhir ke `getPersonalizedFeed()` dari Room watch history.
 - **Pencegahan Redundansi & Deduplikasi Reaktif**: Memfilter video aktif (`videoId` dan `videoUrl`) serta menerapkan `.distinctBy { it.id }` untuk menjamin integritas antarmuka tanpa duplikasi konten. Menggunakan penanda kunci video (`currentLoadedRecommendationVideoId`) agar proses kurasi tidak dieksekusi berulang saat mutasi playback non-kritis terjadi.
 - **Silent Resume Direct Seeking**: Menyinkronkan pemulihan posisi tontonan langsung melalui `playbackManager.playVideo()` dengan pembacaan instan dari `WatchHistoryRepository`. Eliminasi banner interaktif meniadakan beban state `resumeBannerVisible` dan rekomposisi UI yang tidak perlu.
+
+#### 18. Sinkronisasi Antrean Rekomendasi Autoplay & Animasi Banner Transisi
+- **Reactive Recommendation Flow**: `PlayerViewModel` mengalirkan daftar rekomendasi bertingkat ke `PlaybackManager.setUpcomingRecommendations()`. Hal ini memungkinkan `PlaybackManager` mengeksekusi transisi video berikutnya secara mandiri bahkan saat aplikasi berada di latar belakang atau mode Picture-in-Picture.
+- **Standar Transisi YouTube & Dynamic Queue Teardown**: Evaluasi terpadu pada `playNextImmediately()` yang memastikan pemutaran playlist berlanjut hingga trek terakhir, dan beralih secara mulus ke video rekomendasi teratas (`targetVideo`) dengan mereset status playlist lama secara bersih.
+- **Visual Countdown Dynamics**: Banner `AutoplayCountdownBanner` mengintegrasikan `animateFloatAsState` berinterpolasi linear untuk menyusutkan bilah progres gradien cyberpunk secara presisi selama 3 detik, disandingkan dengan transisi `fadeIn + scaleIn(0.85f)` dan `fadeOut + scaleOut(0.85f)`.
 
 ---
 

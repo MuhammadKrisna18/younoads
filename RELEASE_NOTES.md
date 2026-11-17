@@ -1,3 +1,22 @@
+### YounoAds v3.8 - Catatan Rilis & Pembaruan
+
+Pembaruan menghadirkan kesinambungan pemutaran video otomatis tanpa henti dengan dukungan rekomendasi cerdas teratas, alur playlist standar YouTube, serta penyempurnaan animasi banner hitung mundur:
+
+1. Autoplay Video Rekomendasi Teratas (Index 0 Fallback)
+- Fitur Autoplay kini aktif secara menyeluruh untuk video reguler di luar playlist; ketika video selesai, pemutar otomatis melanjutkan ke video rekomendasi nomor 1 (posisi teratas) dari feed rekomendasi cerdas.
+- Menghubungkan kurasi rekomendasi bertingkat (channel, pencarian serupa, dan histori personalisasi) langsung ke engine pemutar latar belakang (`PlaybackManager`).
+
+2. Alur Transisi Playlist Standar YouTube
+- Mempertahankan integritas urutan pemutaran playlist resmi YouTube: selama masih ada video berikutnya dalam daftar putar, pemutar akan melanjutkan ke trek berikutnya.
+- Saat antrean playlist telah mencapai video terakhir, sistem secara cerdas beralih memutar video rekomendasi teratas dan membersihkan antrean playlist lama tanpa memutus aliran tontonan.
+
+3. Animasi Visual Banner Hitung Mundur 3 Detik
+- Banner hitung mundur transisi (`AutoplayCountdownBanner`) kini dipercantik dengan animasi kemunculan halus kombinasi `scaleIn` (skala 0.85) dan `fadeIn`, serta penutupan `scaleOut` dan `fadeOut`.
+- Dilengkapi indikator titik status neon Electric Cyan dan garis waktu progres horizontal (`CyberpunkGradient`) yang menyusut secara dinamis selama 3 detik sebelum pemutaran video berikutnya dimulai.
+- Pengguna tetap memegang kendali penuh dengan tombol "Putar Sekarang" untuk transisi instan atau tombol "Batal" untuk menghentikan pemutaran otomatis.
+
+---
+
 ### YounoAds v3.7 - Catatan Rilis & Pembaruan
 
 Pembaruan fokus pada kenyamanan pemutaran video tanpa distraksi, pemulihan posisi otomatis tanpa konfirmasi, antarmuka pemutar yang bersih dan minimalis, serta sistem kurasi rekomendasi video cerdas bertingkat:
