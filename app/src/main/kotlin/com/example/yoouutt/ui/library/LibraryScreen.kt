@@ -25,11 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.HighQuality
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Translate
-import com.example.yoouutt.ui.player.components.DefaultQualitySelectionDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,18 +59,15 @@ import com.example.yoouutt.data.model.SavedVideo
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.history.components.HistoryItemRow
-import com.example.yoouutt.ui.language.LanguageManager
-import com.example.yoouutt.ui.language.components.LanguageSelectionDialog
 import com.example.yoouutt.ui.library.components.CustomPlaylistCard
 import com.example.yoouutt.ui.library.components.LibraryEmptyTabState
 import com.example.yoouutt.ui.library.components.SavedVideoItemRow
 import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
-import com.example.yoouutt.ui.theme.ThemeManager
-import com.example.yoouutt.ui.theme.components.ThemeSelectionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
+    initialTab: Int = 0,
     onVideoClick: (String, String, String) -> Unit,
     onPlayAllSaved: (List<SavedVideo>) -> Unit,
     onCustomPlaylistClick: (playlistId: Long, playlistTitle: String) -> Unit,
@@ -86,16 +80,14 @@ fun LibraryScreen(
     val customPlaylists by viewModel.customPlaylists.collectAsStateWithLifecycle()
     val historyItems by viewModel.historyItems.collectAsStateWithLifecycle()
     val isCreatePlaylistDialogVisible by viewModel.isCreatePlaylistDialogVisible.collectAsStateWithLifecycle()
-    val defaultQuality by viewModel.defaultQuality.collectAsStateWithLifecycle()
 
     var showClearSavedDialog by remember { mutableStateOf(false) }
     var showClearHistoryDialog by remember { mutableStateOf(false) }
-    var showThemeDialog by remember { mutableStateOf(false) }
-    var showLanguageDialog by remember { mutableStateOf(false) }
-    var showQualityDialog by remember { mutableStateOf(false) }
     var playlistToDeleteId by remember { mutableStateOf<Long?>(null) }
-    val currentTheme by ThemeManager.currentTheme.collectAsStateWithLifecycle()
-    val currentLanguage by LanguageManager.currentLanguage.collectAsStateWithLifecycle()
+
+    LaunchedEffect(initialTab) {
+        viewModel.selectTab(initialTab)
+    }
 
     val view = LocalView.current
     val tabs = listOf(
@@ -147,34 +139,6 @@ fun LibraryScreen(
         )
     }
 
-    if (showThemeDialog) {
-        ThemeSelectionDialog(
-            currentTheme = currentTheme,
-            onThemeSelected = { newTheme ->
-                ThemeManager.setTheme(newTheme)
-            },
-            onDismiss = { showThemeDialog = false }
-        )
-    }
-
-    if (showLanguageDialog) {
-        LanguageSelectionDialog(
-            currentLanguage = currentLanguage,
-            onLanguageSelected = { newLanguage ->
-                LanguageManager.setLanguage(newLanguage)
-            },
-            onDismiss = { showLanguageDialog = false }
-        )
-    }
-
-    if (showQualityDialog) {
-        DefaultQualitySelectionDialog(
-            currentQuality = defaultQuality,
-            onQualitySelected = viewModel::setDefaultQuality,
-            onDismiss = { showQualityDialog = false }
-        )
-    }
-
     Scaffold(
         modifier = modifier,
         containerColor = Color.Transparent,
@@ -198,27 +162,6 @@ fun LibraryScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showQualityDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.HighQuality,
-                            contentDescription = stringResource(R.string.settings_default_quality),
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(onClick = { showLanguageDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Translate,
-                            contentDescription = stringResource(R.string.settings_language),
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(onClick = { showThemeDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Palette,
-                            contentDescription = stringResource(R.string.settings_theme),
-                            tint = Color.White
-                        )
-                    }
                     if (selectedTab == 0 && savedVideos.isNotEmpty()) {
                         IconButton(onClick = { showClearSavedDialog = true }) {
                             Icon(

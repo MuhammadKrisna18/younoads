@@ -47,7 +47,8 @@ Mendukung penyalinan dan pembagian tautan video dengan parameter stempel waktu (
 
 ### 10. Konfigurasi Resolusi dan Kecepatan Pemutaran
 - **Pilihan Resolusi Adaptif**: Mulai dari resolusi hemat kuota (360p) hingga Full HD (1080p) dan pengatur kecepatan pemutaran (0.25x hingga 2.0x).
-- **Preferensi Default Kualitas Tayangan**: Pengguna dapat menetapkan target kualitas awal secara permanen (Otomatis, 1080p, 720p, 480p, 360p) melalui modal dialog `DefaultQualitySelectionDialog`, sehingga video baru langsung dimuat pada resolusi target yang diinginkan tanpa perlu memilih manual setiap saat.
+- **Preferensi Default Kualitas Tayangan**: Pengguna dapat menetapkan target kualitas awal secara permanen (Otomatis, 1080p, 720p, 480p, 360p) melalui layar Pengaturan (SettingsScreen), sehingga video baru langsung dimuat pada resolusi target yang diinginkan tanpa perlu memilih manual setiap saat.
+- **Pemutaran Awal Instan (Direct Progressive Streams)**: Seluruh video reguler wajib menggunakan URL stream MP4/WebM langsung dari jaringan CDN Google dengan eliminasi total format HLS ber-proxy, menjamin waktu mulai pemutaran instan tanpa jeda buffering playlist.
 
 ### 11. Desain Tema Cyberpunk Neo-Tokyo & Maskot Anime ("Youno-chan")
 - **Estetika Neo-Tokyo AMOLED**: Latar belakang hitam pekat murni (Pure Void Black `#08080C`) dengan aksen pendaran Electric Cyan (`#00F0FF`) dan Neon Magenta (`#FF2A85`) yang hemat daya OLED dan futuristik.

@@ -29,10 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.history.components.HistoryEmptyState
@@ -42,7 +44,8 @@ import com.example.yoouutt.ui.history.components.HistoryItemRow
 @Composable
 fun HistoryScreen(
     onVideoClick: (String, String, String) -> Unit,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
+    onExploreClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: HistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -52,8 +55,8 @@ fun HistoryScreen(
 
     if (showClearDialog) {
         AppConfirmDialog(
-            title = "Hapus Riwayat?",
-            message = "Semua riwayat tontonan di HP Anda akan dihapus permanen.",
+            title = stringResource(R.string.library_clear_history_title),
+            message = stringResource(R.string.library_clear_history_msg),
             onConfirm = {
                 viewModel.clearAll()
                 showClearDialog = false
@@ -69,19 +72,21 @@ fun HistoryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Riwayat Tontonan",
+                        text = stringResource(R.string.nav_history),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                    if (onBack != null) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.common_back),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -89,7 +94,7 @@ fun HistoryScreen(
                         IconButton(onClick = { showClearDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteSweep,
-                                contentDescription = "Hapus Semua",
+                                contentDescription = stringResource(R.string.library_clear_history_title),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
@@ -108,7 +113,7 @@ fun HistoryScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                HistoryEmptyState(onExploreClick = onBack)
+                HistoryEmptyState(onExploreClick = { onExploreClick?.invoke() ?: onBack?.invoke() })
             }
         } else {
             LazyColumn(

@@ -90,6 +90,7 @@ class PipedFallbackExtractor(
         val views = json.optLong("views", 0L)
         val viewText = if (views > 0L) TextFormatters.formatViewCount(views) else ""
         val uploadDateText = json.optString("uploadDate")
+        val isLive = json.optBoolean("liveStream", false) || json.optBoolean("isLive", false)
 
         val hlsUrl = json.optString("hls").takeIf { it.isNotBlank() }
         val videoStreamsArray = json.optJSONArray("videoStreams")
@@ -129,6 +130,7 @@ class PipedFallbackExtractor(
                 val isVideoOnly = vObj.optBoolean("videoOnly", false)
                 val height = vObj.optInt("height", quality.filter { it.isDigit() }.toIntOrNull() ?: 720)
                 val isHlsFormat = format.equals("HLS", ignoreCase = true)
+                if (isHlsFormat && !isLive) continue
 
                 resolutionOptions.add(
                     VideoResolutionOption(
@@ -144,11 +146,11 @@ class PipedFallbackExtractor(
             }
         }
 
-        if (!hlsUrl.isNullOrBlank() && resolutionOptions.none { it.isHls }) {
+        if (isLive && !hlsUrl.isNullOrBlank() && resolutionOptions.none { it.isHls }) {
             resolutionOptions.add(
                 0,
                 VideoResolutionOption(
-                    label = "Auto (HLS)",
+                    label = "Live",
                     height = 720,
                     videoUrl = hlsUrl,
                     isVideoOnly = false,
@@ -159,7 +161,7 @@ class PipedFallbackExtractor(
             )
         }
 
-        if (resolutionOptions.isEmpty() && hlsUrl.isNullOrBlank()) {
+        if (resolutionOptions.isEmpty() && (!isLive || hlsUrl.isNullOrBlank())) {
             return null
         }
 
@@ -167,12 +169,12 @@ class PipedFallbackExtractor(
             ?: resolutionOptions.firstOrNull { it.height == 1080 }
             ?: resolutionOptions.firstOrNull()
             ?: VideoResolutionOption(
-                label = "Auto",
+                label = if (isLive) "Live" else "Auto",
                 height = 720,
-                videoUrl = hlsUrl ?: resolutionOptions.first().videoUrl,
+                videoUrl = if (isLive) hlsUrl.orEmpty() else (resolutionOptions.firstOrNull()?.videoUrl ?: ""),
                 isVideoOnly = false,
                 audioUrl = null,
-                isHls = !hlsUrl.isNullOrBlank()
+                isHls = isLive && !hlsUrl.isNullOrBlank()
             )
 
         val relatedVideos = mutableListOf<VideoItem>()
@@ -248,6 +250,7 @@ class PipedFallbackExtractor(
         val viewCount = json.optLong("viewCount", 0L)
         val viewText = if (viewCount > 0L) TextFormatters.formatViewCount(viewCount) else ""
         val publishedText = json.optString("publishedText")
+        val isLive = json.optBoolean("liveStream", false) || json.optBoolean("isLive", false)
 
         val hlsUrl = json.optString("hlsUrl").takeIf { it.isNotBlank() }
         val formatStreamsArray = json.optJSONArray("formatStreams")
@@ -255,10 +258,10 @@ class PipedFallbackExtractor(
 
         val resolutionOptions = mutableListOf<VideoResolutionOption>()
 
-        if (!hlsUrl.isNullOrBlank()) {
+        if (isLive && !hlsUrl.isNullOrBlank()) {
             resolutionOptions.add(
                 VideoResolutionOption(
-                    label = "Auto (HLS)",
+                    label = "Live",
                     height = 720,
                     videoUrl = hlsUrl,
                     isVideoOnly = false,
@@ -277,6 +280,9 @@ class PipedFallbackExtractor(
                 val qualityLabel = fObj.optString("qualityLabel").ifBlank { fObj.optString("resolution", "720p") }
                 val height = qualityLabel.filter { it.isDigit() }.toIntOrNull() ?: 720
                 val container = fObj.optString("container", "mp4")
+                if ((container.equals("m3u8", ignoreCase = true) || container.equals("hls", ignoreCase = true)) && !isLive) {
+                    continue
+                }
 
                 resolutionOptions.add(
                     VideoResolutionOption(
@@ -317,7 +323,7 @@ class PipedFallbackExtractor(
             }
         }
 
-        if (resolutionOptions.isEmpty() && hlsUrl.isNullOrBlank()) {
+        if (resolutionOptions.isEmpty() && (!isLive || hlsUrl.isNullOrBlank())) {
             return null
         }
 
@@ -325,12 +331,12 @@ class PipedFallbackExtractor(
             ?: resolutionOptions.firstOrNull { it.height == 1080 }
             ?: resolutionOptions.firstOrNull()
             ?: VideoResolutionOption(
-                label = "Auto",
+                label = if (isLive) "Live" else "Auto",
                 height = 720,
-                videoUrl = hlsUrl ?: resolutionOptions.first().videoUrl,
+                videoUrl = if (isLive) hlsUrl.orEmpty() else (resolutionOptions.firstOrNull()?.videoUrl ?: ""),
                 isVideoOnly = false,
                 audioUrl = null,
-                isHls = !hlsUrl.isNullOrBlank()
+                isHls = isLive && !hlsUrl.isNullOrBlank()
             )
 
         val relatedVideos = mutableListOf<VideoItem>()

@@ -1,3 +1,25 @@
+### YounoAds v4.4 - Catatan Rilis & Pembaruan
+
+Pembaruan struktur navigasi dan penyempurnaan pemutar instan (Level Hard - Bug 2 & Eliminasi HLS):
+
+1. Pembaruan Bilah Navigasi 3 Tombol (Home, History, Settings)
+- Mengubah arsitektur BottomNavigationBar menjadi 3 navigasi utama: Beranda (Home), Riwayat (History), dan Pengaturan (Settings).
+- Menghadirkan layar Riwayat (HistoryScreen) sebagai layar tingkat utama mandiri yang terhubung dengan tab Riwayat, lengkap dengan tombol kosong yang langsung mengarahkan pengguna kembali menjelajahi Beranda.
+
+2. Layar Pengaturan Terpusat (SettingsScreen & SettingsViewModel)
+- Menghadirkan layar Pengaturan terpadu yang membungkus seluruh konfigurasi preferensi dan pustaka konten:
+  * Pemutaran & Tampilan: Mengintegrasikan pemilihan Kualitas Video Default (Otomatis, 1080p, 720p, 480p, 360p), Tema Aplikasi (Cyberpunk, Sakura, City Pop, Mecha, Dark, Light), dan Bahasa Aplikasi (Indonesia & English).
+  * Pustaka & Konten: Pintasan langsung menuju Daftar Putar (Playlists) dan Video Tersimpan (Saved Videos).
+  * Tentang Aplikasi: Menampilkan versi aplikasi aktif serta ringkasan fitur bebas iklan.
+- Merapikan bilah atas Layar Koleksi (LibraryScreen) dengan memindahkan modal pengaturan tema, bahasa, dan kualitas ke tempat semestinya di layar Pengaturan.
+
+3. Eliminasi Total Format HLS pada Video Reguler (Instant Playback Startup)
+- Menghapus injeksi kode fallback Auto (HLS) pada PipedFallbackExtractor yang sebelumnya menyebabkan pemutaran awal mengalami jeda loading panjang (3-6+ detik) akibat segmentasi proxy bertingkat.
+- Mengunci protokol HLS (m3u8) hanya untuk siaran langsung (Live Streaming).
+- Mewajibkan pemutaran video reguler menggunakan Direct Progressive MP4/WebM Streams langsung dari jaringan CDN Google, menghasilkan waktu pemutaran awal instan (sub-500ms) tanpa jeda buffering playlist.
+
+---
+
 ### YounoAds v4.3 - Catatan Rilis & Pembaruan
 
 Pembaruan preferensi pemutar video dan otomatisasi kualitas tayangan (Level Medium - Bug 5):

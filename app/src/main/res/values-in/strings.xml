@@ -10,6 +10,8 @@
     <string name="common_error">Terjadi kesalahan</string>
 
     <string name="nav_home">Beranda</string>
+    <string name="nav_history">Riwayat</string>
+    <string name="nav_settings">Pengaturan</string>
     <string name="nav_library">Koleksi</string>
 
     <string name="search_placeholder">Cari di YouTube...</string>
@@ -99,4 +101,15 @@
     <string name="quality_720p_desc">HD 720p (Seimbang antara kejernihan dan kuota)</string>
     <string name="quality_480p_desc">Standar 480p (Cepat termuat, hemat data)</string>
     <string name="quality_360p_desc">Hemat Data 360p (Penggunaan kuota minimal)</string>
+
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_category_preferences">Pemutaran &amp; Tampilan</string>
+    <string name="settings_category_content">Pustaka &amp; Konten</string>
+    <string name="settings_category_about">Tentang Aplikasi</string>
+    <string name="settings_playlists_title">Daftar Putar</string>
+    <string name="settings_playlists_desc">Kelola dan tonton daftar putar kustom Anda</string>
+    <string name="settings_saved_title">Video Tersimpan</string>
+    <string name="settings_saved_desc">Akses dan tonton video yang Anda simpan</string>
+    <string name="settings_app_version">Versi Aplikasi</string>
+    <string name="settings_app_description">Klien pemutar video bebas iklan dengan estetika anime</string>
 </resources>

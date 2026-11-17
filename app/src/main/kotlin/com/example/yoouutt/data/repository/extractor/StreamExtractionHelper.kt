@@ -148,7 +148,7 @@ class StreamExtractionHelper(
                     .sortedByDescending { it.height }
             }
 
-            if (availableResolutions.isEmpty() && hlsUrl.isNullOrBlank()) {
+            if (availableResolutions.isEmpty() && (!isLive || hlsUrl.isNullOrBlank())) {
                 val fallbackData = fallbackExtractor.extractStreamData(videoUrl)
                 if (fallbackData != null) {
                     streamCache.put(videoUrl, Pair(fallbackData, System.currentTimeMillis()))
@@ -159,7 +159,6 @@ class StreamExtractionHelper(
             val fallbackStreamUrl = when {
                 isLive && !hlsUrl.isNullOrBlank() -> hlsUrl
                 progressiveOptions.isNotEmpty() -> progressiveOptions.first().videoUrl
-                !hlsUrl.isNullOrBlank() -> hlsUrl
                 videoStreams.isNotEmpty() -> videoStreams.first().content
                 videoOnlyStreams.isNotEmpty() -> videoOnlyStreams.first().content
                 else -> {

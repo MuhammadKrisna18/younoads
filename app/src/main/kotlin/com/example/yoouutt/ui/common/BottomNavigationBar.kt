@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.QueueMusic
-import androidx.compose.material.icons.automirrored.outlined.QueueMusic
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,8 +50,10 @@ import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 fun BottomNavigationBar(
     isHomeSelected: Boolean,
     isHistorySelected: Boolean,
+    isSettingsSelected: Boolean,
     onHomeClick: () -> Unit,
     onHistoryClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -66,7 +70,7 @@ fun BottomNavigationBar(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .height(60.dp)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -82,13 +86,24 @@ fun BottomNavigationBar(
             )
 
             BottomNavItem(
-                title = stringResource(R.string.nav_library),
-                selectedIcon = Icons.AutoMirrored.Filled.QueueMusic,
-                unselectedIcon = Icons.AutoMirrored.Outlined.QueueMusic,
+                title = stringResource(R.string.nav_history),
+                selectedIcon = Icons.Filled.History,
+                unselectedIcon = Icons.Outlined.History,
                 selected = isHistorySelected,
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     onHistoryClick()
+                }
+            )
+
+            BottomNavItem(
+                title = stringResource(R.string.nav_settings),
+                selectedIcon = Icons.Filled.Settings,
+                unselectedIcon = Icons.Outlined.Settings,
+                selected = isSettingsSelected,
+                onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    onSettingsClick()
                 }
             )
         }

@@ -10,6 +10,7 @@ import com.example.yoouutt.ui.library.LibraryViewModel
 import com.example.yoouutt.ui.player.PlayerViewModel
 import com.example.yoouutt.ui.playlist.PlaylistViewModel
 import com.example.yoouutt.ui.playlist.custom.CustomPlaylistDetailViewModel
+import com.example.yoouutt.ui.settings.SettingsViewModel
 
 object AppViewModelProvider {
     val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -44,6 +45,8 @@ object AppViewModelProvider {
                         container.customPlaylistRepository,
                         container.playbackManager
                     ) as T
+                modelClass.isAssignableFrom(SettingsViewModel::class.java) ->
+                    SettingsViewModel(container.playbackManager) as T
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
         }

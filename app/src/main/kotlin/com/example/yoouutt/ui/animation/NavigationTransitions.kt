@@ -19,6 +19,7 @@ import com.example.yoouutt.HistoryKey
 import com.example.yoouutt.LibraryKey
 import com.example.yoouutt.PlayerKey
 import com.example.yoouutt.PlaylistKey
+import com.example.yoouutt.SettingsKey
 
 object YouTubeScreenTransitions {
 
@@ -44,7 +45,7 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(200)))
             }
 
-            targetKey is ChannelKey || targetKey is HistoryKey || targetKey is LibraryKey || targetKey is CustomPlaylistDetailKey || targetKey is PlaylistKey -> {
+            targetKey is ChannelKey || targetKey is HistoryKey || targetKey is SettingsKey || targetKey is LibraryKey || targetKey is CustomPlaylistDetailKey || targetKey is PlaylistKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { it },
                     animationSpec = tween(durationMillis = 320, easing = EmphasizedDecelerate)
@@ -54,7 +55,7 @@ object YouTubeScreenTransitions {
                 ) + fadeOut(tween(150)))
             }
 
-            initialKey is ChannelKey || initialKey is HistoryKey || initialKey is LibraryKey || initialKey is CustomPlaylistDetailKey || initialKey is PlaylistKey -> {
+            initialKey is ChannelKey || initialKey is HistoryKey || initialKey is SettingsKey || initialKey is LibraryKey || initialKey is CustomPlaylistDetailKey || initialKey is PlaylistKey -> {
                 (slideInHorizontally(
                     initialOffsetX = { -it / 3 },
                     animationSpec = tween(durationMillis = 280, easing = EmphasizedDecelerate)

@@ -28,6 +28,7 @@ import com.example.yoouutt.ui.player.PlayerScreen
 import com.example.yoouutt.ui.playlist.PlaylistScreen
 import com.example.yoouutt.ui.playlist.custom.CustomPlaylistDetailScreen
 import com.example.yoouutt.ui.playlist.custom.CustomPlaylistDetailViewModel
+import com.example.yoouutt.ui.settings.SettingsScreen
 
 @Composable
 fun MainNavigation() {
@@ -60,7 +61,7 @@ fun MainNavigation() {
                             )
                         },
                         onHistoryClick = {
-                            backStack.add(LibraryKey)
+                            backStack.add(SettingsKey)
                         },
                         onChannelClick = { url, name ->
                             backStack.add(ChannelKey(url, name))
@@ -70,8 +71,19 @@ fun MainNavigation() {
                         }
                     )
                 }
-                entry<LibraryKey> {
+                entry<SettingsKey> {
+                    SettingsScreen(
+                        onNavigateToPlaylists = {
+                            backStack.add(LibraryKey(initialTab = 1))
+                        },
+                        onNavigateToSaved = {
+                            backStack.add(LibraryKey(initialTab = 0))
+                        }
+                    )
+                }
+                entry<LibraryKey> { key ->
                     LibraryScreen(
+                        initialTab = key.initialTab,
                         onVideoClick = { url, title, uploader ->
                             playbackManager.playVideo(url, title, uploader)
                             backStack.add(
@@ -159,7 +171,15 @@ fun MainNavigation() {
                                 )
                             )
                         },
-                        onBack = { backStack.removeLastOrNull() }
+                        onBack = null,
+                        onExploreClick = {
+                            while (backStack.size > 1 && backStack.lastOrNull() !is Main) {
+                                backStack.removeLastOrNull()
+                            }
+                            if (backStack.lastOrNull() !is Main) {
+                                backStack.add(Main)
+                            }
+                        }
                     )
                 }
                 entry<PlayerKey> { key ->
@@ -247,7 +267,8 @@ fun MainNavigation() {
 
                 BottomNavigationBar(
                     isHomeSelected = currentKey is Main,
-                    isHistorySelected = currentKey is LibraryKey || currentKey is HistoryKey || currentKey is CustomPlaylistDetailKey,
+                    isHistorySelected = currentKey is HistoryKey,
+                    isSettingsSelected = currentKey is SettingsKey || currentKey is LibraryKey || currentKey is CustomPlaylistDetailKey,
                     onHomeClick = {
                         while (backStack.size > 1 && backStack.lastOrNull() !is Main) {
                             backStack.removeLastOrNull()
@@ -257,13 +278,24 @@ fun MainNavigation() {
                         }
                     },
                     onHistoryClick = {
-                        if (backStack.lastOrNull() !is LibraryKey) {
-                            if (backStack.any { it is LibraryKey }) {
-                                while (backStack.lastOrNull() !is LibraryKey && backStack.size > 1) {
+                        if (backStack.lastOrNull() !is HistoryKey) {
+                            if (backStack.any { it is HistoryKey }) {
+                                while (backStack.lastOrNull() !is HistoryKey && backStack.size > 1) {
                                     backStack.removeLastOrNull()
                                 }
                             } else {
-                                backStack.add(LibraryKey)
+                                backStack.add(HistoryKey)
+                            }
+                        }
+                    },
+                    onSettingsClick = {
+                        if (backStack.lastOrNull() !is SettingsKey) {
+                            if (backStack.any { it is SettingsKey }) {
+                                while (backStack.lastOrNull() !is SettingsKey && backStack.size > 1) {
+                                    backStack.removeLastOrNull()
+                                }
+                            } else {
+                                backStack.add(SettingsKey)
                             }
                         }
                     }

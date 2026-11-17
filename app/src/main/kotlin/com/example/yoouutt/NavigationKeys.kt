@@ -10,7 +10,10 @@ data object Main : NavKey
 data object HistoryKey : NavKey
 
 @Serializable
-data object LibraryKey : NavKey
+data object SettingsKey : NavKey
+
+@Serializable
+data class LibraryKey(val initialTab: Int = 0) : NavKey
 
 @Serializable
 data class CustomPlaylistDetailKey(
