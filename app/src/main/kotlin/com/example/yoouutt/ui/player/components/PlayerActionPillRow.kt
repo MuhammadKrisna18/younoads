@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -29,7 +28,6 @@ fun PlayerActionPillRow(
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
     onSettingsClick: () -> Unit,
-    onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -78,12 +76,6 @@ fun PlayerActionPillRow(
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onSettingsClick()
             }
-        )
-
-        ActionPill(
-            icon = Icons.Default.PictureInPictureAlt,
-            label = "PiP",
-            onClick = onPipClick
         )
 
         ActionPill(

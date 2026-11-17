@@ -36,7 +36,6 @@ fun PlayerDetailContent(
     onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
     onSettingsClick: () -> Unit = {},
-    onPipClick: () -> Unit,
     onToggleFullscreen: () -> Unit,
     onToggleDescription: () -> Unit,
     onPlaylistVideoClick: ((Int) -> Unit)? = null,
@@ -110,7 +109,6 @@ fun PlayerDetailContent(
                     onCopyLinkClick = onCopyLinkClick,
                     onToggleSave = onToggleSave,
                     onSettingsClick = onSettingsClick,
-                    onPipClick = onPipClick,
                     onToggleFullscreen = onToggleFullscreen
                 )
             }

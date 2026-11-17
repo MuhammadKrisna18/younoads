@@ -167,7 +167,6 @@ fun PlayerScreen(
                 },
                 onToggleSave = viewModel::toggleSave,
                 onSettingsClick = viewModel::showSettingsSheet,
-                onPipClick = { activity?.enterPipMode() },
                 onToggleFullscreen = handleToggleFullscreen,
                 onToggleDescription = viewModel::toggleDescription,
                 onPlaylistVideoClick = viewModel::playPlaylistIndex,
