@@ -1,3 +1,30 @@
+### YounoAds v3.10 - Catatan Rilis & Pembaruan
+
+Pembaruan besar untuk kecerdasan personalisasi beranda (Living Home Feed Engine) dan rangkaian peningkatan fluiditas visual sistem antarmuka (Ultra-Smooth Animation Suite):
+
+1. Mesin Rekomendasi Beranda Dinamis (Living Home Feed Engine)
+- Menghadirkan algoritma kurasi beranda adaptif yang menggabungkan kreator paling sering ditonton (top 3) dengan sampling acak dari jejak kreator historis (hingga 4 kreator tambahan), memastikan beranda selalu menyajikan sudut pandang baru pada setiap refresh.
+- Menambahkan ekstraksi kata kunci topik dinamis dari judul video yang baru saja ditonton dengan pembersihan stop words otomatis untuk menarik video bertopik relevan dari berbagai kreator eksternal.
+- Menyaring video yang sudah ditonton (unwatched filter) agar pengguna tidak disajikan ulang konten yang baru saja selesai ditonton.
+- Menerapkan pembatasan kuota anti-clustering (maksimal 2 video per kreator) dan pengocokan acak menyeluruh (`.shuffled()`) dengan penyisipan berkala playlist resmi setiap 4 video.
+
+2. Animasi Garis Waktu Hitung Mundur Autoplay 3000ms Mulus
+- Merombak total animasi banner hitung mundur autoplay dari yang sebelumnya berbasis lompatan interval detik diskret menjadi animasi linier kontinu 3000ms penuh menggunakan `Animatable`. Garis progres gradien cyberpunk kini menyusut secara presisi dari 100% hingga 0% tanpa terpotong di angka 33%.
+- Menambahkan transisi flip-roll vertikal (`AnimatedContent`) pada angka detik hitung mundur sehingga pergantian angka terasa alami dan berkarakter.
+
+3. Transisi Layar Fluiditas Tinggi (Cubic Bezier Easing)
+- Menggantikan kurva transisi layar kaku dengan Material 3 Emphasized Decelerate (`CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f)`) dan Emphasized Accelerate (`CubicBezierEasing(0.3f, 0.0f, 0.8f, 0.15f)`).
+- Menghilangkan jeda visual atau micro-stutter saat membuka dan menutup layar pemutar video serta transisi geser horizontal pada halaman saluran dan riwayat tontonan.
+
+4. Dinamika Fisika Pegas In-App Mini-Player & Animasi Bilah Progres
+- Menggantikan durasi geser kaku saat pelepasan drag horizontal mini-player dengan fisika pegas (`Spring.DampingRatioNoBouncy` dan `Spring.DampingRatioLowBouncy`), memberikan respons sentuhan yang membal alami dan taktil layaknya aplikasi native papan atas.
+- Mengintegrasikan interpolasi halus (`animateFloatAsState`) pada bilah kemajuan pemutaran mini-player sehingga garis waktu tidak lagi melompat-lompat setiap interval 500ms.
+
+5. Transisi Crossfade Status Beranda (Pull-to-Refresh Crossfade)
+- Membungkus pergantian status beranda (loading skeleton, konten video, error state, dan empty state) dengan `AnimatedContent` berdurasi 280ms/200ms, menghilangkan efek visual pop mendadak saat pengguna melakukan tarik untuk menyegarkan (pull-to-refresh).
+
+---
+
 ### YounoAds v3.9 - Catatan Rilis & Pembaruan
 
 Pembaruan besar untuk kecerdasan rekomendasi video dan kesinambungan tontonan yang luwes, segar, dan tidak monoton:

@@ -91,6 +91,15 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 ### 17. Feed Rekomendasi Video Pintar Dinamis (Dynamic Smart Shuffled Recommendations)
 Menghadirkan feed rekomendasi video cerdas dan dinamis tepat di bawah kartu deskripsi video. Mengadopsi arsitektur kurasi multi-pilar paralel: pembatasan kuota channel (maksimal 3 video untuk mencegah monopoli), pencarian video topik serupa lintas kreator berdasarkan ekstraksi kata kunci judul, personalisasi histori tontonan lokal pengguna, serta pengocokan acak terkontrol (`.shuffled()`) agar daftar rekomendasi dan target Autoplay selalu segar, variatif, dan tidak pernah monoton setiap kali video dibuka.
 
+### 18. Mesin Beranda Dinamis (Living Home Feed Engine) & Suite Animasi Ultra-Smooth
+- **Kurasi Beranda Dinamis Adaptif**: Mengembangkan algoritma feed beranda cerdas yang memadukan kreator prioritas tinggi dengan sampling acak dari jejak kreator riwayat masa lalu, penelusuran topik relevan dari ekstraksi kata kunci judul, serta penyaringan otomatis video yang sudah ditonton (unwatched filter).
+- **Anti-Clustering & Distribusi Seimbang**: Membatasi kuota maksimal 2 video per kreator untuk mengeliminasi monopoli satu channel di beranda, dipadukan dengan pengocokan menyeluruh (`.shuffled()`) dan penyisipan harmonis kartu playlist resmi setiap 4 item video.
+- **Suite Animasi Ultra-Smooth Berstandar YouTube**:
+  * **Hitung Mundur Autoplay Linier 3000ms**: Garis waktu progres gradien cyberpunk menyusut secara kontinu penuh dari 100% ke 0% tanpa terpotong di angka 33%, disertai efek flip-roll vertikal dinamis pada angka detik.
+  * **Kurva Navigasi Emphasized**: Menerapkan kurva `CubicBezierEasing` Material 3 (Emphasized Decelerate dan Accelerate) untuk transisi masuk/keluar layar pemutar video, saluran, dan riwayat yang bebas patah-patah (*stutter-free*).
+  * **Fisika Pegas In-App Mini-Player**: Gestur geser horizontal mini-player direspon dengan fisika pegas natural (`Spring`) dan bilah progres pemutaran mini-player diinterpolasi secara halus dengan `animateFloatAsState`.
+  * **Crossfade Penyegaran Beranda**: Transisi status tarik untuk menyegarkan (*pull-to-refresh*) diperhalus dengan crossfade `AnimatedContent` untuk menghilangkan efek visual pop yang kaku.
+
 ---
 
 ## Informasi & Spesifikasi Teknis

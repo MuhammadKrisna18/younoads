@@ -89,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Mesin rekomendasi dinamis cerdas dengan pengocokan acak (dynamic shuffle pool)\n• Eliminasi monopoli channel dengan pembatasan kuota dan pencarian lintas kreator\n• Kurasi topik serupa berdasarkan ekstraksi kata kunci judul video\n• Personalisasi rekomendasi adaptif berbasis riwayat tontonan lokal"
+                    "• Living Home Feed Engine: personalisasi beranda dinamis multi-kreator berbasis riwayat, sampling acak, dan topik kata kunci\n• Anti-Clustering Feed: pencegahan dominasi channel tunggal (maksimal 2 video per kreator) dan filter video yang telah ditonton\n• Animasi Banner Autoplay: interpolasi garis waktu 3000ms tanpa jeda terpotong dan transisi gulir angka detik yang mulus\n• Suite Animasi Ultra-Smooth: kurva navigasi cubic bezier, fisika pegas gestur mini-player, dan transisi crossfade penyegaran beranda"
                 }
 
                 Box(
