@@ -1,21 +1,25 @@
-### YounoAds v3.5 - Catatan Rilis & Pembaruan
+### YounoAds v3.6 - Catatan Rilis & Pembaruan
 
-Pembaruan fitur kenyamanan pemutaran video dengan interval lompatan cepat yang dapat dikonfigurasi serta mekanisme ketukan berulang akumulatif:
+Pembaruan besar untuk kenyamanan multitasking dengan transisi Picture-in-Picture otomatis, kontrol aksi jendela PiP terpadu, dan opsi beralih ke audio latar belakang:
 
-1. Konfigurasi Interval Lompatan Cepat (Configurable Seek Intervals)
-- Menambahkan opsi konfigurasi interval lompatan seek (5, 10, 15, dan 20 detik) untuk ketuk ganda (double-tap to seek).
-- Pengaturan dapat diakses dengan mudah melalui Lembar Pengaturan Pemutar (Player Settings Bottom Sheet) dengan ikon Lewati Cepat.
-- Dialog pemilihan terstruktur (SeekIntervalSelectionDialog) beraksen neon Electric Cyan lengkap dengan penanda centang aktif.
-- Pilihan interval pengguna disimpan secara persisten di perangkat lokal melalui SharedPreferences, sehingga tetap terjaga saat aplikasi ditutup dan dibuka kembali.
+1. Transisi Otomatis Picture-in-Picture (Gesture Auto-PiP)
+- Video yang sedang diputar di layar pemutar kini otomatis beralih menjadi jendela mengambang (Picture-in-Picture) ketika pengguna menekan tombol Home, melakukan gestur swipe-up, atau beralih ke aplikasi lain.
+- Mengeliminasi kebutuhan menekan tombol PiP secara manual, memberikan pengalaman multitasking yang alami seperti YouTube native.
+- Didukung animasi transisi pengecilan mulus (sourceRectHint) yang presisi mengikuti posisi video di layar.
+- Auto-PiP hanya aktif saat video berputar; saat video dijeda (paused), aplikasi tidak akan membuka jendela PiP yang diam.
 
-2. Ketukan Berulang Akumulatif (Accumulative Rapid Seeking)
-- Ketukan berurutan cepat (double-tap, triple-tap, quad-tap, dst.) pada sisi kanan atau kiri pemutar kini menambah total detik lompatan secara bertahap (misalnya pada interval 5 detik: double-tap = 10 detik, triple-tap = 15 detik, quad-tap = 20 detik).
-- Teks visual indikator seek menampilkan durasi akumulasi total secara langsung (+10 detik, +15 detik, +20 detik, dst.).
-- Dilengkapi sistem intersepsi ketukan pintar (tap interceptor) yang mencegah ketukan ketiga dan seterusnya memunculkan atau menyembunyikan kontrol pemutar secara tidak sengaja.
-- Umpan balik haptik responsif pada setiap ketukan bertahap.
+2. Aksi Ikon Headset pada Jendela PiP (Background Audio Switch)
+- Menambahkan tombol aksi dengan ikon Headset langsung di dalam jendela floating PiP.
+- Mengklik tombol Headset akan menutup jendela video PiP namun tetap melanjutkan pemutaran audio di latar belakang tanpa jeda.
+- Pemutaran audio di latar belakang tetap dapat dikendalikan, dijeda, atau dihentikan kapan saja melalui notifikasi media sistem.
 
-3. Peningkatan Lembar Pengaturan Pemutar (Player Settings Bottom Sheet)
-- Penataan opsi pengaturan yang semakin lengkap dan intuitif, menyatukan Kualitas Resolusi, Kecepatan Pemutaran, Interval Lompatan Cepat, Trek Audio, Pengulangan Loop, dan Autoplay dalam satu antarmuka modal terpadu.
+3. Kontrol Aksi Jendela PiP Lengkap (Interactive RemoteActions)
+- Menyematkan 3 tombol kontrol interaktif di jendela PiP:
+  * Mundur 10 detik (Seek Backward) untuk mengulang bagian penting video secara instan.
+  * Putar / Jeda (Play/Pause Toggle) dengan ikon yang berganti secara dinamis sesuai status video.
+  * Tombol Headset untuk beralih ke mode audio latar belakang.
+- Penutupan jendela PiP melalui tombol silang (X) akan menghentikan pemutaran secara tuntas dan menyimpan posisi tontonan terakhir ke riwayat.
 
-4. Peningkatan Efisiensi & Kinerja Gestur
-- Manajemen state gestur yang lebih terisolasi pada VideoPlayerSection dan PlayerViewModel guna mencegah rekomposisi yang tidak perlu selama proses seek berlangsung.
+4. Perampingan Baris Aksi Pemutar (Clean Action Bar)
+- Menghapus tombol PiP manual dari deretan pil aksi di bawah video, menyisakan 5 tombol esensial yang ringkas dan simetris: Bagikan, Salin, Simpan, Pengaturan, dan Layar Penuh.
+- Tampilan bebas dari gulir horizontal berlebih dan lebih nyaman dioperasikan satu tangan.

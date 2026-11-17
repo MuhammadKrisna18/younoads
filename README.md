@@ -20,9 +20,10 @@ Menyajikan konten video secara langsung dari awal hingga akhir tanpa interupsi j
 ### 2. Pemutaran Latar Belakang (Background Playback)
 Audio video tetap berjalan secara berkelanjutan ketika layar ponsel dimatikan atau saat pengguna beralih ke aplikasi lain (seperti aplikasi perpesanan atau peramban). Terintegrasi dengan kontrol media di notification shade dan lockscreen.
 
-### 3. Jendela Mengambang (In-App & System Picture-in-Picture)
+### 3. Jendela Mengambang (In-App & Gesture Auto Picture-in-Picture)
 - **In-App Floating Player**: Mini player mengambang di dalam aplikasi dengan kontrol gestur halus, memungkinkan navigasi feed sambil tetap menonton video.
-- **System PiP**: Mendukung mode Picture-in-Picture native Android saat keluar dari aplikasi.
+- **Gesture Auto-PiP**: Transisi otomatis ke mode Picture-in-Picture native Android ketika keluar dari aplikasi (tekan Home atau gestur swipe-up) saat video sedang berputar, tanpa perlu menekan tombol manual. Dilengkapi animasi scaling mulus berbasis koordinat video (`sourceRectHint`).
+- **Aksi PiP Interaktif & Tombol Headset**: Jendela PiP dilengkapi 3 tombol kontrol native: Mundur 10 detik, Putar/Jeda dinamis, dan tombol Headset untuk beralih instan ke mode audio latar belakang tanpa jeda.
 
 ### 4. Ekstraksi Fallback Otomatis untuk Video Terbatas (Age-Restricted 18+ Bypass)
 Mengintegrasikan resolver sekunder berbasis public Piped & Invidious API ketika video terkena batasan usia (Age-Restricted / 18+) atau pembatasan autentikasi YouTube. Alur fallback berjalan secara otomatis di latar belakang tanpa mengharuskan pengguna melakukan login atau registrasi akun.
@@ -84,7 +85,7 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Konfigurasi Interval Lompatan Seek (5, 10, 15, 20 detik)**: Pilihan interval lompatan cepat ketuk ganda langsung dari lembar pengaturan melalui modal `SeekIntervalSelectionDialog` dengan penanda centang aktif, disimpan secara persisten di penyimpanan lokal perangkat.
 - **Komponen Switch Interaktif**: Fitur Loop video dan Autoplay disematkan dengan sakelar toggle `Switch` Material 3 beraksen neon Electric Cyan yang dapat dinyalakan/dimatikan secara instan dengan satu sentuhan.
 - **Dialog Pemilih Kecepatan Eksplisit**: Menggantikan siklus kecepatan manual dengan dialog `PlaybackSpeedSelectionDialog` yang menyajikan seluruh opsi (0.5x, 0.75x, Normal 1.0x, 1.25x, 1.5x, 2.0x) lengkap dengan penanda centang aktif.
-- **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol "Suka" dan "Subscribe" semu untuk menjaga arsitektur lokal murni tanpa akun, menyisakan baris pil aksi yang esensial, ringkas, dan bebas gulir panjang (`Bagikan`, `Salin`, `Simpan`, `Pengaturan`, `PiP`, `Layar Penuh`).
+- **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol semu serta tombol PiP manual untuk menjaga arsitektur lokal murni tanpa akun, menyisakan 5 baris pil aksi yang esensial, ringkas, dan bebas gulir panjang (`Bagikan`, `Salin`, `Simpan`, `Pengaturan`, `Layar Penuh`).
 
 ---
 
@@ -205,6 +206,12 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Umpan Balik Visual Dinamis**: Teks overlay indikator seek menampilkan akumulasi total detik secara real-time (`+15 detik`, `+20 detik`, dst.) dan otomatis mereset akumulator saat batas waktu berakhir atau pemutaran berpindah.
 - **Penyimpanan Preferensi Terisolasi**: Nilai interval seek tersimpan secara persisten pada `PlayerPreferences` via SharedPreferences, sehingga preferensi pengguna tetap dipertahankan saat aplikasi dimulai ulang.
 
+#### 16. Manajemen Lifecycle Gesture Auto-PiP, RemoteActions, dan Transisi Audio Latar Belakang
+- **Seamless Auto-PiP Activation**: Mengintegrasikan API native `setAutoEnterEnabled(true)` (Android 12+) dan `onUserLeaveHint()` (Android 8-11) yang terikat secara presisi pada status pemutaran aktif (`isPlaying == true`) di layar pemutar video. Menekan tombol Home atau melakukan gestur swipe-up secara otomatis mengubah pemutar video menjadi floating PiP window tanpa tombol manual.
+- **Transisi Animasi Presisi (Source Rect Hint)**: Mengukur batas koordinat jendela pemutar video secara dinamis menggunakan `onGloballyPositioned` dan menyematkannya ke `PictureInPictureParams.setSourceRectHint()`, menghasilkan animasi zooming yang mulus dan bebas kedip saat memasuki mode PiP.
+- **RemoteActions Terpadu dengan Aksi Headset**: Menyediakan 3 aksi kustom interaktif pada jendela PiP melalui `RemoteAction`: Mundur 10 detik, Putar/Jeda dinamis, dan tombol Headset (Audio Latar Belakang).
+- **Isolasi Alur Penutupan Jendela (Headset vs Tombol X)**: Mengintegrasikan mekanisme penanganan penutupan jendela PiP di mana tombol Headset mendismiss jendela PiP dan melanjutkan pemutaran audio di `PlaybackService` dengan notifikasi media, sementara tombol silang (X) menghentikan pemutaran secara bersih (`playbackManager.stop()`) dan menyimpan riwayat tontonan.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -227,7 +234,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |-- history/         # Riwayat tontonan & routing HistoryScreen
 |   |   |-- components/  # HistoryItemRow, HistoryEmptyState
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
-|   |-- player/          # Tampilan utama pemutar video & routing PlayerScreen
+|   |-- player/          # Tampilan utama pemutar video, PipActionHelper & routing PlayerScreen
 |   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, SettingsBottomSheet, SpeedDialog, SeekIntervalSelectionDialog, Banner
 |   |-- playlist/        # Tampilan detail playlist & routing PlaylistScreen
 |   |   |-- components/  # PlaylistHeaderSection, PlaylistItemRow, PlaylistStateViews, PlaylistContent

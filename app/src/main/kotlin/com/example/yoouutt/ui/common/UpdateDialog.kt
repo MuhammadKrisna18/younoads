@@ -89,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Konfigurasi interval lompatan seek (5, 10, 15, 20 detik)\n• Ketukan berulang akumulatif (double, triple, quad tap)\n• Dialog pemilihan interval seek terstruktur\n• Peningkatan responsivitas kontrol dan gestur pemutar"
+                    "• Transisi otomatis Picture-in-Picture (Auto-PiP) saat keluar aplikasi\n• Tombol Headset di jendela PiP untuk beralih ke audio latar belakang\n• Kontrol aksi PiP interaktif (Mundur 10 detik, Putar/Jeda dinamis)\n• Penghapusan tombol PiP manual dan perampingan baris aksi pemutar"
                 }
 
                 Box(
