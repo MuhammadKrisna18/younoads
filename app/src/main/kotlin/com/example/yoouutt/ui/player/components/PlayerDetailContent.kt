@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +24,7 @@ import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.feed.VideoCard
+import com.example.yoouutt.ui.theme.ElectricCyan
 
 @Composable
 fun PlayerDetailContent(
@@ -40,6 +43,8 @@ fun PlayerDetailContent(
     onPlaylistVideoClick: ((Int) -> Unit)? = null,
     onChannelClick: ((channelUrl: String, channelName: String) -> Unit)?,
     onRelatedVideoClick: (VideoItem) -> Unit,
+    recommendedVideos: List<VideoItem> = emptyList(),
+    isLoadingRecommendations: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -119,12 +124,17 @@ fun PlayerDetailContent(
                 )
             }
 
-            val relatedVideos = streamData?.relatedVideos.orEmpty()
-            if (relatedVideos.isNotEmpty()) {
+            val displayVideos = if (recommendedVideos.isNotEmpty()) {
+                recommendedVideos
+            } else {
+                streamData?.relatedVideos.orEmpty()
+            }
+
+            if (displayVideos.isNotEmpty()) {
                 item(key = "related_header") {
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
-                        text = "Video Terkait",
+                        text = "Rekomendasi Video",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -134,7 +144,7 @@ fun PlayerDetailContent(
                 }
 
                 items(
-                    items = relatedVideos,
+                    items = displayVideos,
                     key = { it.id }
                 ) { relVideo ->
                     VideoCard(
@@ -142,6 +152,21 @@ fun PlayerDetailContent(
                         onClick = { onRelatedVideoClick(relVideo) },
                         onChannelClick = onChannelClick
                     )
+                }
+            } else if (isLoadingRecommendations) {
+                item(key = "recommendations_loading") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = ElectricCyan,
+                            modifier = Modifier.size(28.dp),
+                            strokeWidth = 2.5.dp
+                        )
+                    }
                 }
             }
 

@@ -26,7 +26,11 @@ object AppViewModelProvider {
                 modelClass.isAssignableFrom(HistoryViewModel::class.java) ->
                     HistoryViewModel(container.historyRepository) as T
                 modelClass.isAssignableFrom(PlayerViewModel::class.java) ->
-                    PlayerViewModel(container.playbackManager, container.historyRepository) as T
+                    PlayerViewModel(
+                        container.playbackManager,
+                        container.historyRepository,
+                        container.videoRepository
+                    ) as T
                 modelClass.isAssignableFrom(PlaylistViewModel::class.java) ->
                     PlaylistViewModel(container.videoRepository) as T
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

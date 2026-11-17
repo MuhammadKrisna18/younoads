@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.yoouutt.data.model.AudioTrackOption
+import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.StreamData
+import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.data.model.VideoResolutionOption
+import com.example.yoouutt.data.repository.VideoRepository
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import com.example.yoouutt.playback.ActivePlayback
 import com.example.yoouutt.playback.AutoplayCountdown
@@ -17,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 data class SeekFeedback(
@@ -26,7 +30,8 @@ data class SeekFeedback(
 
 class PlayerViewModel(
     private val playbackManager: PlaybackManager,
-    private val historyRepository: WatchHistoryRepository
+    private val historyRepository: WatchHistoryRepository,
+    private val videoRepository: VideoRepository
 ) : ViewModel() {
 
     val currentPlayback: StateFlow<ActivePlayback?> = playbackManager.currentPlayback
@@ -109,6 +114,14 @@ class PlayerViewModel(
     private val _seekFeedback = MutableStateFlow<SeekFeedback?>(null)
     val seekFeedback: StateFlow<SeekFeedback?> = _seekFeedback.asStateFlow()
 
+    private val _recommendedVideos = MutableStateFlow<List<VideoItem>>(emptyList())
+    val recommendedVideos: StateFlow<List<VideoItem>> = _recommendedVideos.asStateFlow()
+
+    private val _isLoadingRecommendations = MutableStateFlow(false)
+    val isLoadingRecommendations: StateFlow<Boolean> = _isLoadingRecommendations.asStateFlow()
+
+    private var recommendationJob: Job? = null
+    private var currentLoadedRecommendationVideoId: String? = null
     private var controlsTimeoutJob: Job? = null
     private var seekFeedbackJob: Job? = null
     private var progressTrackingJob: Job? = null
@@ -117,9 +130,96 @@ class PlayerViewModel(
 
     init {
         startProgressTracking()
+        observeCurrentPlaybackForRecommendations()
     }
 
     fun initVideo(videoUrl: String) {
+    }
+
+    private fun observeCurrentPlaybackForRecommendations() {
+        viewModelScope.launch {
+            playbackManager.currentPlayback.collect { playback ->
+                if (playback != null) {
+                    if (playback.streamData != null) {
+                        val videoKey = playback.videoId.ifBlank { playback.videoUrl }
+                        if (currentLoadedRecommendationVideoId != videoKey) {
+                            currentLoadedRecommendationVideoId = videoKey
+                            loadRecommendations(playback)
+                        }
+                    } else {
+                        _isLoadingRecommendations.value = true
+                    }
+                } else {
+                    currentLoadedRecommendationVideoId = null
+                    recommendationJob?.cancel()
+                    _recommendedVideos.value = emptyList()
+                    _isLoadingRecommendations.value = false
+                }
+            }
+        }
+    }
+
+    private fun loadRecommendations(playback: ActivePlayback) {
+        recommendationJob?.cancel()
+        recommendationJob = viewModelScope.launch {
+            val streamData = playback.streamData
+            val existingRelated = streamData?.relatedVideos.orEmpty().filter {
+                it.id != playback.videoId && it.url != playback.videoUrl
+            }
+
+            if (existingRelated.size >= 4) {
+                _recommendedVideos.value = existingRelated
+                _isLoadingRecommendations.value = false
+                return@launch
+            }
+
+            _isLoadingRecommendations.value = true
+            val collected = existingRelated.toMutableList()
+
+            val targetChannel = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: playback.uploaderName
+            if (targetChannel.isNotBlank()) {
+                val channelResult = videoRepository.getChannelDetails(targetChannel)
+                channelResult.onSuccess { channelData ->
+                    val channelVideos = channelData.videos.filter {
+                        it.id != playback.videoId && it.url != playback.videoUrl && collected.none { c -> c.id == it.id }
+                    }
+                    collected.addAll(channelVideos)
+                }
+            }
+
+            if (collected.size < 6) {
+                val query = if (playback.uploaderName.isNotBlank()) {
+                    playback.uploaderName
+                } else {
+                    playback.title.split(" ").filter { it.length > 2 }.take(3).joinToString(" ")
+                }
+                if (query.isNotBlank()) {
+                    val searchResult = videoRepository.searchVideos(query)
+                    searchResult.onSuccess { searchVideos ->
+                        val similarVideos = searchVideos.filter {
+                            it.id != playback.videoId && it.url != playback.videoUrl && collected.none { c -> c.id == it.id }
+                        }
+                        collected.addAll(similarVideos)
+                    }
+                }
+            }
+
+            if (collected.size < 6) {
+                val watchedHistory = historyRepository.getHistory().firstOrNull().orEmpty()
+                if (watchedHistory.isNotEmpty()) {
+                    val feedResult = videoRepository.getPersonalizedFeed(watchedHistory)
+                    feedResult.onSuccess { feedItems ->
+                        val feedVideos = feedItems.filterIsInstance<FeedItem.Video>().map { it.video }.filter {
+                            it.id != playback.videoId && it.url != playback.videoUrl && collected.none { c -> c.id == it.id }
+                        }
+                        collected.addAll(feedVideos)
+                    }
+                }
+            }
+
+            _recommendedVideos.value = collected.distinctBy { it.id }
+            _isLoadingRecommendations.value = false
+        }
     }
 
     private fun startProgressTracking() {
@@ -370,6 +470,8 @@ class PlayerViewModel(
         progressTrackingJob?.cancel()
         controlsTimeoutJob?.cancel()
         seekFeedbackJob?.cancel()
+        recommendationJob?.cancel()
+        currentLoadedRecommendationVideoId = null
         accumulatedSeekSeconds = 0
         currentSeekDirection = null
     }

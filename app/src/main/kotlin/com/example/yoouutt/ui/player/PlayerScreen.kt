@@ -71,6 +71,8 @@ fun PlayerScreen(
     val isAudioTrackDialogVisible by viewModel.isAudioTrackDialogVisible.collectAsStateWithLifecycle()
     val playlistContext by viewModel.playlistContext.collectAsStateWithLifecycle()
     val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
+    val recommendedVideos by viewModel.recommendedVideos.collectAsStateWithLifecycle()
+    val isLoadingRecommendations by viewModel.isLoadingRecommendations.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
@@ -196,6 +198,8 @@ fun PlayerScreen(
                 onRelatedVideoClick = { relVideo ->
                     viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
                 },
+                recommendedVideos = recommendedVideos,
+                isLoadingRecommendations = isLoadingRecommendations,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
