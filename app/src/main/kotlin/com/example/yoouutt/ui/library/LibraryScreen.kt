@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -60,7 +61,8 @@ import com.example.yoouutt.ui.library.components.CustomPlaylistCard
 import com.example.yoouutt.ui.library.components.LibraryEmptyTabState
 import com.example.yoouutt.ui.library.components.SavedVideoItemRow
 import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
-import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.ThemeManager
+import com.example.yoouutt.ui.theme.components.ThemeSelectionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +82,9 @@ fun LibraryScreen(
 
     var showClearSavedDialog by remember { mutableStateOf(false) }
     var showClearHistoryDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
     var playlistToDeleteId by remember { mutableStateOf<Long?>(null) }
+    val currentTheme by ThemeManager.currentTheme.collectAsStateWithLifecycle()
 
     val view = LocalView.current
     val tabs = listOf("Disimpan (${savedVideos.size})", "Playlist (${customPlaylists.size})", "Riwayat (${historyItems.size})")
@@ -128,6 +132,16 @@ fun LibraryScreen(
         )
     }
 
+    if (showThemeDialog) {
+        ThemeSelectionDialog(
+            currentTheme = currentTheme,
+            onThemeSelected = { newTheme ->
+                ThemeManager.setTheme(newTheme)
+            },
+            onDismiss = { showThemeDialog = false }
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = Color.Transparent,
@@ -151,6 +165,13 @@ fun LibraryScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showThemeDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = "Pilih Tema",
+                            tint = Color.White
+                        )
+                    }
                     if (selectedTab == 0 && savedVideos.isNotEmpty()) {
                         IconButton(onClick = { showClearSavedDialog = true }) {
                             Icon(
@@ -181,7 +202,7 @@ fun LibraryScreen(
             SecondaryTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = Color.Transparent,
-                contentColor = ElectricCyan,
+                contentColor = MaterialTheme.colorScheme.primary,
                 divider = {
                     Box(
                         modifier = Modifier
@@ -203,7 +224,7 @@ fun LibraryScreen(
                                 text = title,
                                 fontSize = 13.sp,
                                 fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium,
-                                color = if (selectedTab == index) ElectricCyan else Color(0xFFAAAAAA)
+                                color = if (selectedTab == index) MaterialTheme.colorScheme.primary else Color(0xFFAAAAAA)
                             )
                         }
                     )
@@ -255,8 +276,8 @@ fun LibraryScreen(
                                         Button(
                                             onClick = { onPlayAllSaved(savedVideos) },
                                             colors = ButtonDefaults.buttonColors(
-                                                containerColor = ElectricCyan,
-                                                contentColor = Color.Black
+                                                containerColor = MaterialTheme.colorScheme.primary,
+                                                contentColor = MaterialTheme.colorScheme.onPrimary
                                             ),
                                             shape = RoundedCornerShape(50.dp),
                                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
@@ -264,7 +285,7 @@ fun LibraryScreen(
                                             Icon(
                                                 imageVector = Icons.Default.PlayArrow,
                                                 contentDescription = null,
-                                                tint = Color.Black,
+                                                tint = MaterialTheme.colorScheme.onPrimary,
                                                 modifier = Modifier.size(18.dp)
                                             )
                                             Text(
@@ -303,8 +324,8 @@ fun LibraryScreen(
                                         viewModel.showCreatePlaylistDialog()
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF1C1F2E),
-                                        contentColor = ElectricCyan
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        contentColor = MaterialTheme.colorScheme.primary
                                     ),
                                     shape = RoundedCornerShape(14.dp),
                                     modifier = Modifier.fillMaxWidth(),
@@ -313,7 +334,7 @@ fun LibraryScreen(
                                     Icon(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = null,
-                                        tint = ElectricCyan,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.size(8.dp))

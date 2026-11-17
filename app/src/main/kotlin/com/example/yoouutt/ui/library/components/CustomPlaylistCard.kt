@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -36,8 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.CustomPlaylist
-import com.example.yoouutt.ui.theme.ElectricCyan
-import com.example.yoouutt.ui.theme.NeonMagenta
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun CustomPlaylistCard(
@@ -50,8 +48,8 @@ fun CustomPlaylistCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .border(BorderStroke(1.dp, Color(0xFF222638)), RoundedCornerShape(14.dp))
-            .background(Color(0xFF121420))
+            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)), RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .clickable(onClick = onClick)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -61,7 +59,7 @@ fun CustomPlaylistCard(
                 .width(110.dp)
                 .aspectRatio(16f / 9f)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFF1E2235)),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             if (playlist.thumbnailFallbackUrl.isNotBlank()) {
@@ -75,17 +73,13 @@ fun CustomPlaylistCard(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(ElectricCyan.copy(alpha = 0.25f), NeonMagenta.copy(alpha = 0.25f))
-                            )
-                        ),
+                        .background(LocalYoouuttGradient.current),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                         contentDescription = null,
-                        tint = ElectricCyan,
+                        tint = Color.White,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -135,7 +129,7 @@ fun CustomPlaylistCard(
 
             Text(
                 text = "Playlist Kustom",
-                color = ElectricCyan,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold
             )

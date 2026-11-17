@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,9 +23,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.ElectricCyan
-import com.example.yoouutt.ui.theme.PureBlack
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun FeedFilterRow(
@@ -42,18 +41,21 @@ fun FeedFilterRow(
         items(categories) { category ->
             val isSelected = selectedCategory == category
             val chipShape = RoundedCornerShape(50.dp)
+            val themeGradient = LocalYoouuttGradient.current
+            val primaryColor = MaterialTheme.colorScheme.primary
+
             Box(
                 modifier = Modifier
                     .clip(chipShape)
                     .then(
                         if (isSelected) {
                             Modifier
-                                .background(CyberpunkGradient)
-                                .border(BorderStroke(1.dp, ElectricCyan.copy(alpha = 0.6f)), chipShape)
+                                .background(themeGradient)
+                                .border(BorderStroke(1.dp, primaryColor.copy(alpha = 0.6f)), chipShape)
                         } else {
                             Modifier
-                                .background(Color(0xFF131522))
-                                .border(BorderStroke(0.8.dp, Color(0xFF222638)), chipShape)
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                                .border(BorderStroke(0.8.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)), chipShape)
                         }
                     )
                     .clickable {
@@ -65,7 +67,7 @@ fun FeedFilterRow(
             ) {
                 Text(
                     text = category,
-                    color = if (isSelected) PureBlack else Color.White,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                     fontSize = 12.5.sp,
                     fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
                 )

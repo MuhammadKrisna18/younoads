@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.HighQuality
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,12 +52,14 @@ fun PlayerSettingsBottomSheet(
     seekIntervalText: String = "10 detik",
     audioTrackText: String = "",
     hasMultipleAudioTracks: Boolean = false,
+    themeText: String = "Cyberpunk Neo-Tokyo",
     isLoopEnabled: Boolean,
     isAutoplayEnabled: Boolean,
     onSelectQualityClick: () -> Unit,
     onSelectSpeedClick: () -> Unit,
     onSelectSeekIntervalClick: () -> Unit = {},
     onSelectAudioTrackClick: () -> Unit = {},
+    onSelectThemeClick: () -> Unit = {},
     onAddToPlaylistClick: () -> Unit = {},
     onToggleLoop: () -> Unit,
     onToggleAutoplay: () -> Unit,
@@ -126,6 +129,13 @@ fun PlayerSettingsBottomSheet(
                     onDismiss()
                     onAddToPlaylistClick()
                 }
+            )
+
+            SettingsNavigationRow(
+                icon = Icons.Default.Palette,
+                title = "Tema aplikasi",
+                value = themeText,
+                onClick = onSelectThemeClick
             )
 
             HorizontalDivider(

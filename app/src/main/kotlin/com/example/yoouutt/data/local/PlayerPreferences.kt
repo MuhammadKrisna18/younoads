@@ -18,10 +18,15 @@ class PlayerPreferences(context: Context) {
         get() = prefs.getInt(KEY_SEEK_INTERVAL, 10)
         set(value) = prefs.edit().putInt(KEY_SEEK_INTERVAL, value).apply()
 
+    var appTheme: String
+        get() = prefs.getString(KEY_APP_THEME, "CYBERPUNK") ?: "CYBERPUNK"
+        set(value) = prefs.edit().putString(KEY_APP_THEME, value).apply()
+
     companion object {
         private const val PREFS_NAME = "younoads_player_prefs"
         private const val KEY_AUTOPLAY = "is_autoplay_enabled"
         private const val KEY_LOOP = "is_loop_enabled"
         private const val KEY_SEEK_INTERVAL = "seek_interval_seconds"
+        private const val KEY_APP_THEME = "app_theme"
     }
 }

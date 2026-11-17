@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -42,7 +43,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.common.BrandLogo
-import com.example.yoouutt.ui.theme.DarkBackground
 
 @Composable
 fun FeedTopBar(
@@ -67,7 +67,7 @@ fun FeedTopBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(DarkBackground.copy(alpha = 0.88f))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.88f))
             .statusBarsPadding()
     ) {
         AnimatedContent(

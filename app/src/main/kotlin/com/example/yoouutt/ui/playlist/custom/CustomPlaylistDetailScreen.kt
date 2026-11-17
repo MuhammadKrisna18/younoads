@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
@@ -57,8 +56,7 @@ import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.library.components.LibraryEmptyTabState
-import com.example.yoouutt.ui.theme.ElectricCyan
-import com.example.yoouutt.ui.theme.NeonMagenta
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,17 +171,13 @@ fun CustomPlaylistDetailScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(
-                                        Brush.horizontalGradient(
-                                            listOf(ElectricCyan.copy(alpha = 0.3f), NeonMagenta.copy(alpha = 0.3f))
-                                        )
-                                    ),
+                                    .background(LocalYoouuttGradient.current),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                                     contentDescription = null,
-                                    tint = ElectricCyan,
+                                    tint = Color.White,
                                     modifier = Modifier.size(54.dp)
                                 )
                             }
@@ -213,7 +207,7 @@ fun CustomPlaylistDetailScreen(
                     Text(
                         text = "${items.size} video • Playlist Kustom",
                         fontSize = 12.5.sp,
-                        color = ElectricCyan,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
                     )
 
@@ -230,8 +224,8 @@ fun CustomPlaylistDetailScreen(
                                     onPlayPlaylist(videoItems, 0)
                                 },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = ElectricCyan,
-                                    contentColor = Color.Black
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.weight(1f)
@@ -239,7 +233,7 @@ fun CustomPlaylistDetailScreen(
                                 Icon(
                                     imageVector = Icons.Default.PlayArrow,
                                     contentDescription = null,
-                                    tint = Color.Black,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))

@@ -12,19 +12,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.animation.bounceClick
-import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun ActionPill(
@@ -34,11 +33,18 @@ fun ActionPill(
     modifier: Modifier = Modifier,
     isActive: Boolean = false
 ) {
+    val activeBgColor = MaterialTheme.colorScheme.primary
+    val inactiveBgColor = MaterialTheme.colorScheme.surfaceVariant
+    val activeContentColor = MaterialTheme.colorScheme.onPrimary
+    val inactiveContentColor = MaterialTheme.colorScheme.onSurface
+
     val animatedBgColor by animateColorAsState(
-        targetValue = if (isActive) YouTubeRed else Color(0xFF272727),
+        targetValue = if (isActive) activeBgColor else inactiveBgColor,
         animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
         label = "pillBgColor"
     )
+
+    val contentColor = if (isActive) activeContentColor else inactiveContentColor
 
     Row(
         modifier = modifier
@@ -52,7 +58,7 @@ fun ActionPill(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = Color.White,
+            tint = contentColor,
             modifier = Modifier.size(15.dp)
         )
         Spacer(modifier = Modifier.width(5.dp))
@@ -60,7 +66,7 @@ fun ActionPill(
             text = label,
             fontSize = 12.sp,
             fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
-            color = Color.White
+            color = contentColor
         )
     }
 }

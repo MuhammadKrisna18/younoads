@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,8 +40,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.NeonMagenta
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun BottomNavigationBar(
@@ -55,9 +55,9 @@ fun BottomNavigationBar(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp),
-        color = Color(0xFF0A0B12),
+        color = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp,
-        border = BorderStroke(1.dp, Color(0xFF1E2235))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier
@@ -102,11 +102,13 @@ private fun BottomNavItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val primaryColor = MaterialTheme.colorScheme.primary
     val contentColor by animateColorAsState(
-        targetValue = if (selected) NeonMagenta else Color(0xFF7A8299),
+        targetValue = if (selected) primaryColor else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = tween(durationMillis = 150),
         label = "BottomNavColor"
     )
+    val themeGradient = LocalYoouuttGradient.current
 
     Column(
         modifier = modifier
@@ -127,8 +129,8 @@ private fun BottomNavItem(
                 .then(
                     if (selected) {
                         Modifier
-                            .background(NeonMagenta.copy(alpha = 0.16f))
-                            .border(BorderStroke(1.dp, CyberpunkGradient), pillShape)
+                            .background(primaryColor.copy(alpha = 0.16f))
+                            .border(BorderStroke(1.dp, themeGradient), pillShape)
                     } else {
                         Modifier.background(Color.Transparent)
                     }

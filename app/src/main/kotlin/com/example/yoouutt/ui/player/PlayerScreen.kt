@@ -37,6 +37,8 @@ import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
 import com.example.yoouutt.ui.player.components.SeekIntervalSelectionDialog
 import com.example.yoouutt.ui.player.components.ShareBottomSheet
 import com.example.yoouutt.ui.player.components.VideoPlayerSection
+import com.example.yoouutt.ui.theme.ThemeManager
+import com.example.yoouutt.ui.theme.components.ThemeSelectionDialog
 
 @Composable
 fun PlayerScreen(
@@ -79,11 +81,13 @@ fun PlayerScreen(
     val isAddToPlaylistSheetVisible by viewModel.isAddToPlaylistSheetVisible.collectAsStateWithLifecycle()
     val isCreatePlaylistDialogVisible by viewModel.isCreatePlaylistDialogVisible.collectAsStateWithLifecycle()
     val currentVideoPlaylistIds by viewModel.currentVideoPlaylistIds.collectAsStateWithLifecycle()
+    val currentTheme by ThemeManager.currentTheme.collectAsStateWithLifecycle()
     val resolutionLabel = currentResolution?.label.orEmpty()
 
     val isInPipMode = LocalInPipMode.current
     var videoBounds by remember { mutableStateOf<Rect?>(null) }
     var isShareSheetVisible by remember { mutableStateOf(false) }
+    var isThemeDialogVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(isPlaying, videoBounds) {
         (activity as? MainActivity)?.setPlayerActive(true, videoBounds)
@@ -242,6 +246,7 @@ fun PlayerScreen(
             seekIntervalText = "$seekIntervalSeconds detik",
             audioTrackText = currentAudioTrack?.displayName.orEmpty(),
             hasMultipleAudioTracks = availableAudioTracks.size > 1,
+            themeText = currentTheme.displayName,
             isLoopEnabled = isLoopEnabled,
             isAutoplayEnabled = isAutoplayEnabled,
             onSelectQualityClick = {
@@ -260,10 +265,24 @@ fun PlayerScreen(
                 viewModel.dismissSettingsSheet()
                 viewModel.showAudioTrackDialog()
             },
+            onSelectThemeClick = {
+                viewModel.dismissSettingsSheet()
+                isThemeDialogVisible = true
+            },
             onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
             onToggleLoop = viewModel::toggleLoop,
             onToggleAutoplay = viewModel::toggleAutoplay,
             onDismiss = viewModel::dismissSettingsSheet
+        )
+    }
+
+    if (isThemeDialogVisible) {
+        ThemeSelectionDialog(
+            currentTheme = currentTheme,
+            onThemeSelected = { newTheme ->
+                ThemeManager.setTheme(newTheme)
+            },
+            onDismiss = { isThemeDialogVisible = false }
         )
     }
 

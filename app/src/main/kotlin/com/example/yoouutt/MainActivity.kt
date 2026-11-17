@@ -13,6 +13,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import com.example.yoouutt.ui.player.PipBroadcastReceiver
 import com.example.yoouutt.ui.player.enterPipMode
 import com.example.yoouutt.ui.player.updatePipAutoEnter
 import com.example.yoouutt.ui.player.updatePipParams
+import com.example.yoouutt.ui.theme.ThemeManager
 import com.example.yoouutt.ui.theme.YoouuttTheme
 import kotlinx.coroutines.launch
 
@@ -51,8 +54,9 @@ class MainActivity : ComponentActivity() {
         observePlaybackStateForPip()
 
         setContent {
+            val currentTheme by ThemeManager.currentTheme.collectAsState()
             CompositionLocalProvider(LocalInPipMode provides inPipModeState.value) {
-                YoouuttTheme {
+                YoouuttTheme(appTheme = currentTheme) {
                     CyberpunkAppBackground {
                         Surface(
                             modifier = Modifier.fillMaxSize(),

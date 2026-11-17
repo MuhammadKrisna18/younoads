@@ -22,14 +22,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.R
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.NeonMagenta
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 import com.example.yoouutt.ui.theme.YouTubeRed
 
 val BrandRed = YouTubeRed
 
 @Composable
 fun BrandLogo(modifier: Modifier = Modifier) {
+    val themeGradient = LocalYoouuttGradient.current
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -38,7 +39,7 @@ fun BrandLogo(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .border(BorderStroke(1.5.dp, CyberpunkGradient), CircleShape),
+                .border(BorderStroke(1.5.dp, themeGradient), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -62,7 +63,7 @@ fun BrandLogo(modifier: Modifier = Modifier) {
                 text = "noAds",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = NeonMagenta
+                color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(
