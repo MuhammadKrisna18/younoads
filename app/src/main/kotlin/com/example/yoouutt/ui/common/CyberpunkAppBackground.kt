@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.example.yoouutt.R
 import com.example.yoouutt.ui.theme.LocalYoouuttTheme
 
 @Composable
@@ -28,9 +27,10 @@ fun CyberpunkAppBackground(
             .fillMaxSize()
             .background(backgroundColor)
     ) {
-        if (theme.hasHologramBackdrop) {
+        val backdropRes = theme.backdropResId
+        if (theme.hasHologramBackdrop && backdropRes != null) {
             Image(
-                painter = painterResource(id = R.drawable.youno_backdrop),
+                painter = painterResource(id = backdropRes),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.TopCenter,

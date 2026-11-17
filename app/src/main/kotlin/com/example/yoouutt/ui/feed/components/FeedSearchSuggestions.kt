@@ -25,13 +25,13 @@ import androidx.compose.material.icons.filled.NorthWest
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.common.BrandRed
-import com.example.yoouutt.ui.theme.DarkBackground
 
 @Composable
 fun FeedSearchSuggestions(
@@ -73,7 +72,7 @@ fun FeedSearchSuggestions(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(DarkBackground.copy(alpha = 0.94f))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.96f))
             .imePadding(),
         contentPadding = PaddingValues(top = 4.dp, bottom = 130.dp)
     ) {
@@ -88,7 +87,7 @@ fun FeedSearchSuggestions(
                 ) {
                     Text(
                         text = "Riwayat Pencarian",
-                        color = Color(0xFFAAAAAA),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -127,13 +126,13 @@ fun FeedSearchSuggestions(
                 Icon(
                     imageVector = Icons.Default.History,
                     contentDescription = "Riwayat",
-                    tint = Color(0xFFAAAAAA),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = historyItem,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 15.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -149,7 +148,7 @@ fun FeedSearchSuggestions(
                     Icon(
                         imageVector = Icons.Default.NorthWest,
                         contentDescription = "Isi ke pencarian",
-                        tint = Color(0xFF8E8E8E),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -163,7 +162,7 @@ fun FeedSearchSuggestions(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Hapus riwayat",
-                        tint = Color(0xFF8E8E8E),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -188,13 +187,13 @@ fun FeedSearchSuggestions(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color(0xFF8E8E8E),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = suggestion,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 15.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -210,7 +209,7 @@ fun FeedSearchSuggestions(
                     Icon(
                         imageVector = Icons.Default.NorthWest,
                         contentDescription = "Isi ke pencarian",
-                        tint = Color(0xFF8E8E8E),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -228,20 +227,20 @@ fun FeedSearchSuggestions(
                     Icon(
                         imageVector = Icons.Default.History,
                         contentDescription = null,
-                        tint = Color(0xFF444444),
+                        tint = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
                         text = "Belum ada riwayat pencarian",
-                        color = Color(0xFF888888),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Pencarian Anda akan otomatis tersimpan di sini",
-                        color = Color(0xFF555555),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         fontSize = 12.sp
                     )
                 }

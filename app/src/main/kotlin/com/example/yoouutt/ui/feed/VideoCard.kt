@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -101,7 +102,7 @@ fun VideoCard(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF272727))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable {
                         val targetUrl = video.uploaderUrl.ifBlank { video.uploaderName }
                         onChannelClick?.invoke(targetUrl, video.uploaderName)
@@ -121,7 +122,7 @@ fun VideoCard(
                         text = initial,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -136,7 +137,7 @@ fun VideoCard(
             ) {
                 Text(
                     text = video.title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 14.5.sp,
                     lineHeight = 20.sp,
                     fontWeight = FontWeight.Normal,
@@ -160,7 +161,7 @@ fun VideoCard(
 
                 Text(
                     text = metaText,
-                    color = Color(0xFFAAAAAA),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     lineHeight = 16.sp,
                     maxLines = 1,
@@ -178,7 +179,7 @@ fun VideoCard(
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Opsi Video",
-                    tint = Color(0xFFAAAAAA),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
             }

@@ -138,14 +138,16 @@ private val MechaTacticalColorScheme = darkColorScheme(
 val LocalYoouuttGradient = staticCompositionLocalOf { CyberpunkGradient }
 val LocalYoouuttTheme = staticCompositionLocalOf { AppTheme.CYBERPUNK }
 
-fun AppTheme.gradient(): Brush = when (this) {
-    AppTheme.CYBERPUNK -> CyberpunkGradient
-    AppTheme.MATTE_BLACK -> MatteBlackGradient
-    AppTheme.LIGHT -> LightModeGradient
-    AppTheme.SAKURA_LOFI -> SakuraGradient
-    AppTheme.CITY_POP_SUNSET -> CityPopGradient
-    AppTheme.MECHA_TACTICAL -> MechaGradient
+fun AppTheme.gradientColors(): List<Color> = when (this) {
+    AppTheme.CYBERPUNK -> listOf(ElectricCyan, NeonMagenta)
+    AppTheme.MATTE_BLACK -> listOf(OfficialYouTubeRed, Color(0xFFCC0000))
+    AppTheme.LIGHT -> listOf(Color(0xFFFF0000), Color(0xFF065FD4))
+    AppTheme.SAKURA_LOFI -> listOf(SakuraPink, PastelLavender)
+    AppTheme.CITY_POP_SUNSET -> listOf(SunsetOrange, SunsetAmber)
+    AppTheme.MECHA_TACTICAL -> listOf(EvaNeonGreen, TacticalAmber)
 }
+
+fun AppTheme.gradient(): Brush = Brush.horizontalGradient(gradientColors())
 
 fun AppTheme.colorScheme(): ColorScheme = when (this) {
     AppTheme.CYBERPUNK -> CyberpunkColorScheme

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -27,11 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.yoouutt.ui.theme.ElectricCyan
 import com.example.yoouutt.update.UpdateInfo
 
 @Composable
@@ -42,14 +39,15 @@ fun UpdateDialog(
     onDismiss: () -> Unit
 ) {
     val isDownloading = downloadProgress != null
+    val primaryColor = MaterialTheme.colorScheme.primary
 
     AlertDialog(
         onDismissRequest = {
             if (!isDownloading) onDismiss()
         },
-        containerColor = Color(0xFF16161C),
-        titleContentColor = Color.White,
-        textContentColor = Color(0xFFCCCCCC),
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         shape = RoundedCornerShape(22.dp),
         title = {
             Column {
@@ -57,7 +55,7 @@ fun UpdateDialog(
                     text = "Pembaruan Tersedia",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
@@ -67,13 +65,13 @@ fun UpdateDialog(
                     Text(
                         text = "Versi Terbaru:",
                         style = MaterialTheme.typography.labelMedium,
-                        color = Color(0xFFAAAAAA)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = updateInfo.versionName,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = ElectricCyan
+                        color = primaryColor
                     )
                 }
             }
@@ -84,12 +82,12 @@ fun UpdateDialog(
                     text = "Apa yang baru di ${updateInfo.versionName}:",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Living Home Feed Engine: personalisasi beranda dinamis multi-kreator berbasis riwayat, sampling acak, dan topik kata kunci\n• Anti-Clustering Feed: pencegahan dominasi channel tunggal (maksimal 2 video per kreator) dan filter video yang telah ditonton\n• Animasi Banner Autoplay: interpolasi garis waktu 3000ms tanpa jeda terpotong dan transisi gulir angka detik yang mulus\n• Suite Animasi Ultra-Smooth: kurva navigasi cubic bezier, fisika pegas gestur mini-player, dan transisi crossfade penyegaran beranda"
+                    "Pembaruan performa dan tampilan antarmuka yang lebih segar."
                 }
 
                 Box(
@@ -97,15 +95,15 @@ fun UpdateDialog(
                         .fillMaxWidth()
                         .heightIn(max = 180.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF202028))
-                        .border(BorderStroke(1.dp, Color(0xFF2E2E38)), RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), RoundedCornerShape(10.dp))
                         .padding(12.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
                         text = changelogText,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFDDDDDD),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 19.sp
                     )
                 }
@@ -117,7 +115,7 @@ fun UpdateDialog(
                     Text(
                         text = "Mengunduh pembaruan... $percentage%",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(
@@ -126,14 +124,14 @@ fun UpdateDialog(
                             .fillMaxWidth()
                             .height(6.dp)
                             .clip(RoundedCornerShape(3.dp)),
-                        color = ElectricCyan,
-                        trackColor = Color(0xFF33333D)
+                        color = primaryColor,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 } else {
                     Text(
                         text = "Versi baru siap diunduh dan dipasang langsung ke HP Anda.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFAAAAAA)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -144,8 +142,8 @@ fun UpdateDialog(
                     onClick = onUpdateClick,
                     shape = RoundedCornerShape(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ElectricCyan,
-                        contentColor = Color.Black
+                        containerColor = primaryColor,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(
@@ -160,11 +158,11 @@ fun UpdateDialog(
                 OutlinedButton(
                     onClick = onDismiss,
                     shape = RoundedCornerShape(50.dp),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.35f))
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                 ) {
                     Text(
                         text = "Nanti",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

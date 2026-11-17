@@ -109,7 +109,7 @@ fun CustomPlaylistCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = playlist.title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
@@ -120,7 +120,7 @@ fun CustomPlaylistCard(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = playlist.description,
-                    color = Color(0xFFAAAAAA),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -141,7 +141,7 @@ fun CustomPlaylistCard(
             Icon(
                 imageVector = Icons.Default.DeleteOutline,
                 contentDescription = stringResource(R.string.common_delete),
-                tint = Color(0xFF888899)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

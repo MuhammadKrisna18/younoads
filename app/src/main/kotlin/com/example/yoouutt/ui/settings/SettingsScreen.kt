@@ -112,7 +112,7 @@ fun SettingsScreen(
                         text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

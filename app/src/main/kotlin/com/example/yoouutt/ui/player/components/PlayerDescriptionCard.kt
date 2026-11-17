@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,7 +44,7 @@ fun PlayerDescriptionCard(
             .fillMaxWidth()
             .padding(horizontal = 14.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF1E1E1E))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onToggleExpand()
@@ -63,7 +63,7 @@ fun PlayerDescriptionCard(
                     text = metaLine,
                     fontSize = 12.5.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (hasDesc) {
                     Spacer(modifier = Modifier.height(6.dp))
@@ -75,7 +75,7 @@ fun PlayerDescriptionCard(
                     text = streamData.description,
                     fontSize = 12.sp,
                     lineHeight = 17.sp,
-                    color = Color(0xFFDDDDDD),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = if (isExpanded) Int.MAX_VALUE else 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -84,10 +84,9 @@ fun PlayerDescriptionCard(
                     text = if (isExpanded) "Sembunyikan" else "...selengkapnya",
                     fontSize = 11.5.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
     }
 }
-

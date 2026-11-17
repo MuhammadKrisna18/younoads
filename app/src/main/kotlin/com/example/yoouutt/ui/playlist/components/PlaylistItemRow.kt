@@ -47,7 +47,7 @@ fun PlaylistItemRow(
             text = index.toString(),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Medium,
-            color = Color(0xFF888888),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(26.dp),
             textAlign = TextAlign.Center
         )
@@ -59,7 +59,7 @@ fun PlaylistItemRow(
                 .width(120.dp)
                 .aspectRatio(16f / 9f)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFF1E1E1E))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             if (video.thumbnailUrl.isNotBlank()) {
                 AsyncImage(
@@ -98,7 +98,7 @@ fun PlaylistItemRow(
                 text = video.title,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 lineHeight = 18.sp
@@ -118,7 +118,7 @@ fun PlaylistItemRow(
                 Text(
                     text = metaText,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFFAAAAAA),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.5.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

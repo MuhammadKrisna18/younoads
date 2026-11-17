@@ -100,7 +100,7 @@ fun FeedTopBar(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                                 contentDescription = stringResource(R.string.nav_library),
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -113,7 +113,7 @@ fun FeedTopBar(
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = stringResource(R.string.search_placeholder),
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -137,7 +137,7 @@ fun FeedTopBar(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
 
@@ -148,7 +148,7 @@ fun FeedTopBar(
                             Text(
                                 text = stringResource(R.string.search_placeholder),
                                 fontSize = 14.sp,
-                                color = Color(0xFF8E8E8E)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         trailingIcon = {
@@ -157,7 +157,7 @@ fun FeedTopBar(
                                     Icon(
                                         imageVector = Icons.Default.Clear,
                                         contentDescription = stringResource(R.string.search_clear),
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onBackground
                                     )
                                 }
                             }
@@ -165,12 +165,12 @@ fun FeedTopBar(
                         singleLine = true,
                         shape = RoundedCornerShape(50.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color(0xFF1F1F1F),
-                            unfocusedContainerColor = Color(0xFF1F1F1F),
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             focusedBorderColor = Color.Transparent,
                             unfocusedBorderColor = Color.Transparent,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         ),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(

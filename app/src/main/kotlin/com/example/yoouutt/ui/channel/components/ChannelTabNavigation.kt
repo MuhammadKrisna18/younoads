@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.yoouutt.ui.channel.ChannelSortOption
 import com.example.yoouutt.ui.channel.ChannelTab
-import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun ChannelTabNavigation(
@@ -39,6 +38,7 @@ fun ChannelTabNavigation(
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
+    val primaryColor = MaterialTheme.colorScheme.primary
 
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -53,11 +53,11 @@ fun ChannelTabNavigation(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (isSelected) Color(0xFF2E2E2E) else Color(0xFF161616))
+                        .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant)
                         .border(
                             border = BorderStroke(
                                 width = 1.dp,
-                                color = if (isSelected) YouTubeRed else Color.Transparent
+                                color = if (isSelected) primaryColor else Color.Transparent
                             ),
                             shape = RoundedCornerShape(8.dp)
                         )
@@ -71,7 +71,7 @@ fun ChannelTabNavigation(
                         text = tab.title,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) Color.White else Color(0xFFAAAAAA)
+                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -91,11 +91,11 @@ fun ChannelTabNavigation(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSelected) YouTubeRed else Color(0xFF1E1E1E))
+                            .background(if (isSelected) primaryColor else MaterialTheme.colorScheme.surfaceVariant)
                             .border(
                                 border = BorderStroke(
                                     width = 0.5.dp,
-                                    color = if (isSelected) YouTubeRed else Color(0xFF333333)
+                                    color = if (isSelected) primaryColor else MaterialTheme.colorScheme.outline
                                 ),
                                 shape = RoundedCornerShape(50.dp)
                             )
@@ -109,7 +109,7 @@ fun ChannelTabNavigation(
                             text = option.title,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = Color.White
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

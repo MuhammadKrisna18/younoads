@@ -149,7 +149,7 @@ fun LibraryScreen(
                         text = stringResource(R.string.library_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 navigationIcon = {
@@ -157,7 +157,7 @@ fun LibraryScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -167,7 +167,7 @@ fun LibraryScreen(
                             Icon(
                                 imageVector = Icons.Default.DeleteSweep,
                                 contentDescription = "Hapus Semua Simpanan",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     } else if (selectedTab == 2 && historyItems.isNotEmpty()) {
@@ -175,7 +175,7 @@ fun LibraryScreen(
                             Icon(
                                 imageVector = Icons.Default.DeleteSweep,
                                 contentDescription = "Hapus Semua Riwayat",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
@@ -198,7 +198,7 @@ fun LibraryScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(1.dp)
-                            .background(Color.White.copy(alpha = 0.08f))
+                            .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
                     )
                 }
             ) {
@@ -214,7 +214,7 @@ fun LibraryScreen(
                                 text = title,
                                 fontSize = 13.sp,
                                 fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium,
-                                color = if (selectedTab == index) MaterialTheme.colorScheme.primary else Color(0xFFAAAAAA)
+                                color = if (selectedTab == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     )

@@ -65,7 +65,7 @@ fun PlayerDetailContent(
                         fontSize = 16.5.sp,
                         fontWeight = FontWeight.SemiBold,
                         lineHeight = 22.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -81,7 +81,7 @@ fun PlayerDetailContent(
                             Text(
                                 text = metaLine,
                                 fontSize = 12.sp,
-                                color = Color(0xFFAAAAAA)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -141,7 +141,7 @@ fun PlayerDetailContent(
                         text = stringResource(R.string.player_recommendations_title),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))

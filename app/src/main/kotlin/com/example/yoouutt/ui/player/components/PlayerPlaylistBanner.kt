@@ -51,10 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.yoouutt.data.model.PlaylistContext
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.ElectricCyan
-import com.example.yoouutt.ui.theme.NeonMagenta
-import com.example.yoouutt.ui.theme.YouTubeRed
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun PlayerPlaylistBanner(
@@ -64,14 +61,16 @@ fun PlayerPlaylistBanner(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val view = LocalView.current
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val themeGradient = LocalYoouuttGradient.current
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF0E0F18))
-            .border(BorderStroke(1.dp, Color(0xFF1E2235)), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), RoundedCornerShape(12.dp))
     ) {
         Row(
             modifier = Modifier
@@ -86,7 +85,7 @@ fun PlayerPlaylistBanner(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
                 contentDescription = null,
-                tint = ElectricCyan,
+                tint = primaryColor,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -97,7 +96,7 @@ fun PlayerPlaylistBanner(
                     text = playlistContext.playlistTitle.ifBlank { "Daftar Putar" },
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -107,7 +106,7 @@ fun PlayerPlaylistBanner(
                 Text(
                     text = "${playlistContext.currentIndex + 1} / ${playlistContext.videos.size} video",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFFAAAAAA),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.5.sp
                 )
             }
@@ -115,7 +114,7 @@ fun PlayerPlaylistBanner(
             Icon(
                 imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -145,8 +144,8 @@ fun PlayerPlaylistBanner(
                                 .then(
                                     if (isCurrent) {
                                         Modifier
-                                            .background(NeonMagenta.copy(alpha = 0.16f))
-                                            .border(BorderStroke(1.dp, CyberpunkGradient), trackShape)
+                                            .background(primaryColor.copy(alpha = 0.16f))
+                                            .border(BorderStroke(1.dp, themeGradient), trackShape)
                                     } else {
                                         Modifier.background(Color.Transparent)
                                     }
@@ -162,7 +161,7 @@ fun PlayerPlaylistBanner(
                                 Icon(
                                     imageVector = Icons.Default.PlayArrow,
                                     contentDescription = null,
-                                    tint = ElectricCyan,
+                                    tint = primaryColor,
                                     modifier = Modifier.size(16.dp)
                                 )
                             } else {
@@ -170,7 +169,7 @@ fun PlayerPlaylistBanner(
                                     text = (index + 1).toString(),
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF888888),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.width(16.dp),
                                     textAlign = TextAlign.Center
                                 )
@@ -183,7 +182,7 @@ fun PlayerPlaylistBanner(
                                     .width(58.dp)
                                     .aspectRatio(16f / 9f)
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(Color(0xFF141414))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
                             ) {
                                 if (video.thumbnailUrl.isNotBlank()) {
                                     AsyncImage(
@@ -202,7 +201,7 @@ fun PlayerPlaylistBanner(
                                     text = video.title,
                                     fontSize = 12.5.sp,
                                     fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Normal,
-                                    color = if (isCurrent) NeonMagenta else Color.White,
+                                    color = if (isCurrent) primaryColor else MaterialTheme.colorScheme.onSurface,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -212,7 +211,7 @@ fun PlayerPlaylistBanner(
                                 Text(
                                     text = video.uploaderName,
                                     fontSize = 11.sp,
-                                    color = Color(0xFFAAAAAA),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -224,4 +223,3 @@ fun PlayerPlaylistBanner(
         }
     }
 }
-

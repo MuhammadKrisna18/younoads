@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -59,7 +58,7 @@ fun PlaylistHeaderSection(
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF1E1E1E))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 AsyncImage(
                     model = playlist.thumbnailUrl,
@@ -75,7 +74,7 @@ fun PlaylistHeaderSection(
             text = playlist.title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 26.sp
         )
 
@@ -103,14 +102,14 @@ fun PlaylistHeaderSection(
                 text = playlist.uploaderName,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = "•",
-                color = Color(0xFF888888)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -118,7 +117,7 @@ fun PlaylistHeaderSection(
             Text(
                 text = "${playlist.videos.size} video",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFFAAAAAA)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -138,8 +137,8 @@ fun PlaylistHeaderSection(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Icon(
@@ -165,8 +164,8 @@ fun PlaylistHeaderSection(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF222222),
-                    contentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
                 Icon(

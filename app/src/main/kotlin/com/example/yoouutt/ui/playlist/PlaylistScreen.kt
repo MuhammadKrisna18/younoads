@@ -60,7 +60,7 @@ fun PlaylistScreen(
                         text = playlistTitle.ifBlank { "Playlist" },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -70,7 +70,7 @@ fun PlaylistScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -81,7 +81,7 @@ fun PlaylistScreen(
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = "Share Playlist",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },

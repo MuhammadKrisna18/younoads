@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -41,7 +42,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.R
-import com.example.yoouutt.ui.theme.ElectricCyan
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +64,7 @@ fun PlayerSettingsBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF161616),
+        containerColor = MaterialTheme.colorScheme.surface,
         scrimColor = Color.Black.copy(alpha = 0.65f),
         dragHandle = {
             Box(
@@ -73,7 +73,7 @@ fun PlayerSettingsBottomSheet(
                     .width(36.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFF555555))
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
             )
         },
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -106,7 +106,7 @@ fun PlayerSettingsBottomSheet(
             )
 
             HorizontalDivider(
-                color = Color.White.copy(alpha = 0.08f),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
@@ -156,7 +156,7 @@ private fun SettingsNavigationRow(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(22.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -164,7 +164,7 @@ private fun SettingsNavigationRow(
                 text = title,
                 fontSize = 14.5.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -176,12 +176,12 @@ private fun SettingsNavigationRow(
                 text = value,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFFAAAAAA)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Color(0xFF888888),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -216,7 +216,7 @@ private fun SettingsToggleRow(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(22.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -224,7 +224,7 @@ private fun SettingsToggleRow(
                 text = title,
                 fontSize = 14.5.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -235,10 +235,10 @@ private fun SettingsToggleRow(
                 onToggle()
             },
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.Black,
-                checkedTrackColor = ElectricCyan,
-                uncheckedThumbColor = Color.White.copy(alpha = 0.7f),
-                uncheckedTrackColor = Color(0xFF2C2C32),
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
                 uncheckedBorderColor = Color.Transparent
             )
         )

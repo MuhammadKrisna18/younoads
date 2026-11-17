@@ -44,9 +44,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
 import com.example.yoouutt.ui.player.PlayerUtils
-import com.example.yoouutt.ui.theme.CyberpunkGradient
-import com.example.yoouutt.ui.theme.ElectricCyan
+import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
 @Composable
 fun BoxScope.PlayerControlsOverlay(
@@ -149,7 +149,7 @@ fun BoxScope.PlayerControlsOverlay(
                         .size(56.dp)
                         .clip(CircleShape)
                         .background(Color.Black.copy(alpha = 0.65f))
-                        .border(BorderStroke(1.2.dp, CyberpunkGradient), CircleShape)
+                        .border(BorderStroke(1.2.dp, LocalYoouuttGradient.current), CircleShape)
                         .clickable {
                             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             onPlayPauseClick()
@@ -159,7 +159,7 @@ fun BoxScope.PlayerControlsOverlay(
                     if (isBuffering) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(28.dp),
-                            color = ElectricCyan,
+                            color = MaterialTheme.colorScheme.primary,
                             strokeWidth = 2.5.dp
                         )
                     } else {
@@ -290,7 +290,7 @@ fun BoxScope.PlayerControlsOverlay(
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(36.dp),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.primary,
             strokeWidth = 3.dp
         )
     }

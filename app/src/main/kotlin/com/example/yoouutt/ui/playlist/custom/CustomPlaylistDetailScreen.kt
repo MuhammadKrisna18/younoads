@@ -109,7 +109,7 @@ fun CustomPlaylistDetailScreen(
                         text = displayTitle,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -119,7 +119,7 @@ fun CustomPlaylistDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.common_back),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -128,7 +128,7 @@ fun CustomPlaylistDetailScreen(
                         Icon(
                             imageVector = Icons.Default.DeleteOutline,
                             contentDescription = stringResource(R.string.common_delete),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -192,7 +192,7 @@ fun CustomPlaylistDetailScreen(
                         text = displayTitle,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                     if (playlist?.description?.isNotBlank() == true) {
@@ -200,7 +200,7 @@ fun CustomPlaylistDetailScreen(
                         Text(
                             text = playlist?.description.orEmpty(),
                             fontSize = 13.sp,
-                            color = Color(0xFFAAAAAA)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -249,13 +249,13 @@ fun CustomPlaylistDetailScreen(
                                     onPlayPlaylist(shuffledVideos, 0)
                                 },
                                 shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Shuffle,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -340,7 +340,7 @@ fun CustomPlaylistDetailScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = item.title,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = 13.5.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 maxLines = 2,
@@ -351,7 +351,7 @@ fun CustomPlaylistDetailScreen(
 
                             Text(
                                 text = item.uploader,
-                                color = Color(0xFFAAAAAA),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 11.5.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -367,7 +367,7 @@ fun CustomPlaylistDetailScreen(
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,
                                 contentDescription = "Hapus dari playlist",
-                                tint = Color(0xFF888899)
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }

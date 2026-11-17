@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -60,7 +61,7 @@ fun VideoOptionsBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF161616),
+        containerColor = MaterialTheme.colorScheme.surface,
         scrimColor = Color.Black.copy(alpha = 0.65f),
         dragHandle = {
             Box(
@@ -69,7 +70,7 @@ fun VideoOptionsBottomSheet(
                     .width(36.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFF555555))
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
             )
         },
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -91,7 +92,7 @@ fun VideoOptionsBottomSheet(
                         .width(96.dp)
                         .aspectRatio(16f / 9f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF222222))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     AsyncImage(
                         model = video.thumbnailUrl,
@@ -106,7 +107,7 @@ fun VideoOptionsBottomSheet(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = video.title,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 13.5.sp,
                         fontWeight = FontWeight.SemiBold,
                         lineHeight = 18.sp,
@@ -116,7 +117,7 @@ fun VideoOptionsBottomSheet(
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
                         text = video.uploaderName,
-                        color = Color(0xFFAAAAAA),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -125,7 +126,7 @@ fun VideoOptionsBottomSheet(
             }
 
             HorizontalDivider(
-                color = Color(0xFF262626),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                 thickness = 0.8.dp,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -187,13 +188,13 @@ private fun OptionRowItem(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF222222)),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -203,7 +204,7 @@ private fun OptionRowItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.5.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -211,7 +212,7 @@ private fun OptionRowItem(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    color = Color(0xFFAAAAAA),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -220,4 +221,3 @@ private fun OptionRowItem(
         }
     }
 }
-

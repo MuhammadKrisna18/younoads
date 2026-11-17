@@ -36,9 +36,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yoouutt.ui.player.PlayerUtils
-import com.example.yoouutt.ui.theme.ElectricCyan
-import com.example.yoouutt.ui.theme.NeonMagenta
-import com.example.yoouutt.ui.theme.YouTubeRed
+import com.example.yoouutt.ui.theme.LocalYoouuttTheme
+import com.example.yoouutt.ui.theme.gradientColors
 import kotlin.math.roundToInt
 
 @Composable
@@ -52,6 +51,11 @@ fun InteractiveSeekBar(
 ) {
     val view = LocalView.current
     val density = LocalDensity.current
+    val theme = LocalYoouuttTheme.current
+    val gradientColors = remember(theme) { theme.gradientColors() }
+    val thumbColors = remember(theme) {
+        listOf(Color.White, gradientColors.first(), gradientColors.last())
+    }
 
     val totalDuration = durationMs.coerceAtLeast(1L)
     val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
@@ -145,7 +149,7 @@ fun InteractiveSeekBar(
             if (playedX > 0f) {
                 drawLine(
                     brush = Brush.horizontalGradient(
-                        listOf(ElectricCyan, NeonMagenta),
+                        colors = gradientColors,
                         startX = 0f,
                         endX = playedX.coerceAtLeast(1f)
                     ),
@@ -158,7 +162,7 @@ fun InteractiveSeekBar(
 
             drawCircle(
                 brush = Brush.radialGradient(
-                    listOf(Color.White, ElectricCyan, NeonMagenta),
+                    colors = thumbColors,
                     center = Offset(playedX, centerY),
                     radius = animatedThumbRadius.toPx().coerceAtLeast(1f)
                 ),
@@ -208,6 +212,9 @@ fun MinimalBottomProgressBar(
     durationMs: Long,
     modifier: Modifier = Modifier
 ) {
+    val theme = LocalYoouuttTheme.current
+    val gradientColors = remember(theme) { theme.gradientColors() }
+
     val totalDuration = durationMs.coerceAtLeast(1L)
     val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
     val bufferedProgress = (bufferedPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
@@ -242,7 +249,7 @@ fun MinimalBottomProgressBar(
         if (playedX > 0f) {
             drawLine(
                 brush = Brush.horizontalGradient(
-                    listOf(ElectricCyan, NeonMagenta),
+                    colors = gradientColors,
                     startX = 0f,
                     endX = playedX.coerceAtLeast(1f)
                 ),

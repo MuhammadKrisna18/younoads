@@ -36,7 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
 import com.example.yoouutt.ui.player.PlayerUtils
 import com.example.yoouutt.ui.player.PlayerViewModel
-import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
 fun VideoPlayerSection(

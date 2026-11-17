@@ -56,7 +56,7 @@ fun ChannelHeaderSection(
                     .padding(horizontal = 12.dp, vertical = 6.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .aspectRatio(16f / 5f)
-                    .background(Color(0xFF1F1F1F))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 AsyncImage(
                     model = channel.bannerUrl,
@@ -89,8 +89,8 @@ fun ChannelHeaderSection(
                 modifier = Modifier
                     .size(76.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF222222))
-                    .border(BorderStroke(1.dp, Color(0xFF333333)), CircleShape),
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 if (channel.avatarUrl.isNotBlank()) {
@@ -106,7 +106,7 @@ fun ChannelHeaderSection(
                         text = initial,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -121,7 +121,7 @@ fun ChannelHeaderSection(
                     text = channel.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
                 if (channel.isVerified) {
@@ -129,7 +129,7 @@ fun ChannelHeaderSection(
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Verified",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -140,7 +140,7 @@ fun ChannelHeaderSection(
                 Text(
                     text = channel.subscriberCountText,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFFAAAAAA)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -149,7 +149,7 @@ fun ChannelHeaderSection(
                 Text(
                     text = channel.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF888888),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 2,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,

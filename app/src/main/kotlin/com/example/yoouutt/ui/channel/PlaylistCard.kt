@@ -57,7 +57,7 @@ fun PlaylistCard(
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF1E1E1E))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             if (playlist.thumbnailUrl.isNotBlank()) {
                 AsyncImage(
@@ -103,7 +103,7 @@ fun PlaylistCard(
             text = playlist.title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             lineHeight = 20.sp
@@ -114,10 +114,9 @@ fun PlaylistCard(
         Text(
             text = "${playlist.uploaderName} • Playlist",
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFFAAAAAA),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
     }
 }
-

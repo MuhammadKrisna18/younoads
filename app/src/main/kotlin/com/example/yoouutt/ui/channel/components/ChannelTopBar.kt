@@ -33,7 +33,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.yoouutt.ui.theme.DarkBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +58,7 @@ fun ChannelTopBar(
                     text = channelName.ifBlank { "Channel" },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -69,7 +68,7 @@ fun ChannelTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             },
@@ -78,7 +77,7 @@ fun ChannelTopBar(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Cari di channel",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             },
@@ -90,7 +89,7 @@ fun ChannelTopBar(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .background(DarkBackground.copy(alpha = 0.90f))
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.96f))
                 .height(56.dp)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -99,7 +98,7 @@ fun ChannelTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Tutup Pencarian",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -110,7 +109,7 @@ fun ChannelTopBar(
                     Text(
                         text = "Cari video di channel ini...",
                         fontSize = 13.5.sp,
-                        color = Color(0xFF888888)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 trailingIcon = {
@@ -119,7 +118,7 @@ fun ChannelTopBar(
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Hapus",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
@@ -127,12 +126,12 @@ fun ChannelTopBar(
                 singleLine = true,
                 shape = RoundedCornerShape(50.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF1E1E1E),
-                    unfocusedContainerColor = Color(0xFF1E1E1E),
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
