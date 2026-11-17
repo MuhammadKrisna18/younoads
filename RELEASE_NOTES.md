@@ -1,26 +1,21 @@
-### YounoAds v3.4 - Catatan Rilis & Pembaruan
+### YounoAds v3.5 - Catatan Rilis & Pembaruan
 
-Pembaruan besar untuk kenyamanan navigasi, tata letak pemutar video terpadu bergaya YouTube, dan fitur pemutaran berkelanjutan:
+Pembaruan fitur kenyamanan pemutaran video dengan interval lompatan cepat yang dapat dikonfigurasi serta mekanisme ketukan berulang akumulatif:
 
-1. Lembar Pengaturan Pemutar Terpadu (Player Settings Bottom Sheet)
-- Mengelompokkan pengaturan Kualitas Resolusi, Kecepatan Pemutaran, Trek Audio, Loop, dan Autoplay ke dalam satu modal bottom sheet bergaya YouTube native.
-- Akses instan melalui ikon roda gigi (Settings) di sudut kanan atas pemutar video atau melalui pil aksi Pengaturan di bawah video.
+1. Konfigurasi Interval Lompatan Cepat (Configurable Seek Intervals)
+- Menambahkan opsi konfigurasi interval lompatan seek (5, 10, 15, dan 20 detik) untuk ketuk ganda (double-tap to seek).
+- Pengaturan dapat diakses dengan mudah melalui Lembar Pengaturan Pemutar (Player Settings Bottom Sheet) dengan ikon Lewati Cepat.
+- Dialog pemilihan terstruktur (SeekIntervalSelectionDialog) beraksen neon Electric Cyan lengkap dengan penanda centang aktif.
+- Pilihan interval pengguna disimpan secara persisten di perangkat lokal melalui SharedPreferences, sehingga tetap terjaga saat aplikasi ditutup dan dibuka kembali.
 
-2. Fitur Pemutaran Otomatis (Autoplay)
-- Transisi otomatis ke video berikutnya (playlist atau rekomendasi pertama) dengan banner hitung mundur 3 detik saat video selesai.
-- Dilengkapi tombol Putar Sekarang dan Batal untuk fleksibilitas kontrol.
-- Sakelar toggle Switch langsung di dalam lembar pengaturan dan quick-toggle pada overlay.
+2. Ketukan Berulang Akumulatif (Accumulative Rapid Seeking)
+- Ketukan berurutan cepat (double-tap, triple-tap, quad-tap, dst.) pada sisi kanan atau kiri pemutar kini menambah total detik lompatan secara bertahap (misalnya pada interval 5 detik: double-tap = 10 detik, triple-tap = 15 detik, quad-tap = 20 detik).
+- Teks visual indikator seek menampilkan durasi akumulasi total secara langsung (+10 detik, +15 detik, +20 detik, dst.).
+- Dilengkapi sistem intersepsi ketukan pintar (tap interceptor) yang mencegah ketukan ketiga dan seterusnya memunculkan atau menyembunyikan kontrol pemutar secara tidak sengaja.
+- Umpan balik haptik responsif pada setiap ketukan bertahap.
 
-3. Fitur Putar Ulang Video Tunggal (Loop)
-- Pengulangan video aktif secara terus-menerus tanpa henti melalui sakelar Switch interaktif di lembar pengaturan.
-- Memiliki prioritas lebih tinggi daripada Autoplay saat diaktifkan.
+3. Peningkatan Lembar Pengaturan Pemutar (Player Settings Bottom Sheet)
+- Penataan opsi pengaturan yang semakin lengkap dan intuitif, menyatukan Kualitas Resolusi, Kecepatan Pemutaran, Interval Lompatan Cepat, Trek Audio, Pengulangan Loop, dan Autoplay dalam satu antarmuka modal terpadu.
 
-4. Dialog Pemilih Kecepatan Pemutaran Baru (Playback Speed Dialog)
-- Dialog terstruktur untuk memilih kecepatan video secara presisi (0.5x, 0.75x, Normal 1.0x, 1.25x, 1.5x, 2.0x) dengan penanda centang aktif.
-
-5. Perampingan Baris Aksi & Arsitektur Lokal Murni
-- Menghapus tombol semu Suka dan Subscribe agar integritas aplikasi sebagai pemutar bebas akun (no-login) tetap terjaga.
-- Baris pil aksi bawah video dirampingkan menjadi esensial: Bagikan, Salin, Simpan, Pengaturan, PiP, Layar Penuh.
-
-6. Peningkatan Popup Pembaruan Aplikasi
-- Menampilkan rincian versi terbaru dan daftar apa saja yang diperbarui secara langsung di dalam aplikasi.
+4. Peningkatan Efisiensi & Kinerja Gestur
+- Manajemen state gestur yang lebih terisolasi pada VideoPlayerSection dan PlayerViewModel guna mencegah rekomposisi yang tidak perlu selama proses seek berlangsung.

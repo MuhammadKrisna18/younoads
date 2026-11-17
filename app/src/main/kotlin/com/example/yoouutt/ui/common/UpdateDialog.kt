@@ -89,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Desain pengaturan pemutar video terpadu ala YouTube\n• Fitur Autoplay pemutaran otomatis dengan transisi hitung mundur 3 detik\n• Fitur Loop pengulangan video tunggal tanpa jeda\n• Dialog pemilih kecepatan pemutaran terstruktur\n• Optimalisasi arsitektur dan efisiensi performa"
+                    "• Konfigurasi interval lompatan seek (5, 10, 15, 20 detik)\n• Ketukan berulang akumulatif (double, triple, quad tap)\n• Dialog pemilihan interval seek terstruktur\n• Peningkatan responsivitas kontrol dan gestur pemutar"
                 }
 
                 Box(

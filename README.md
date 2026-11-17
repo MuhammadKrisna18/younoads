@@ -28,7 +28,7 @@ Audio video tetap berjalan secara berkelanjutan ketika layar ponsel dimatikan at
 Mengintegrasikan resolver sekunder berbasis public Piped & Invidious API ketika video terkena batasan usia (Age-Restricted / 18+) atau pembatasan autentikasi YouTube. Alur fallback berjalan secara otomatis di latar belakang tanpa mengharuskan pengguna melakukan login atau registrasi akun.
 
 ### 5. Kontrol Interaktif dan Gestur
-- **Double-Tap to Seek**: Ketuk ganda di sisi kanan atau kiri pemutar untuk melompat maju atau mundur 10 detik dengan feedback haptik instan.
+- **Double-Tap to Seek & Ketukan Akumulatif Cepat**: Ketukan ganda di sisi kanan atau kiri pemutar untuk melompat maju atau mundur sesuai interval yang dikonfigurasi (5, 10, 15, atau 20 detik). Dilengkapi mekanisme ketukan berulang akumulatif (misalnya interval 5 detik: double-tap = 10 detik, triple-tap = 15 detik, quad-tap = 20 detik) dengan teks umpan balik visual dinamis dan feedback haptik instan.
 - **Interactive Scrubber**: Kontrol garis waktu video presisi dengan visual thumb yang responsif.
 - **Feedback Haptik & Animasi Membal**: Responsivitas taktil pada tombol aksi, navigasi, dan kontrol.
 
@@ -79,8 +79,9 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Penyimpanan Preferensi Lokal (SharedPreferences)**: Preferensi status Autoplay dan Loop disimpan secara persisten di penyimpanan lokal perangkat melalui `PlayerPreferences`, sehingga konfigurasi pengguna tetap terjaga saat aplikasi ditutup dan dibuka kembali.
 
 ### 16. Lembar Pengaturan Pemutar Terpadu ala YouTube (Player Settings Bottom Sheet)
-- **Konsolidasi Kontrol Pemutar**: Mengelompokkan seluruh opsi konfigurasi video (Kualitas Resolusi, Kecepatan Pemutaran, Trek Audio, Pengulangan Loop, dan Autoplay) ke dalam satu lembar modal (*Modal Bottom Sheet*) terpadu bergaya YouTube native.
+- **Konsolidasi Kontrol Pemutar**: Mengelompokkan seluruh opsi konfigurasi video (Kualitas Resolusi, Kecepatan Pemutaran, Interval Lompatan Cepat, Trek Audio, Pengulangan Loop, dan Autoplay) ke dalam satu lembar modal (*Modal Bottom Sheet*) terpadu bergaya YouTube native.
 - **Akses Cepat Ganda**: Dapat diakses melalui ikon roda gigi (Settings) di sudut kanan atas pemutar video maupun melalui pil aksi "Pengaturan" di bawah judul video.
+- **Konfigurasi Interval Lompatan Seek (5, 10, 15, 20 detik)**: Pilihan interval lompatan cepat ketuk ganda langsung dari lembar pengaturan melalui modal `SeekIntervalSelectionDialog` dengan penanda centang aktif, disimpan secara persisten di penyimpanan lokal perangkat.
 - **Komponen Switch Interaktif**: Fitur Loop video dan Autoplay disematkan dengan sakelar toggle `Switch` Material 3 beraksen neon Electric Cyan yang dapat dinyalakan/dimatikan secara instan dengan satu sentuhan.
 - **Dialog Pemilih Kecepatan Eksplisit**: Menggantikan siklus kecepatan manual dengan dialog `PlaybackSpeedSelectionDialog` yang menyajikan seluruh opsi (0.5x, 0.75x, Normal 1.0x, 1.25x, 1.5x, 2.0x) lengkap dengan penanda centang aktif.
 - **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol "Suka" dan "Subscribe" semu untuk menjaga arsitektur lokal murni tanpa akun, menyisakan baris pil aksi yang esensial, ringkas, dan bebas gulir panjang (`Bagikan`, `Salin`, `Simpan`, `Pengaturan`, `PiP`, `Layar Penuh`).
@@ -198,6 +199,12 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Pembersihan Fitur Pseudo-Account**: Menghilangkan state in-memory `isLiked` dan `isSubscribed` dari `PlayerViewModel` serta komponen visual `PlayerChannelHeader` dan `PlayerActionPillRow`. Refactoring ini menegaskan arsitektur aplikasi sebagai klien lokal murni tanpa akun (no-login) yang hanya mengandalkan fitur persistensi nyata (penyimpanan riwayat dan bookmark SQLite).
 - **Alur Interaksi Berjenjang (Sheet-to-Dialog Navigation)**: Menghubungkan transisi mulus dari lembar modal pengaturan ke dialog resolusi, kecepatan, dan trek audio tanpa konflik state atau kebocoran memori.
 
+#### 15. Engine Seek Akumulatif & Intersepsi Gestur Ketukan Berulang (Accumulative Rapid Seeking Engine)
+- **Mekanisme Akumulasi Cepat (Rapid Chaining)**: Menghubungkan gestur ketuk ganda dan ketukan berulang (triple-tap, quad-tap, dst.) dengan jendela waktu toleransi 800 milidetik. Setiap ketukan berturut-turut pada arah yang sama mengakumulasikan durasi seek secara dinamis berbasis preferensi pengguna (`seekIntervalSeconds`).
+- **Intersepsi Gestur Tanpa Konflik Kontrol (Tap Interceptor)**: Mengintegrasikan fungsi penangkap ketukan `handleTap(isForward)` pada `onTap` di dalam `detectTapGestures`. Jika terdeteksi ketukan berulang setelah double-tap aktif, ketukan diterjemahkan sebagai penambahan seek dan memicu umpan balik haptik tanpa memicu pergantian visibilitas overlay kontrol pemutar (`toggleControls`).
+- **Umpan Balik Visual Dinamis**: Teks overlay indikator seek menampilkan akumulasi total detik secara real-time (`+15 detik`, `+20 detik`, dst.) dan otomatis mereset akumulator saat batas waktu berakhir atau pemutaran berpindah.
+- **Penyimpanan Preferensi Terisolasi**: Nilai interval seek tersimpan secara persisten pada `PlayerPreferences` via SharedPreferences, sehingga preferensi pengguna tetap dipertahankan saat aplikasi dimulai ulang.
+
 ---
 
 ## Struktur Direktori Proyek
@@ -205,7 +212,7 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 ```
 app/src/main/kotlin/com/example/yoouutt/
 |-- data/
-|   |-- local/           # SQLite Database, PlayerPreferences (Autoplay & Loop), Repositori Riwayat & Pencarian
+|   |-- local/           # SQLite Database, PlayerPreferences (Autoplay, Loop, Seek Interval), Repositori Riwayat & Pencarian
 |   |-- model/           # Data classes & domain models (StreamData, VideoItem, PlaylistData, FeedItem)
 |   |-- repository/      # Abstraksi repositori data (VideoRepository, NewPipeVideoRepository Facade)
 |   |   |-- extractor/   # Modular extraction helpers (Stream, Search, Channel, Playlist, Feed, Mappers, PipedFallback)
@@ -221,7 +228,7 @@ app/src/main/kotlin/com/example/yoouutt/
 |   |   |-- components/  # HistoryItemRow, HistoryEmptyState
 |   |-- navigation/      # Navigasi bottom bar & routing Compose
 |   |-- player/          # Tampilan utama pemutar video & routing PlayerScreen
-|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, SettingsBottomSheet, SpeedDialog, Banner
+|   |   |-- components/  # VideoPlayerSection, PlayerDetailContent, ControlsOverlay, SettingsBottomSheet, SpeedDialog, SeekIntervalSelectionDialog, Banner
 |   |-- playlist/        # Tampilan detail playlist & routing PlaylistScreen
 |   |   |-- components/  # PlaylistHeaderSection, PlaylistItemRow, PlaylistStateViews, PlaylistContent
 |   |-- search/          # Antarmuka pencarian & saran kata kunci
