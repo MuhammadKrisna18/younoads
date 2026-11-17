@@ -36,6 +36,7 @@ import com.example.yoouutt.ui.theme.YoouuttTheme
 import kotlinx.coroutines.launch
 
 val LocalInPipMode = staticCompositionLocalOf { false }
+val LocalActivity = staticCompositionLocalOf<ComponentActivity?> { null }
 
 class MainActivity : ComponentActivity() {
     private val inPipModeState = mutableStateOf(false)
@@ -70,6 +71,7 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(
                 LocalInPipMode provides inPipModeState.value,
+                LocalActivity provides this,
                 LocalContext provides localizedContext,
                 LocalConfiguration provides localizedConfig
             ) {

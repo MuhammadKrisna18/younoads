@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.LocalActivity
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.ui.common.AppViewModelProvider
@@ -49,7 +50,7 @@ fun PlayerScreen(
     viewModel: PlayerViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
-    val activity = context.findActivity()
+    val activity = LocalActivity.current ?: context.findActivity()
     val configuration = LocalConfiguration.current
     val isDeviceLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 

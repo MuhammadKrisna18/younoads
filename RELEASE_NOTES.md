@@ -1,3 +1,19 @@
+### YounoAds v4.2 - Catatan Rilis & Pembaruan
+
+Pembaruan perbaikan kritis pemutar video (Level Medium - Bug 7 & 8):
+
+1. Pemulihan Fitur Picture-in-Picture (Gesture Auto-Enter PIP Fix)
+- Menyelesaikan anomali unwrap Activity pada rantai konteks localized configuration (ContextImpl) dengan membungkus baseContext menggunakan ContextWrapper yang mendelegasikan resource terjemahan secara transparan.
+- Menghadirkan CompositionLocal baru LocalActivity di tingkat root MainActivity, menjamin referensi Activity pada PlayerScreen selalu valid dan terhindar dari nilai null.
+- Fungsi registrasi pemutar aktif (setPlayerActive) dan parameter auto-enter PIP (Android 12+) serta transisi gesture onUserLeaveHint (Android 8-11) kini berfungsi normal kembali saat pengguna keluar dari aplikasi.
+
+2. Pemulihan Rotasi Layar Penuh Horizontal (Landscape Fullscreen Fix)
+- Mengembalikan eksekusi orientasi otomatis SCREEN_ORIENTATION_SENSOR_LANDSCAPE saat tombol toggle layar penuh ditekan.
+- Menghilangkan bug tampilan fullscreen yang sebelumnya terkunci vertikal (potret), kini video langsung berputar memenuhi layar secara horizontal dan menyembunyikan status bar serta navigation bar secara imersif.
+- Mengembalikan orientasi layar ke potret secara mulus saat keluar dari mode layar penuh atau saat menekan tombol kembali (BackHandler).
+
+---
+
 ### YounoAds v4.1 - Catatan Rilis & Pembaruan
 
 Pembaruan optimalisasi dan perbaikan pengalaman pemutaran video (Level Easy Fixes):

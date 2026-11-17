@@ -24,7 +24,7 @@ fun Context.findActivity(): Activity? {
         if (currentContext is Activity) return currentContext
         currentContext = currentContext.baseContext
     }
-    return null
+    return currentContext as? Activity
 }
 
 fun Activity.enterPipMode(
