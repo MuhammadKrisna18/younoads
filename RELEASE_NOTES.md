@@ -1,3 +1,42 @@
+### YounoAds v4.0 - Catatan Rilis & Pembaruan
+
+Pembaruan tonggak sejarah (Major Milestone Release) menghadirkan 4 pilar fitur inti baru: Manajemen Playlist Kustom Lokal, Sistem Markah Simpan Video Terpadu, Engine 6 Tema Dinamis Adaptif, serta Lokalisasi Dwi-Bahasa (English dan Bahasa Indonesia) dengan peralihan langsung:
+
+1. Pembuatan & Manajemen Playlist Kustom Lokal (Custom Playlists Engine)
+- Menambahkan kapabilitas pembuatan playlist kustom lokal tanpa batas dengan judul dan deskripsi mandiri.
+- Mengintegrasikan dialog penambahan playlist (AddToPlaylistBottomSheet) langsung dari bilah aksi pemutar video, memungkinkan penyimpanan video aktif ke satu atau beberapa playlist sekaligus secara efisien.
+- Tampilan detail playlist kustom lengkap dengan informasi total video, thumbnail cover resolusi tinggi, opsi hapus item, serta tombol "Putar Semua" dan "Acak" yang langsung memuat trek ke antrean pemutar video latar belakang (PlaybackManager).
+- Dukungan penghapusan playlist dan pengelolaan urutan video secara instan dan reaktif.
+
+2. Sistem Simpan Video / Markah Cepat (Persistent Video Bookmarking)
+- Tombol aksi "Simpan" pada bilah pil pemutar video kini terhubung langsung dengan basis data lokal tersimpan (saved_videos).
+- Indikator status visual aktif/non-aktif pada tombol pil pemutar dengan sinkronisasi status bookmark otomatis saat video dimuat.
+- Tab khusus "Tersimpan" di Layar Koleksi (Library Hub) menyajikan seluruh katalog video yang disimpan lengkap dengan thumbnail, durasi, nama uploader, serta opsi hapus cepat.
+
+3. Hub Koleksi Terpadu (Unified Library Hub)
+- Merombak navigasi bawah dengan mengganti tab "Riwayat" menjadi tab terpadu "Koleksi" (Library), menyatukan 3 pilar konten lokal pengguna dalam 3 tab geser: "Playlist", "Tersimpan", dan "Riwayat".
+- Dilengkapi bilah aksi atas (TopAppBar) dengan akses instan ke pembuatan playlist baru, dialog pemilih tema, dan dialog pemilih bahasa.
+- Mendukung pembersihan seluruh riwayat tontonan dengan dialog konfirmasi keamanan (AppConfirmDialog).
+
+4. Engine 6 Tema Dinamis (Adaptive 6-Theme Architecture)
+- Menghadirkan 6 preset palet tema estetika tinggi yang dapat berganti secara langsung dan persisten tanpa perlu memulai ulang aplikasi:
+  * Cyberpunk Neon: Estetika orisinal Neo-Tokyo, Pure Void Black (#08080C), aksen Electric Cyan dan Neon Magenta dengan latar belakang hologram anime maskot Youno-chan.
+  * Hitam Doff AMOLED: Gaya stealth ultra-minimalis, latar hitam pekat murni (#000000), tanpa watermark karakter, kontras aksen putih dan cyan bersih yang hemat baterai layar OLED.
+  * Putih Bersih Light: Mode terang modern dengan latar putih lembut (#F8F9FA) dan aksen Sapphire Blue dan Indigo untuk keterbacaan optimal di lingkungan luar ruangan.
+  * Violet Midnight: Palet nuansa malam galaksi (#0D0B18) dengan aksen pendaran Deep Purple (#9D4EDD) dan Lilac Glow (#C77DFF).
+  * Sakura Pastel: Estetika anime pastel lembut (#1A1116) dengan aksen Rose Pink (#FF758F) dan Coral (#FFB3C1).
+  * Mecha Blue: Palet sci-fi militer navy (#0A1118) dengan aksen Cobalt Blue (#0077B6) dan Ice Cyan (#90E0EF).
+- Latar belakang CyberpunkAppBackground secara cerdas menyembunyikan watermark hologram pada mode Hitam Doff AMOLED dan Putih Bersih Light agar tampilan tetap minimalis dan bersih.
+- Dialog pemilihan tema (ThemeSelectionDialog) terintegrasi rapi di Layar Koleksi dan Lembar Pengaturan Pemutar.
+
+5. Lokalisasi Dwi-Bahasa Penuh (Bilingual Localization: English & Bahasa Indonesia)
+- Mengimplementasikan sistem pelokalan bahasa menyeluruh mencakup seluruh antarmuka aplikasi dalam Bahasa Indonesia dan English.
+- Menyediakan opsi bahasa: Ikuti Sistem (System Default), Bahasa Indonesia, dan English melalui modal dialog LanguageSelectionDialog.
+- Pergantian bahasa berlangsung secara instan dan reaktif di seluruh komponen Jetpack Compose menggunakan CompositionLocalProvider tanpa merusak status pemutaran video aktif.
+- Menyelaraskan pengaturan bahasa pengguna ke NewPipe extractor untuk memastikan data pencarian dan metadata video YouTube tersaji dalam bahasa yang sesuai.
+
+---
+
 ### YounoAds v3.10 - Catatan Rilis & Pembaruan
 
 Pembaruan besar untuk kecerdasan personalisasi beranda (Living Home Feed Engine) dan rangkaian peningkatan fluiditas visual sistem antarmuka (Ultra-Smooth Animation Suite):

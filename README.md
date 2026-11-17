@@ -100,6 +100,33 @@ Menghadirkan feed rekomendasi video cerdas dan dinamis tepat di bawah kartu desk
   * **Fisika Pegas In-App Mini-Player**: Gestur geser horizontal mini-player direspon dengan fisika pegas natural (`Spring`) dan bilah progres pemutaran mini-player diinterpolasi secara halus dengan `animateFloatAsState`.
   * **Crossfade Penyegaran Beranda**: Transisi status tarik untuk menyegarkan (*pull-to-refresh*) diperhalus dengan crossfade `AnimatedContent` untuk menghilangkan efek visual pop yang kaku.
 
+### 19. Manajemen Playlist Kustom Lokal (Custom Playlists)
+- **Pembuatan Playlist Tanpa Batas**: Pengguna dapat membuat daftar putar lokal mandiri dengan judul dan deskripsi kustom langsung dari dialog pembuatan playlist (`CreatePlaylistDialog`).
+- **Penyimpanan Multi-Playlist Instan**: Integrasi bottom sheet `AddToPlaylistBottomSheet` dari bilah aksi pemutar video memungkinkan penyimpanan video aktif ke satu atau beberapa playlist sekaligus dengan penanda checkbox reaktif.
+- **Tampilan Detail Playlist**: Menampilkan sampul thumbnail resolusi tinggi dari video pertama, total video, tanggal pembuatan, aksi hapus video per item, serta tombol aksi "Putar Semua" dan "Acak".
+- **Integrasi Antrean Pemutar Video**: Memutar playlist kustom secara otomatis memuat seluruh trek ke dalam antrean pemutar (`PlaybackManager`), mendukung transisi trek berikutnya secara kontinu.
+
+### 20. Markah Simpan Video Terpadu (Persistent Video Bookmarking)
+- **Aksi Cepat Simpan Video**: Tombol pil "Simpan" pada pemutar video terhubung langsung ke basis data lokal (`saved_videos`), memberikan indikasi visual aktif/non-aktif secara seketika.
+- **Tab Koleksi Tersimpan**: Tab khusus "Tersimpan" di Layar Koleksi menyajikan seluruh video tersimpan lengkap dengan thumbnail, durasi, nama uploader, serta opsi hapus cepat dengan umpan balik instan.
+
+### 21. Engine 6 Tema Dinamis & Adaptif (Adaptive 6-Theme Architecture)
+- **6 Pilihan Tema Berestetika Tinggi**:
+  * **Cyberpunk Neon**: Estetika orisinal Neo-Tokyo, Pure Void Black (`#08080C`), aksen Electric Cyan dan Neon Magenta dengan latar belakang hologram anime maskot Youno-chan.
+  * **Hitam Doff AMOLED**: Gaya stealth ultra-minimalis, latar hitam pekat murni (`#000000`), tanpa watermark karakter, kontras aksen putih dan cyan bersih yang hemat baterai layar OLED.
+  * **Putih Bersih Light**: Mode terang modern dengan latar putih lembut (`#F8F9FA`) dan aksen Sapphire Blue dan Indigo untuk keterbacaan optimal di lingkungan terang.
+  * **Violet Midnight**: Palet nuansa malam galaksi (`#0D0B18`) dengan aksen pendaran Deep Purple (`#9D4EDD`) dan Lilac Glow (`#C77DFF`).
+  * **Sakura Pastel**: Estetika anime pastel lembut (`#1A1116`) dengan aksen Rose Pink (`#FF758F`) dan Coral (`#FFB3C1`).
+  * **Mecha Blue**: Palet sci-fi militer navy (`#0A1118`) dengan aksen Cobalt Blue (`#0077B6`) dan Ice Cyan (`#90E0EF`).
+- **Transisi Tema Realtime**: Pergantian tema terjadi secara instan tanpa perlu memuat ulang aplikasi melalui `ThemeManager` dan `StateFlow<AppTheme>`.
+- **Adaptasi Latar Belakang Cerdas**: Komponen `CyberpunkAppBackground` secara otomatis menyembunyikan watermark hologram pada tema Hitam Doff AMOLED dan Putih Bersih Light untuk menjaga kejernihan antarmuka.
+
+### 22. Lokalisasi Dwi-Bahasa (Bilingual Localization - English & Indonesia)
+- **Dukungan Dua Bahasa Penuh**: Seluruh antarmuka aplikasi dilokalisasi secara komprehensif dalam Bahasa Indonesia (`values-in/strings.xml`) dan English (`values/strings.xml`).
+- **Opsi Bahasa Fleksibel**: Menyediakan opsi Ikuti Sistem (System Default), Bahasa Indonesia, dan English melalui modal dialog `LanguageSelectionDialog`.
+- **Pergantian Bahasa Tanpa Restart**: Menggunakan `CompositionLocalProvider` untuk membungkus `LocalContext` dan `LocalConfiguration`, memungkinkan pembaruan bahasa instan pada seluruh komponen Jetpack Compose tanpa mereset pemutaran video yang sedang berjalan.
+- **Sinkronisasi Metadata YouTube**: Pengaturan bahasa pengguna disinkronkan secara otomatis ke NewPipe extractor untuk memastikan data pencarian dan metadata video tersaji dalam bahasa yang sesuai.
+
 ---
 
 ## Informasi & Spesifikasi Teknis
