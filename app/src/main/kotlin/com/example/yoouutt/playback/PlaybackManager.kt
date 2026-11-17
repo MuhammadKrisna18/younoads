@@ -35,11 +35,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class AutoplayCountdown(
-    val targetVideo: VideoItem,
-    val secondsRemaining: Int
-)
-
 data class ActivePlayback(
     val videoUrl: String,
     val title: String,
@@ -72,10 +67,6 @@ class PlaybackManager(
 
     private val _upcomingRecommendations = MutableStateFlow<List<VideoItem>>(emptyList())
     val upcomingRecommendations: StateFlow<List<VideoItem>> = _upcomingRecommendations.asStateFlow()
-
-    private var autoplayJob: Job? = null
-    private val _autoplayCountdown = MutableStateFlow<AutoplayCountdown?>(null)
-    val autoplayCountdown: StateFlow<AutoplayCountdown?> = _autoplayCountdown.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -137,7 +128,6 @@ class PlaybackManager(
                         _isPlaying.value = isPlaying
                         if (isPlaying) {
                             _isBuffering.value = false
-                            cancelAutoplayCountdown()
                         }
                     }
 
@@ -152,18 +142,9 @@ class PlaybackManager(
                             if (!_isAutoplayEnabled.value) {
                                 _isPlaying.value = false
                                 _isBuffering.value = false
-                                cancelAutoplayCountdown()
                                 return
                             }
-                            val nextVideo = queueManager.peekNextTarget()
-                                ?: _upcomingRecommendations.value.firstOrNull()
-                                ?: _currentPlayback.value?.streamData?.relatedVideos?.firstOrNull()
-                            if (nextVideo != null) {
-                                startAutoplayCountdown(nextVideo)
-                            } else {
-                                _isPlaying.value = false
-                                _isBuffering.value = false
-                            }
+                            playNextImmediately()
                         }
                     }
 
@@ -202,7 +183,6 @@ class PlaybackManager(
     }
 
     fun playVideo(videoUrl: String, title: String, uploaderName: String, clearPlaylist: Boolean = true) {
-        cancelAutoplayCountdown()
         if (clearPlaylist) {
             queueManager.clear()
         }
@@ -281,7 +261,6 @@ class PlaybackManager(
     }
 
     fun togglePlayPause() {
-        cancelAutoplayCountdown()
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
         } else {
@@ -382,7 +361,6 @@ class PlaybackManager(
     }
 
     fun stop() {
-        cancelAutoplayCountdown()
         queueManager.clear()
         _upcomingRecommendations.value = emptyList()
         saveProgress()
@@ -403,7 +381,6 @@ class PlaybackManager(
     }
 
     fun release() {
-        cancelAutoplayCountdown()
         _upcomingRecommendations.value = emptyList()
         saveProgress()
         try {
@@ -421,46 +398,42 @@ class PlaybackManager(
         _upcomingRecommendations.value = recommendations
     }
 
-    private fun startAutoplayCountdown(nextVideo: VideoItem) {
-        cancelAutoplayCountdown()
-        autoplayJob = scope.launch {
-            for (seconds in 3 downTo 1) {
-                _autoplayCountdown.value = AutoplayCountdown(nextVideo, seconds)
-                delay(1000L)
-            }
-            _autoplayCountdown.value = null
-            playNextImmediately()
+    fun playNextImmediately(): Boolean {
+        if (queueManager.playlistContext.value != null) {
+            val playedPlaylistNext = playNextInPlaylist()
+            if (playedPlaylistNext) return true
         }
-    }
-
-    fun cancelAutoplayCountdown() {
-        autoplayJob?.cancel()
-        autoplayJob = null
-        _autoplayCountdown.value = null
-    }
-
-    fun playNextImmediately() {
-        val target = _autoplayCountdown.value?.targetVideo
-        cancelAutoplayCountdown()
-        val playedPlaylistNext = if (queueManager.playlistContext.value != null) {
-            playNextInPlaylist()
-        } else {
-            false
+        val nextVideo = queueManager.peekNextTarget()
+            ?: _upcomingRecommendations.value.firstOrNull()
+            ?: _currentPlayback.value?.streamData?.relatedVideos?.firstOrNull()
+        if (nextVideo != null) {
+            playVideo(nextVideo.url, nextVideo.title, nextVideo.uploaderName)
+            return true
         }
-        if (!playedPlaylistNext && target != null) {
-            playVideo(target.url, target.title, target.uploaderName)
-        }
+        _isPlaying.value = false
+        _isBuffering.value = false
+        return false
     }
 
     fun toggleAutoplay() {
         val newValue = !_isAutoplayEnabled.value
         _isAutoplayEnabled.value = newValue
         playerPreferences.isAutoplayEnabled = newValue
+        if (newValue && _isLoopEnabled.value) {
+            _isLoopEnabled.value = false
+            playerPreferences.isLoopEnabled = false
+            exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
+        }
     }
 
     fun setAutoplay(enabled: Boolean) {
         _isAutoplayEnabled.value = enabled
         playerPreferences.isAutoplayEnabled = enabled
+        if (enabled && _isLoopEnabled.value) {
+            _isLoopEnabled.value = false
+            playerPreferences.isLoopEnabled = false
+            exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
+        }
     }
 
     fun toggleLoop() {
@@ -468,12 +441,20 @@ class PlaybackManager(
         _isLoopEnabled.value = newValue
         playerPreferences.isLoopEnabled = newValue
         exoPlayer.repeatMode = if (newValue) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+        if (newValue && _isAutoplayEnabled.value) {
+            _isAutoplayEnabled.value = false
+            playerPreferences.isAutoplayEnabled = false
+        }
     }
 
     fun setLoop(enabled: Boolean) {
         _isLoopEnabled.value = enabled
         playerPreferences.isLoopEnabled = enabled
         exoPlayer.repeatMode = if (enabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+        if (enabled && _isAutoplayEnabled.value) {
+            _isAutoplayEnabled.value = false
+            playerPreferences.isAutoplayEnabled = false
+        }
     }
 
     fun setSeekIntervalSeconds(seconds: Int) {

@@ -1,3 +1,24 @@
+### YounoAds v4.1 - Catatan Rilis & Pembaruan
+
+Pembaruan optimalisasi dan perbaikan pengalaman pemutaran video (Level Easy Fixes):
+
+1. Pembersihan Lembar Pengaturan Pemutar (Streamlined Playback Settings)
+- Menghapus opsi tema aplikasi, bahasa, dan tambah ke playlist dari lembar pengaturan pemutar (PlayerSettingsBottomSheet).
+- Lembar pengaturan pemutar kini terfokus murni pada parameter teknis pemutaran video aktif (Kualitas, Kecepatan, Lompatan Ketuk Ganda, Trek Audio, Pengulangan Loop, dan Autoplay).
+- Menghilangkan kode mati (dead code) dan redundansi tombol dengan memanfaatkan tombol pil "Playlist" yang telah tersedia di baris aksi utama.
+
+2. Logika Saling Kunci Looping vs Autoplay (Mutually Exclusive Logic)
+- Mengaktifkan pengulangan video tunggal (Loop) kini otomatis mematikan pemutaran otomatis (Autoplay).
+- Sebaliknya, mengaktifkan Autoplay kini otomatis mematikan fitur Loop.
+- Menghilangkan kebingungan status ganda aktif dan menjamin perilaku akhir pemutaran video selalu dapat diprediksi dengan tepat.
+
+3. Transisi Autoplay Instan Mulus Tanpa Konfirmasi/Countdown
+- Mengeliminasi jeda banner hitung mundur 3 detik yang sebelumnya menahan transisi video.
+- Saat pemutaran video selesai (STATE_ENDED), pemutar langsung berpindah dan memutar video berikutnya (baik trek playlist maupun rekomendasi teratas) secara instan tanpa memerlukan intervensi tombol atau konfirmasi manual pengguna.
+- Menghapus komponen mati AutoplayCountdownBanner dari pohon rendering visual.
+
+---
+
 ### YounoAds v4.0 - Catatan Rilis & Pembaruan
 
 Pembaruan tonggak sejarah (Major Milestone Release) menghadirkan 4 pilar fitur inti baru: Manajemen Playlist Kustom Lokal, Sistem Markah Simpan Video Terpadu, Engine 6 Tema Dinamis Adaptif, serta Lokalisasi Dwi-Bahasa (English dan Bahasa Indonesia) dengan peralihan langsung:

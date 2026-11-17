@@ -16,15 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.HighQuality
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -55,17 +52,12 @@ fun PlayerSettingsBottomSheet(
     seekIntervalText: String = "10 detik",
     audioTrackText: String = "",
     hasMultipleAudioTracks: Boolean = false,
-    themeText: String = "Cyberpunk Neo-Tokyo",
-    languageText: String = "Mengikuti Sistem",
     isLoopEnabled: Boolean,
     isAutoplayEnabled: Boolean,
     onSelectQualityClick: () -> Unit,
     onSelectSpeedClick: () -> Unit,
     onSelectSeekIntervalClick: () -> Unit = {},
     onSelectAudioTrackClick: () -> Unit = {},
-    onSelectThemeClick: () -> Unit = {},
-    onSelectLanguageClick: () -> Unit = {},
-    onAddToPlaylistClick: () -> Unit = {},
     onToggleLoop: () -> Unit,
     onToggleAutoplay: () -> Unit,
     onDismiss: () -> Unit,
@@ -125,30 +117,6 @@ fun PlayerSettingsBottomSheet(
                     onClick = onSelectAudioTrackClick
                 )
             }
-
-            SettingsNavigationRow(
-                icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-                title = stringResource(R.string.settings_add_to_playlist),
-                value = "",
-                onClick = {
-                    onDismiss()
-                    onAddToPlaylistClick()
-                }
-            )
-
-            SettingsNavigationRow(
-                icon = Icons.Default.Palette,
-                title = stringResource(R.string.settings_theme),
-                value = themeText,
-                onClick = onSelectThemeClick
-            )
-
-            SettingsNavigationRow(
-                icon = Icons.Default.Translate,
-                title = stringResource(R.string.settings_language),
-                value = languageText,
-                onClick = onSelectLanguageClick
-            )
 
             HorizontalDivider(
                 color = Color.White.copy(alpha = 0.08f),

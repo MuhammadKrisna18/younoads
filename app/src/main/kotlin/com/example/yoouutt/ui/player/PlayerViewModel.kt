@@ -18,7 +18,6 @@ import com.example.yoouutt.data.repository.SavedVideoRepository
 import com.example.yoouutt.data.repository.VideoRepository
 import com.example.yoouutt.data.repository.WatchHistoryRepository
 import com.example.yoouutt.playback.ActivePlayback
-import com.example.yoouutt.playback.AutoplayCountdown
 import com.example.yoouutt.playback.PlaybackManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -58,7 +57,6 @@ class PlayerViewModel(
     val playlistContext: StateFlow<PlaylistContext?> = playbackManager.playlistContext
     val isAutoplayEnabled: StateFlow<Boolean> = playbackManager.isAutoplayEnabled
     val isLoopEnabled: StateFlow<Boolean> = playbackManager.isLoopEnabled
-    val autoplayCountdown: StateFlow<AutoplayCountdown?> = playbackManager.autoplayCountdown
     val seekIntervalSeconds: StateFlow<Int> = playbackManager.seekIntervalSeconds
     val availableSeekIntervals = listOf(5, 10, 15, 20)
 
@@ -315,7 +313,6 @@ class PlayerViewModel(
     }
 
     fun seekTo(seekMs: Long) {
-        cancelAutoplayCountdown()
         accumulatedSeekSeconds = 0
         currentSeekDirection = null
         seekFeedbackJob?.cancel()
@@ -330,7 +327,6 @@ class PlayerViewModel(
     }
 
     fun doubleTapSeek(isForward: Boolean) {
-        cancelAutoplayCountdown()
         val interval = seekIntervalSeconds.value
         if (currentSeekDirection == isForward && seekFeedbackJob?.isActive == true) {
             accumulatedSeekSeconds += interval
@@ -427,10 +423,6 @@ class PlayerViewModel(
 
     fun setLoop(enabled: Boolean) {
         playbackManager.setLoop(enabled)
-    }
-
-    fun cancelAutoplayCountdown() {
-        playbackManager.cancelAutoplayCountdown()
     }
 
     fun playNextImmediately() {

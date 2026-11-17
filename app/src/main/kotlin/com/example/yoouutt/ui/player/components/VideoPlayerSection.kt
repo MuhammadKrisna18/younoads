@@ -68,7 +68,6 @@ fun VideoPlayerSection(
     val scrubPositionMs by viewModel.scrubPositionMs.collectAsStateWithLifecycle()
     val controlsVisible by viewModel.controlsVisible.collectAsStateWithLifecycle()
     val seekFeedback by viewModel.seekFeedback.collectAsStateWithLifecycle()
-    val autoplayCountdown by viewModel.autoplayCountdown.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
         if (isLoading) {
@@ -173,13 +172,6 @@ fun VideoPlayerSection(
                     text = feedback.text
                 )
             }
-
-            AutoplayCountdownBanner(
-                countdown = autoplayCountdown,
-                onPlayNext = viewModel::playNextImmediately,
-                onCancel = viewModel::cancelAutoplayCountdown,
-                modifier = Modifier.align(Alignment.Center)
-            )
 
             if (!controlsVisible && !isInPipMode) {
                 MinimalBottomProgressBar(
