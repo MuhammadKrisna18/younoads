@@ -16,6 +16,7 @@ import androidx.media3.session.MediaSession
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.data.local.PlayerPreferences
 import com.example.yoouutt.data.model.AudioTrackOption
+import com.example.yoouutt.data.model.DefaultVideoQuality
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
@@ -94,6 +95,34 @@ class PlaybackManager(
 
     private val _availableAudioTracks = MutableStateFlow<List<AudioTrackOption>>(emptyList())
     val availableAudioTracks: StateFlow<List<AudioTrackOption>> = _availableAudioTracks.asStateFlow()
+
+    private val _defaultQuality = MutableStateFlow(DefaultVideoQuality.fromCode(playerPreferences.defaultQuality))
+    val defaultQuality: StateFlow<DefaultVideoQuality> = _defaultQuality.asStateFlow()
+
+    fun setDefaultQuality(quality: DefaultVideoQuality) {
+        _defaultQuality.value = quality
+        playerPreferences.defaultQuality = quality.code
+    }
+
+    private fun resolveInitialResolution(
+        available: List<VideoResolutionOption>,
+        defaultExtractorResolution: VideoResolutionOption?,
+        preferredQuality: DefaultVideoQuality
+    ): VideoResolutionOption? {
+        if (available.isEmpty()) return defaultExtractorResolution
+        if (preferredQuality == DefaultVideoQuality.AUTO) {
+            return defaultExtractorResolution ?: available.firstOrNull()
+        }
+        val target = preferredQuality.targetHeight
+        val exactMatch = available.find { it.height == target }
+        if (exactMatch != null) return exactMatch
+
+        val closestBelow = available.filter { it.height <= target }.maxByOrNull { it.height }
+        if (closestBelow != null) return closestBelow
+
+        val lowest = available.minByOrNull { it.height }
+        return lowest ?: defaultExtractorResolution ?: available.firstOrNull()
+    }
 
     val playlistContext: StateFlow<PlaylistContext?> = queueManager.playlistContext
 
@@ -220,8 +249,11 @@ class PlaybackManager(
                         streamData = streamData
                     )
                     _availableResolutions.value = streamData.availableResolutions
-                    val initialResolution = streamData.selectedResolution
-                        ?: streamData.availableResolutions.firstOrNull()
+                    val initialResolution = resolveInitialResolution(
+                        streamData.availableResolutions,
+                        streamData.selectedResolution,
+                        _defaultQuality.value
+                    )
                     _currentResolution.value = initialResolution
                     _availableAudioTracks.value = streamData.availableAudioTracks
                     val initialAudioTrack = streamData.selectedAudioTrack

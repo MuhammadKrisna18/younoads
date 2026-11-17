@@ -3,11 +3,13 @@ package com.example.yoouutt.ui.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yoouutt.data.model.CustomPlaylist
+import com.example.yoouutt.data.model.DefaultVideoQuality
 import com.example.yoouutt.data.model.SavedVideo
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.CustomPlaylistRepository
 import com.example.yoouutt.data.repository.SavedVideoRepository
 import com.example.yoouutt.data.repository.WatchHistoryRepository
+import com.example.yoouutt.playback.PlaybackManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +20,15 @@ import kotlinx.coroutines.launch
 class LibraryViewModel(
     private val watchHistoryRepository: WatchHistoryRepository,
     private val savedVideoRepository: SavedVideoRepository,
-    private val customPlaylistRepository: CustomPlaylistRepository
+    private val customPlaylistRepository: CustomPlaylistRepository,
+    private val playbackManager: PlaybackManager
 ) : ViewModel() {
+
+    val defaultQuality: StateFlow<DefaultVideoQuality> = playbackManager.defaultQuality
+
+    fun setDefaultQuality(quality: DefaultVideoQuality) {
+        playbackManager.setDefaultQuality(quality)
+    }
 
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()

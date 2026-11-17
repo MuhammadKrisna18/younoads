@@ -25,9 +25,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Translate
+import com.example.yoouutt.ui.player.components.DefaultQualitySelectionDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,11 +86,13 @@ fun LibraryScreen(
     val customPlaylists by viewModel.customPlaylists.collectAsStateWithLifecycle()
     val historyItems by viewModel.historyItems.collectAsStateWithLifecycle()
     val isCreatePlaylistDialogVisible by viewModel.isCreatePlaylistDialogVisible.collectAsStateWithLifecycle()
+    val defaultQuality by viewModel.defaultQuality.collectAsStateWithLifecycle()
 
     var showClearSavedDialog by remember { mutableStateOf(false) }
     var showClearHistoryDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showQualityDialog by remember { mutableStateOf(false) }
     var playlistToDeleteId by remember { mutableStateOf<Long?>(null) }
     val currentTheme by ThemeManager.currentTheme.collectAsStateWithLifecycle()
     val currentLanguage by LanguageManager.currentLanguage.collectAsStateWithLifecycle()
@@ -163,6 +167,14 @@ fun LibraryScreen(
         )
     }
 
+    if (showQualityDialog) {
+        DefaultQualitySelectionDialog(
+            currentQuality = defaultQuality,
+            onQualitySelected = viewModel::setDefaultQuality,
+            onDismiss = { showQualityDialog = false }
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = Color.Transparent,
@@ -186,6 +198,13 @@ fun LibraryScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showQualityDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.HighQuality,
+                            contentDescription = stringResource(R.string.settings_default_quality),
+                            tint = Color.White
+                        )
+                    }
                     IconButton(onClick = { showLanguageDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Translate,

@@ -46,7 +46,8 @@ Menampilkan profil kreator, banner saluran, serta daftar video yang dapat diurut
 Mendukung penyalinan dan pembagian tautan video dengan parameter stempel waktu (timestamp) spesifik (`?t=XXs`).
 
 ### 10. Konfigurasi Resolusi dan Kecepatan Pemutaran
-Pilihan resolusi adaptif (mulai dari resolusi hemat kuota hingga Full HD) dan pengatur kecepatan pemutaran (0.25x hingga 2.0x).
+- **Pilihan Resolusi Adaptif**: Mulai dari resolusi hemat kuota (360p) hingga Full HD (1080p) dan pengatur kecepatan pemutaran (0.25x hingga 2.0x).
+- **Preferensi Default Kualitas Tayangan**: Pengguna dapat menetapkan target kualitas awal secara permanen (Otomatis, 1080p, 720p, 480p, 360p) melalui modal dialog `DefaultQualitySelectionDialog`, sehingga video baru langsung dimuat pada resolusi target yang diinginkan tanpa perlu memilih manual setiap saat.
 
 ### 11. Desain Tema Cyberpunk Neo-Tokyo & Maskot Anime ("Youno-chan")
 - **Estetika Neo-Tokyo AMOLED**: Latar belakang hitam pekat murni (Pure Void Black `#08080C`) dengan aksen pendaran Electric Cyan (`#00F0FF`) dan Neon Magenta (`#FF2A85`) yang hemat daya OLED dan futuristik.

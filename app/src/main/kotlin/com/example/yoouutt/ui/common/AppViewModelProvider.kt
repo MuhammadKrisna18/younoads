@@ -41,7 +41,8 @@ object AppViewModelProvider {
                     LibraryViewModel(
                         container.historyRepository,
                         container.savedVideoRepository,
-                        container.customPlaylistRepository
+                        container.customPlaylistRepository,
+                        container.playbackManager
                     ) as T
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }

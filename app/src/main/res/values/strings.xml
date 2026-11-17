@@ -89,4 +89,14 @@
     <string name="language_in_desc">Bahasa Indonesia baku dan natural</string>
     <string name="language_en_title">English</string>
     <string name="language_en_desc">Standard English interface</string>
+
+    <string name="settings_default_quality">Default Quality</string>
+    <string name="default_quality_dialog_title">Default Video Quality</string>
+    <string name="default_quality_dialog_subtitle">Target playback resolution for new videos</string>
+    <string name="quality_auto_title">Auto (Optimal)</string>
+    <string name="quality_auto_desc">Selects best resolution based on stream availability</string>
+    <string name="quality_1080p_desc">Full HD 1080p (Highest clarity, higher data usage)</string>
+    <string name="quality_720p_desc">HD 720p (Balanced clarity and data usage)</string>
+    <string name="quality_480p_desc">Standard 480p (Fast loading, low data usage)</string>
+    <string name="quality_360p_desc">Data Saver 360p (Minimal data usage)</string>
 </resources>

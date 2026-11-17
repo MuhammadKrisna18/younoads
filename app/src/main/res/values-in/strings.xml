@@ -89,4 +89,14 @@
     <string name="language_in_desc">Bahasa Indonesia baku dan natural</string>
     <string name="language_en_title">English</string>
     <string name="language_en_desc">Antarmuka berbahasa Inggris</string>
+
+    <string name="settings_default_quality">Kualitas Video Default</string>
+    <string name="default_quality_dialog_title">Kualitas Video Default</string>
+    <string name="default_quality_dialog_subtitle">Target resolusi saat mulai memutar video</string>
+    <string name="quality_auto_title">Otomatis (Optimal)</string>
+    <string name="quality_auto_desc">Memilih resolusi terbaik sesuai ketersediaan video</string>
+    <string name="quality_1080p_desc">Full HD 1080p (Sangat jernih, kuota tinggi)</string>
+    <string name="quality_720p_desc">HD 720p (Seimbang antara kejernihan dan kuota)</string>
+    <string name="quality_480p_desc">Standar 480p (Cepat termuat, hemat data)</string>
+    <string name="quality_360p_desc">Hemat Data 360p (Penggunaan kuota minimal)</string>
 </resources>

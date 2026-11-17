@@ -1,3 +1,22 @@
+### YounoAds v4.3 - Catatan Rilis & Pembaruan
+
+Pembaruan preferensi pemutar video dan otomatisasi kualitas tayangan (Level Medium - Bug 5):
+
+1. Fitur Preferensi Default Kualitas Pemutaran Video (Default Video Quality Engine)
+- Menambahkan model preferensi kualitas DefaultVideoQuality yang tersimpan secara persisten di penyimpanan lokal (PlayerPreferences):
+  * Otomatis (Optimal): Memilih resolusi terbaik dan paling stabil sesuai ketersediaan stream extractor.
+  * 1080p (Full HD): Mengutamakan ketajaman maksimal untuk jaringan Wi-Fi kecepatan tinggi.
+  * 720p (HD): Keseimbangan ideal antara kejernihan gambar dan efisiensi konsumsi kuota.
+  * 480p (Standar): Pilihan ideal untuk pemutaran cepat dan koneksi seluler hemat daya.
+  * 360p (Hemat Data): Meminimalkan konsumsi kuota data secara optimal.
+- Mengintegrasikan algoritma pencocokan resolusi otomatis (resolveInitialResolution) pada PlaybackManager. Setiap kali video baru diputar, sistem otomatis mencocokkan katalog resolusi video dengan preferensi target pengguna tanpa perlu pergantian resolusi manual setiap saat.
+
+2. Dialog Pemilih Kualitas Default Interaktif (DefaultQualitySelectionDialog)
+- Menambahkan tombol aksi Kualitas (HighQuality icon) pada bilah atas Layar Koleksi (LibraryScreen).
+- Menyajikan dialog modal interaktif dengan indikator centang aktif dan deskripsi pemakaian kuota yang informatif dalam Bahasa Indonesia dan English.
+
+---
+
 ### YounoAds v4.2 - Catatan Rilis & Pembaruan
 
 Pembaruan perbaikan kritis pemutar video (Level Medium - Bug 7 & 8):
