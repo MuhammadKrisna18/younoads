@@ -28,6 +28,7 @@ import com.example.yoouutt.ui.player.components.PlaybackSpeedSelectionDialog
 import com.example.yoouutt.ui.player.components.PlayerDetailContent
 import com.example.yoouutt.ui.player.components.PlayerSettingsBottomSheet
 import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
+import com.example.yoouutt.ui.player.components.SeekIntervalSelectionDialog
 import com.example.yoouutt.ui.player.components.ShareBottomSheet
 import com.example.yoouutt.ui.player.components.VideoPlayerSection
 
@@ -59,6 +60,8 @@ fun PlayerScreen(
     val isResolutionDialogVisible by viewModel.isResolutionDialogVisible.collectAsStateWithLifecycle()
     val isSettingsSheetVisible by viewModel.isSettingsSheetVisible.collectAsStateWithLifecycle()
     val isSpeedDialogVisible by viewModel.isSpeedDialogVisible.collectAsStateWithLifecycle()
+    val seekIntervalSeconds by viewModel.seekIntervalSeconds.collectAsStateWithLifecycle()
+    val isSeekIntervalDialogVisible by viewModel.isSeekIntervalDialogVisible.collectAsStateWithLifecycle()
     val currentAudioTrack by viewModel.currentAudioTrack.collectAsStateWithLifecycle()
     val availableAudioTracks by viewModel.availableAudioTracks.collectAsStateWithLifecycle()
     val isAudioTrackDialogVisible by viewModel.isAudioTrackDialogVisible.collectAsStateWithLifecycle()
@@ -204,6 +207,7 @@ fun PlayerScreen(
         PlayerSettingsBottomSheet(
             resolutionLabel = resolutionLabel,
             speedText = formattedSpeedText,
+            seekIntervalText = "$seekIntervalSeconds detik",
             audioTrackText = currentAudioTrack?.displayName.orEmpty(),
             hasMultipleAudioTracks = availableAudioTracks.size > 1,
             isLoopEnabled = isLoopEnabled,
@@ -216,6 +220,10 @@ fun PlayerScreen(
                 viewModel.dismissSettingsSheet()
                 viewModel.showSpeedDialog()
             },
+            onSelectSeekIntervalClick = {
+                viewModel.dismissSettingsSheet()
+                viewModel.showSeekIntervalDialog()
+            },
             onSelectAudioTrackClick = {
                 viewModel.dismissSettingsSheet()
                 viewModel.showAudioTrackDialog()
@@ -223,6 +231,15 @@ fun PlayerScreen(
             onToggleLoop = viewModel::toggleLoop,
             onToggleAutoplay = viewModel::toggleAutoplay,
             onDismiss = viewModel::dismissSettingsSheet
+        )
+    }
+
+    if (isSeekIntervalDialogVisible) {
+        SeekIntervalSelectionDialog(
+            availableIntervals = viewModel.availableSeekIntervals,
+            currentIntervalSeconds = seekIntervalSeconds,
+            onSelectInterval = viewModel::selectSeekInterval,
+            onDismiss = viewModel::dismissSeekIntervalDialog
         )
     }
 

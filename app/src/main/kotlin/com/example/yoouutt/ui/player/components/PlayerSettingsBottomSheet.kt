@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Speed
@@ -46,12 +47,14 @@ import com.example.yoouutt.ui.theme.ElectricCyan
 fun PlayerSettingsBottomSheet(
     resolutionLabel: String,
     speedText: String,
+    seekIntervalText: String = "10 detik",
     audioTrackText: String = "",
     hasMultipleAudioTracks: Boolean = false,
     isLoopEnabled: Boolean,
     isAutoplayEnabled: Boolean,
     onSelectQualityClick: () -> Unit,
     onSelectSpeedClick: () -> Unit,
+    onSelectSeekIntervalClick: () -> Unit = {},
     onSelectAudioTrackClick: () -> Unit = {},
     onToggleLoop: () -> Unit,
     onToggleAutoplay: () -> Unit,
@@ -95,6 +98,13 @@ fun PlayerSettingsBottomSheet(
                 title = "Kecepatan pemutaran",
                 value = speedText,
                 onClick = onSelectSpeedClick
+            )
+
+            SettingsNavigationRow(
+                icon = Icons.Default.FastForward,
+                title = "Ketuk ganda untuk melompat",
+                value = seekIntervalText,
+                onClick = onSelectSeekIntervalClick
             )
 
             if (hasMultipleAudioTracks && audioTrackText.isNotBlank()) {
