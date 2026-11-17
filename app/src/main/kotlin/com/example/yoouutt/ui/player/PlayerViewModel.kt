@@ -16,6 +16,8 @@ import com.example.yoouutt.playback.ActivePlayback
 import com.example.yoouutt.playback.AutoplayCountdown
 import com.example.yoouutt.playback.PlaybackManager
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -160,69 +162,102 @@ class PlayerViewModel(
         }
     }
 
+    private fun extractTopicQuery(title: String, uploader: String): String {
+        val stopWords = setOf(
+            "dan", "yang", "di", "ke", "dari", "ini", "itu", "untuk", "pada", "dengan", "adalah",
+            "buat", "full", "eps", "episode", "part", "official", "video", "the", "a", "an", "in",
+            "on", "at", "to", "for", "of", "with", "by"
+        )
+        val cleanedWords = title.replace(Regex("[^a-zA-Z0-9\\s]"), " ")
+            .split("\\s+".toRegex())
+            .filter { it.isNotBlank() && it.length > 2 && it.lowercase() !in stopWords }
+        val topicKeywords = cleanedWords.take(4).joinToString(" ")
+        return if (topicKeywords.isNotBlank()) {
+            topicKeywords
+        } else if (uploader.isNotBlank()) {
+            uploader
+        } else {
+            title.take(30)
+        }
+    }
+
     private fun loadRecommendations(playback: ActivePlayback) {
         recommendationJob?.cancel()
         recommendationJob = viewModelScope.launch {
-            val streamData = playback.streamData
-            val existingRelated = streamData?.relatedVideos.orEmpty().filter {
-                it.id != playback.videoId && it.url != playback.videoUrl
-            }
-
-            if (existingRelated.size >= 4) {
-                _recommendedVideos.value = existingRelated
-                playbackManager.setUpcomingRecommendations(existingRelated)
-                _isLoadingRecommendations.value = false
-                return@launch
-            }
-
             _isLoadingRecommendations.value = true
-            val collected = existingRelated.toMutableList()
+            val streamData = playback.streamData
+            val currentId = playback.videoId
+            val currentUrl = playback.videoUrl
+
+            val existingRelated = streamData?.relatedVideos.orEmpty().filter {
+                it.id != currentId && it.url != currentUrl
+            }
 
             val targetChannel = streamData?.uploaderUrl?.takeIf { it.isNotBlank() } ?: playback.uploaderName
-            if (targetChannel.isNotBlank()) {
-                val channelResult = videoRepository.getChannelDetails(targetChannel)
-                channelResult.onSuccess { channelData ->
-                    val channelVideos = channelData.videos.filter {
-                        it.id != playback.videoId && it.url != playback.videoUrl && collected.none { c -> c.id == it.id }
-                    }
-                    collected.addAll(channelVideos)
-                }
-            }
+            val topicQuery = extractTopicQuery(playback.title, playback.uploaderName)
 
-            if (collected.size < 6) {
-                val query = if (playback.uploaderName.isNotBlank()) {
-                    playback.uploaderName
+            coroutineScope {
+                val channelDeferred = async {
+                    if (targetChannel.isNotBlank()) {
+                        videoRepository.getChannelDetails(targetChannel)
+                            .getOrNull()
+                            ?.videos
+                            .orEmpty()
+                            .filter { it.id != currentId && it.url != currentUrl }
+                            .take(3)
+                    } else {
+                        emptyList()
+                    }
+                }
+
+                val similarDeferred = async {
+                    if (topicQuery.isNotBlank()) {
+                        videoRepository.searchVideos(topicQuery)
+                            .getOrNull()
+                            .orEmpty()
+                            .filter { it.id != currentId && it.url != currentUrl }
+                            .take(8)
+                    } else {
+                        emptyList()
+                    }
+                }
+
+                val personalDeferred = async {
+                    val watchedHistory = historyRepository.getHistory().firstOrNull().orEmpty()
+                    if (watchedHistory.isNotEmpty()) {
+                        videoRepository.getPersonalizedFeed(watchedHistory)
+                            .getOrNull()
+                            .orEmpty()
+                            .filterIsInstance<FeedItem.Video>()
+                            .map { it.video }
+                            .filter { it.id != currentId && it.url != currentUrl }
+                            .take(6)
+                    } else {
+                        emptyList()
+                    }
+                }
+
+                val channelVideos = channelDeferred.await()
+                val similarVideos = similarDeferred.await()
+                val personalVideos = personalDeferred.await()
+
+                val pool = mutableListOf<VideoItem>()
+                pool.addAll(existingRelated.take(4))
+                pool.addAll(similarVideos)
+                pool.addAll(personalVideos)
+                pool.addAll(channelVideos)
+
+                val distinctCandidates = pool.distinctBy { it.id }
+                val finalRecommendations = if (distinctCandidates.isNotEmpty()) {
+                    distinctCandidates.shuffled()
                 } else {
-                    playback.title.split(" ").filter { it.length > 2 }.take(3).joinToString(" ")
+                    existingRelated
                 }
-                if (query.isNotBlank()) {
-                    val searchResult = videoRepository.searchVideos(query)
-                    searchResult.onSuccess { searchVideos ->
-                        val similarVideos = searchVideos.filter {
-                            it.id != playback.videoId && it.url != playback.videoUrl && collected.none { c -> c.id == it.id }
-                        }
-                        collected.addAll(similarVideos)
-                    }
-                }
-            }
 
-            if (collected.size < 6) {
-                val watchedHistory = historyRepository.getHistory().firstOrNull().orEmpty()
-                if (watchedHistory.isNotEmpty()) {
-                    val feedResult = videoRepository.getPersonalizedFeed(watchedHistory)
-                    feedResult.onSuccess { feedItems ->
-                        val feedVideos = feedItems.filterIsInstance<FeedItem.Video>().map { it.video }.filter {
-                            it.id != playback.videoId && it.url != playback.videoUrl && collected.none { c -> c.id == it.id }
-                        }
-                        collected.addAll(feedVideos)
-                    }
-                }
+                _recommendedVideos.value = finalRecommendations
+                playbackManager.setUpcomingRecommendations(finalRecommendations)
+                _isLoadingRecommendations.value = false
             }
-
-            val distinctList = collected.distinctBy { it.id }
-            _recommendedVideos.value = distinctList
-            playbackManager.setUpcomingRecommendations(distinctList)
-            _isLoadingRecommendations.value = false
         }
     }
 
