@@ -36,8 +36,8 @@ Mengintegrasikan resolver sekunder berbasis public Piped & Invidious API ketika 
 ### 6. Pencarian Cerdas & Riwayat Lokal
 Pencarian video dan saluran dengan riwayat kata kunci lokal. Riwayat pencarian dapat dikelola atau dihapus kapan saja secara mandiri oleh pengguna.
 
-### 7. Riwayat Tontonan & Auto Resume
-Menyimpan riwayat video yang ditonton ke dalam basis data lokal dengan posisi detik terakhir, memungkinkan pengguna melanjutkan tontonan kapan saja dengan satu ketukan.
+### 7. Riwayat Tontonan & Silent Auto-Resume
+Menyimpan riwayat video yang ditonton ke dalam basis data lokal dengan posisi detik terakhir. Saat video dibuka kembali, sistem secara otomatis dan senyap melanjutkan pemutaran langsung dari posisi menit dan detik terakhir tanpa jeda konfirmasi banner manual.
 
 ### 8. Halaman Saluran Kreator
 Menampilkan profil kreator, banner saluran, serta daftar video yang dapat diurutkan berdasarkan tanggal terbaru atau popularitas.
@@ -85,7 +85,10 @@ Pendeteksian rilis versi baru secara otomatis melalui GitHub Releases dengan ant
 - **Konfigurasi Interval Lompatan Seek (5, 10, 15, 20 detik)**: Pilihan interval lompatan cepat ketuk ganda langsung dari lembar pengaturan melalui modal `SeekIntervalSelectionDialog` dengan penanda centang aktif, disimpan secara persisten di penyimpanan lokal perangkat.
 - **Komponen Switch Interaktif**: Fitur Loop video dan Autoplay disematkan dengan sakelar toggle `Switch` Material 3 beraksen neon Electric Cyan yang dapat dinyalakan/dimatikan secara instan dengan satu sentuhan.
 - **Dialog Pemilih Kecepatan Eksplisit**: Menggantikan siklus kecepatan manual dengan dialog `PlaybackSpeedSelectionDialog` yang menyajikan seluruh opsi (0.5x, 0.75x, Normal 1.0x, 1.25x, 1.5x, 2.0x) lengkap dengan penanda centang aktif.
-- **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol semu serta tombol PiP manual untuk menjaga arsitektur lokal murni tanpa akun, menyisakan 5 baris pil aksi yang esensial, ringkas, dan bebas gulir panjang (`Bagikan`, `Salin`, `Simpan`, `Pengaturan`, `Layar Penuh`).
+- **Perampingan Baris Aksi Bebas Bloatware**: Membersihkan tombol redundan (termasuk tombol PiP manual dan tombol Layar Penuh) untuk menjaga antarmuka tetap bersih dan minimalis, menyisakan 3 tombol aksi esensial yang ringkas dan bebas gulir (`Salin`, `Simpan`, `Pengaturan`).
+
+### 17. Feed Rekomendasi Video Pintar Bertingkat (Smart Fallback Recommendations)
+Menghadirkan feed rekomendasi video cerdas tepat di bawah kartu deskripsi video sehingga area detail pemutar tidak pernah kosong. Mengadopsi arsitektur kurasi 4 tingkatan secara dinamis: video terkait bawaan stream, katalog video terbaru dari channel kreator, pencarian video serupa berdasarkan kata kunci judul/kreator, dan kompilasi feed terpersonalisasi dari histori tontonan lokal pengguna, lengkap dengan deduplikasi otomatis.
 
 ---
 
@@ -211,6 +214,11 @@ Input pencarian dan caching saran pencarian difilter secara ketat dengan operato
 - **Transisi Animasi Presisi (Source Rect Hint)**: Mengukur batas koordinat jendela pemutar video secara dinamis menggunakan `onGloballyPositioned` dan menyematkannya ke `PictureInPictureParams.setSourceRectHint()`, menghasilkan animasi zooming yang mulus dan bebas kedip saat memasuki mode PiP.
 - **RemoteActions Terpadu dengan Aksi Headset**: Menyediakan 3 aksi kustom interaktif pada jendela PiP melalui `RemoteAction`: Mundur 10 detik, Putar/Jeda dinamis, dan tombol Headset (Audio Latar Belakang).
 - **Isolasi Alur Penutupan Jendela (Headset vs Tombol X)**: Mengintegrasikan mekanisme penanganan penutupan jendela PiP di mana tombol Headset mendismiss jendela PiP dan melanjutkan pemutaran audio di `PlaybackService` dengan notifikasi media, sementara tombol silang (X) menghentikan pemutaran secara bersih (`playbackManager.stop()`) dan menyimpan riwayat tontonan.
+
+#### 17. Arsitektur Multi-Tier Video Recommendation Engine & Silent Seek Synchronization
+- **Kurasi Rekomendasi 4 Tingkatan**: Mengimplementasikan `loadRecommendations()` pada `PlayerViewModel` yang memadukan 4 sumber data secara berjenjang ketika NewPipeExtractor tidak menyajikan cukup video terkait: fallback ke `getChannelDetails()`, ekspansi via `searchVideos()` berbasis kata kunci judul/uploader, dan fallback akhir ke `getPersonalizedFeed()` dari Room watch history.
+- **Pencegahan Redundansi & Deduplikasi Reaktif**: Memfilter video aktif (`videoId` dan `videoUrl`) serta menerapkan `.distinctBy { it.id }` untuk menjamin integritas antarmuka tanpa duplikasi konten. Menggunakan penanda kunci video (`currentLoadedRecommendationVideoId`) agar proses kurasi tidak dieksekusi berulang saat mutasi playback non-kritis terjadi.
+- **Silent Resume Direct Seeking**: Menyinkronkan pemulihan posisi tontonan langsung melalui `playbackManager.playVideo()` dengan pembacaan instan dari `WatchHistoryRepository`. Eliminasi banner interaktif meniadakan beban state `resumeBannerVisible` dan rekomposisi UI yang tidak perlu.
 
 ---
 

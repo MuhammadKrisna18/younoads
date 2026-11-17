@@ -89,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "• Transisi otomatis Picture-in-Picture (Auto-PiP) saat keluar aplikasi\n• Tombol Headset di jendela PiP untuk beralih ke audio latar belakang\n• Kontrol aksi PiP interaktif (Mundur 10 detik, Putar/Jeda dinamis)\n• Penghapusan tombol PiP manual dan perampingan baris aksi pemutar"
+                    "• Auto-resume senyap langsung ke posisi menit/detik terakhir dari histori\n• Viewport pemutar video lebih bersih tanpa tombol overlay di kanan atas\n• Perampingan baris aksi pemutar (Salin, Simpan, Pengaturan)\n• Rekomendasi video pintar bertingkat di bawah deskripsi pemutar"
                 }
 
                 Box(
