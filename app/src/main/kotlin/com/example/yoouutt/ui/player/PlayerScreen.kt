@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Rect
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import com.example.yoouutt.LocalActivity
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.MainActivity
 import com.example.yoouutt.R
+import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.components.AddToPlaylistBottomSheet
 import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
@@ -137,80 +139,94 @@ fun PlayerScreen(
         handleToggleFullscreen()
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(if (isEffectiveFullscreen) Color.Black else MaterialTheme.colorScheme.background)
-    ) {
-        val baseModifier = if (isEffectiveFullscreen) {
-            Modifier.fillMaxSize()
-        } else {
-            Modifier
-                .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .background(Color.Black)
-        }
-        val videoBoxModifier = baseModifier.onGloballyPositioned { coordinates ->
-            val bounds = coordinates.boundsInWindow()
-            videoBounds = Rect(
-                bounds.left.toInt(),
-                bounds.top.toInt(),
-                bounds.right.toInt(),
-                bounds.bottom.toInt()
-            )
-        }
-
-        VideoPlayerSection(
-            viewModel = viewModel,
-            videoUrl = videoUrl,
-            fallbackTitle = fallbackTitle,
-            fallbackUploader = fallbackUploader,
-            isFullscreen = isEffectiveFullscreen,
-            isInPipMode = isInPipMode,
-            resolutionLabel = resolutionLabel,
-            hasPlaylist = playlistContext != null,
-            hasPrevious = (playlistContext?.currentIndex ?: 0) > 0,
-            hasNext = (playlistContext?.let { it.currentIndex + 1 < it.videos.size } ?: false),
-            onPreviousClick = viewModel::playPreviousInPlaylist,
-            onNextClick = viewModel::playNextInPlaylist,
-            onBack = onBack,
-            onToggleFullscreen = handleToggleFullscreen,
-            modifier = videoBoxModifier
-        )
-
-        if (!isEffectiveFullscreen) {
-            val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
-            val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
-            val streamData = currentPlayback?.streamData
-
-            PlayerDetailContent(
-                currentTitle = currentTitle,
-                currentUploader = currentUploader,
-                streamData = streamData,
-                playlistContext = playlistContext,
-                isSaved = isSaved,
-                isDescriptionExpanded = isDescriptionExpanded,
-                videoUrl = videoUrl,
-                onShareClick = { isShareSheetVisible = true },
-                onCopyLinkClick = {
-                    val shortUrl = PlayerUtils.formatShortUrl(videoUrl)
-                    PlayerUtils.copyToClipboard(context, shortUrl, context.getString(R.string.common_link_copied))
-                },
-                onToggleSave = viewModel::toggleSave,
-                onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
-                onSettingsClick = viewModel::showSettingsSheet,
-                onToggleDescription = viewModel::toggleDescription,
-                onPlaylistVideoClick = viewModel::playPlaylistIndex,
-                onChannelClick = onChannelClick,
-                onRelatedVideoClick = { relVideo ->
-                    viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
-                },
-                recommendedVideos = recommendedVideos,
-                isLoadingRecommendations = isLoadingRecommendations,
-                modifier = Modifier
+    val playerBody = @Composable {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            val baseModifier = if (isEffectiveFullscreen) {
+                Modifier.fillMaxSize()
+            } else {
+                Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .aspectRatio(16f / 9f)
+                    .background(Color.Black)
+            }
+            val videoBoxModifier = baseModifier.onGloballyPositioned { coordinates ->
+                val bounds = coordinates.boundsInWindow()
+                videoBounds = Rect(
+                    bounds.left.toInt(),
+                    bounds.top.toInt(),
+                    bounds.right.toInt(),
+                    bounds.bottom.toInt()
+                )
+            }
+
+            VideoPlayerSection(
+                viewModel = viewModel,
+                videoUrl = videoUrl,
+                fallbackTitle = fallbackTitle,
+                fallbackUploader = fallbackUploader,
+                isFullscreen = isEffectiveFullscreen,
+                isInPipMode = isInPipMode,
+                resolutionLabel = resolutionLabel,
+                hasPlaylist = playlistContext != null,
+                hasPrevious = (playlistContext?.currentIndex ?: 0) > 0,
+                hasNext = (playlistContext?.let { it.currentIndex + 1 < it.videos.size } ?: false),
+                onPreviousClick = viewModel::playPreviousInPlaylist,
+                onNextClick = viewModel::playNextInPlaylist,
+                onBack = onBack,
+                onToggleFullscreen = handleToggleFullscreen,
+                modifier = videoBoxModifier
             )
+
+            if (!isEffectiveFullscreen) {
+                val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
+                val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
+                val streamData = currentPlayback?.streamData
+
+                PlayerDetailContent(
+                    currentTitle = currentTitle,
+                    currentUploader = currentUploader,
+                    streamData = streamData,
+                    playlistContext = playlistContext,
+                    isSaved = isSaved,
+                    isDescriptionExpanded = isDescriptionExpanded,
+                    videoUrl = videoUrl,
+                    onShareClick = { isShareSheetVisible = true },
+                    onCopyLinkClick = {
+                        val shortUrl = PlayerUtils.formatShortUrl(videoUrl)
+                        PlayerUtils.copyToClipboard(context, shortUrl, context.getString(R.string.common_link_copied))
+                    },
+                    onToggleSave = viewModel::toggleSave,
+                    onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
+                    onSettingsClick = viewModel::showSettingsSheet,
+                    onToggleDescription = viewModel::toggleDescription,
+                    onPlaylistVideoClick = viewModel::playPlaylistIndex,
+                    onChannelClick = onChannelClick,
+                    onRelatedVideoClick = { relVideo ->
+                        viewModel.playRelatedVideo(relVideo.url, relVideo.title, relVideo.uploaderName)
+                    },
+                    recommendedVideos = recommendedVideos,
+                    isLoadingRecommendations = isLoadingRecommendations,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+        }
+    }
+
+    if (isEffectiveFullscreen) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            playerBody()
+        }
+    } else {
+        AppThemeBackdrop(modifier = modifier) {
+            playerBody()
         }
     }
 
