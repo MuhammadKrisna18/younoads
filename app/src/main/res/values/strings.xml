@@ -159,6 +159,10 @@
     <string name="quality_480p_desc">Standard 480p (Fast loading, low data usage)</string>
     <string name="quality_360p_title">360p (Data Saver)</string>
     <string name="quality_360p_desc">Data Saver 360p (Minimal data usage)</string>
+    <string name="quality_240p_title">240p (Low)</string>
+    <string name="quality_240p_desc">Low 240p (Very low data usage)</string>
+    <string name="quality_144p_title">144p (Lowest)</string>
+    <string name="quality_144p_desc">Lowest 144p (Extreme data saving)</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_category_preferences">Playback &amp; Visuals</string>

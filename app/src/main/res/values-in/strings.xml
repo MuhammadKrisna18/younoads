@@ -159,6 +159,10 @@
     <string name="quality_480p_desc">Standar 480p (Cepat termuat, hemat data)</string>
     <string name="quality_360p_title">360p (Hemat Data)</string>
     <string name="quality_360p_desc">Hemat Data 360p (Penggunaan kuota minimal)</string>
+    <string name="quality_240p_title">240p (Rendah)</string>
+    <string name="quality_240p_desc">Rendah 240p (Sangat hemat kuota)</string>
+    <string name="quality_144p_title">144p (Terendah)</string>
+    <string name="quality_144p_desc">Terendah 144p (Hemat kuota ekstrem)</string>
 
     <string name="settings_title">Pengaturan</string>
     <string name="settings_category_preferences">Pemutaran &amp; Tampilan</string>

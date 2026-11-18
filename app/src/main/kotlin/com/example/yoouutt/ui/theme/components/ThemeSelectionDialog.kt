@@ -94,7 +94,6 @@ fun ThemeSelectionDialog(
                 ) {
                     ThemeCategory.entries.forEach { category ->
                         val isCategorySelected = category == selectedCategory
-                        val count = AppTheme.entries.count { it.category == category }
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -117,7 +116,7 @@ fun ThemeSelectionDialog(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "${stringResource(category.titleRes)} ($count)",
+                                text = stringResource(category.titleRes),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = if (isCategorySelected) FontWeight.Bold else FontWeight.Medium,
                                 color = if (isCategorySelected) MaterialTheme.colorScheme.onPrimaryContainer

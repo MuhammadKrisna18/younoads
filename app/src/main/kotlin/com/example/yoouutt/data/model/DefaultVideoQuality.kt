@@ -13,7 +13,9 @@ enum class DefaultVideoQuality(
     P1080("1080p", 1080, R.string.quality_1080p_title, R.string.quality_1080p_desc),
     P720("720p", 720, R.string.quality_720p_title, R.string.quality_720p_desc),
     P480("480p", 480, R.string.quality_480p_title, R.string.quality_480p_desc),
-    P360("360p", 360, R.string.quality_360p_title, R.string.quality_360p_desc);
+    P360("360p", 360, R.string.quality_360p_title, R.string.quality_360p_desc),
+    P240("240p", 240, R.string.quality_240p_title, R.string.quality_240p_desc),
+    P144("144p", 144, R.string.quality_144p_title, R.string.quality_144p_desc);
 
     companion object {
         fun fromCode(code: String): DefaultVideoQuality =

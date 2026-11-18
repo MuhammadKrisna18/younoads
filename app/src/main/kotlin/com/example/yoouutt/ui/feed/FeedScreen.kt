@@ -47,7 +47,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun FeedScreen(
     onVideoClick: (VideoItem) -> Unit,
-    onHistoryClick: () -> Unit,
     onChannelClick: (channelUrl: String, channelName: String) -> Unit,
     onPlaylistClick: (playlistUrl: String, playlistTitle: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -152,7 +151,6 @@ fun FeedScreen(
                     isSearchExpanded = true
                     isSearchOverlayVisible = true
                 },
-                onLibraryClick = onHistoryClick,
                 onBackClick = {
                     if (isSearchOverlayVisible && searchQuery.isNotBlank()) {
                         focusManager.clearFocus()

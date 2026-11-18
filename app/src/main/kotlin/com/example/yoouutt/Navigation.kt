@@ -68,9 +68,6 @@ fun MainNavigation() {
                                 )
                             )
                         },
-                        onHistoryClick = {
-                            backStack.add(SettingsKey)
-                        },
                         onChannelClick = { url, name ->
                             backStack.add(ChannelKey(url, name))
                         },

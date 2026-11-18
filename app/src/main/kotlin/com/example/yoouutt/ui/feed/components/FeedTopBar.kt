@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -54,7 +53,6 @@ fun FeedTopBar(
     selectedCategory: String,
     focusRequester: FocusRequester,
     onSearchClick: () -> Unit,
-    onLibraryClick: () -> Unit = {},
     onBackClick: () -> Unit,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
@@ -91,19 +89,6 @@ fun FeedTopBar(
                     ) {
                         BrandLogo()
                         Spacer(modifier = Modifier.weight(1f))
-                        IconButton(
-                            onClick = {
-                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                onLibraryClick()
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.QueueMusic,
-                                contentDescription = stringResource(R.string.nav_library),
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
                         IconButton(
                             onClick = {
                                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
