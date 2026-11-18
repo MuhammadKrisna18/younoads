@@ -222,6 +222,8 @@
     <string name="history_empty_mascot_title">Belum Ada Riwayat Tontonan</string>
     <string name="history_empty_mascot_desc">Youno-chan belum mencatat video apa pun. Yuk mulai jelajahi feed dan tonton video favoritmu!</string>
     <string name="history_continue_at">Lanjut: %1$s</string>
+    <string name="history_delete_single_title">Hapus dari Riwayat?</string>
+    <string name="history_delete_single_msg">Hapus \"%1$s\" dari riwayat tontonan kamu?</string>
     <string name="library_clear_saved_action">Hapus Semua Simpanan</string>
     <string name="library_clear_history_action">Hapus Semua Riwayat</string>
 

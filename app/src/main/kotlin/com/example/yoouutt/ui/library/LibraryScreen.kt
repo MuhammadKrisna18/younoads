@@ -56,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.R
 import com.example.yoouutt.data.model.SavedVideo
+import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.history.components.HistoryItemRow
@@ -84,6 +85,7 @@ fun LibraryScreen(
     var showClearSavedDialog by remember { mutableStateOf(false) }
     var showClearHistoryDialog by remember { mutableStateOf(false) }
     var playlistToDeleteId by remember { mutableStateOf<Long?>(null) }
+    var historyItemToDelete by remember { mutableStateOf<WatchHistoryItem?>(null) }
 
     LaunchedEffect(initialTab) {
         viewModel.selectTab(initialTab)
@@ -117,6 +119,19 @@ fun LibraryScreen(
                 showClearHistoryDialog = false
             },
             onDismiss = { showClearHistoryDialog = false }
+        )
+    }
+
+    val currentHistoryToDelete = historyItemToDelete
+    if (currentHistoryToDelete != null) {
+        AppConfirmDialog(
+            title = stringResource(R.string.history_delete_single_title),
+            message = stringResource(R.string.history_delete_single_msg, currentHistoryToDelete.title),
+            onConfirm = {
+                viewModel.deleteHistoryItem(currentHistoryToDelete.videoId)
+                historyItemToDelete = null
+            },
+            onDismiss = { historyItemToDelete = null }
         )
     }
 
@@ -390,7 +405,7 @@ fun LibraryScreen(
                                         onClick = { onVideoClick(item.videoUrl, item.title, item.uploaderName) },
                                         onDelete = {
                                             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                            viewModel.deleteHistoryItem(item.videoId)
+                                            historyItemToDelete = item
                                         }
                                     )
                                 }

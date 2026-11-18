@@ -222,6 +222,8 @@
     <string name="history_empty_mascot_title">No Watch History Yet</string>
     <string name="history_empty_mascot_desc">Youno-chan hasn\'t recorded any watched videos. Start exploring the feed and watch your favorites!</string>
     <string name="history_continue_at">Resume: %1$s</string>
+    <string name="history_delete_single_title">Remove from History?</string>
+    <string name="history_delete_single_msg">Remove \"%1$s\" from your watch history?</string>
     <string name="library_clear_saved_action">Clear All Saved</string>
     <string name="library_clear_history_action">Clear All History</string>
 

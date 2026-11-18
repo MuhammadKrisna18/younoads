@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.R
+import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.history.components.HistoryEmptyState
@@ -51,6 +52,7 @@ fun HistoryScreen(
 ) {
     val historyItems by viewModel.historyItems.collectAsStateWithLifecycle()
     var showClearDialog by remember { mutableStateOf(false) }
+    var itemToDelete by remember { mutableStateOf<WatchHistoryItem?>(null) }
     val view = LocalView.current
 
     if (showClearDialog) {
@@ -62,6 +64,19 @@ fun HistoryScreen(
                 showClearDialog = false
             },
             onDismiss = { showClearDialog = false }
+        )
+    }
+
+    val currentItemToDelete = itemToDelete
+    if (currentItemToDelete != null) {
+        AppConfirmDialog(
+            title = stringResource(R.string.history_delete_single_title),
+            message = stringResource(R.string.history_delete_single_msg, currentItemToDelete.title),
+            onConfirm = {
+                viewModel.deleteItem(currentItemToDelete.videoId)
+                itemToDelete = null
+            },
+            onDismiss = { itemToDelete = null }
         )
     }
 
@@ -133,7 +148,7 @@ fun HistoryScreen(
                         },
                         onDelete = {
                             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                            viewModel.deleteItem(item.videoId)
+                            itemToDelete = item
                         }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
