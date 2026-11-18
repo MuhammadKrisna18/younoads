@@ -1,15 +1,17 @@
-### YounoAds v4.10 - Catatan Rilis & Pembaruan
+### YounoAds v4.11 - Catatan Rilis & Pembaruan
 
-Pembaruan optimalisasi transisi layar, eliminasi efek ghosting, dan sinkronisasi navigasi pemutar:
+Restrukturisasi arsitektur latar belakang solid, backdrop hero beranda, dan transisi pemutar video Hybrid YouTube:
 
-1. Perbaikan Transisi Layar Antar Halaman (Pure Fast Fade)
-- Menghapus efek skala mengecil (scaleIn dan scaleOut) saat berpindah layar yang sebelumnya menimbulkan efek bayangan tembus pandang (ghosting / double exposure) pada latar belakang transparan.
-- Menerapkan transisi pudar cepat (fade in 140 ms, fade out 100 ms) dengan penetapan prioritas lapisan (targetContentZIndex = 1f) sehingga perpindahan antar layar terasa instan, bersih, dan tajam.
+1. Restrukturisasi Latar Belakang Solid Mengikuti Tema
+- Menghapus pembungkus global transparan pada level aplikasi dan menggantinya dengan kanvas solid dinamis yang mengikuti warna tema aktif (MaterialTheme.colorScheme.background).
+- Menjadikan layar pemutar video (PlayerScreen) 100% solid (warna tema saat potret dan hitam pekat saat layar penuh), sehingga elemen beranda tidak akan pernah lagi tembus ke badan pemutar video.
+- Menjadikan seluruh sub-halaman (Riwayat, Pengaturan, Koleksi, Daftar Putar, Saluran) memiliki latar belakang solid yang padat dan tajam.
 
-2. Sinkronisasi Animasi Keluar Pemutar Video & Bilah Bawah
-- Memperbaiki koordinasi animasi saat keluar dari layar pemutar video (PlayerScreen) ke beranda atau daftar putar.
-- Menghapus pergeseran vertikal pada bilah bawah serta memberikan jeda halus saat bilah navigasi dan miniplayer muncul kembali, mencegah pemutar video ganda dan bilah bawah saling bertabrakan di layar.
+2. Header Hero Backdrop Karakter Anime di Beranda
+- Menghadirkan artwork karakter anime tema aktif sebagai banner hero di puncak beranda (FeedHeroBackdrop).
+- Dilengkapi gradasi vertikal halus yang memudar lembut menyatu ke dalam warna solid tema di bawahnya, menjaga kontras logo, bilah pencarian, dan tombol filter tetap tajam dan nyaman dibaca.
 
-3. Penyempurnaan Transisi Komponen Antarmuka
-- Mempercepat transisi pemuatan konten feed dari skeleton shimmer ke kartu video asli agar kerangka pemuatan tidak tertinggal di belakang thumbnail.
-- Menyelaraskan kecepatan transisi bilah pencarian di bagian atas beranda.
+3. Transisi Cerdas Hybrid YouTube
+- Membuka video kini meluncur naik dari bawah (slideInVertically) menutupi layar dengan mulus layaknya aplikasi YouTube resmi.
+- Menutup video meluncur turun ke bawah (slideOutVertically) menyatu kembali ke bilah miniplayer secara presisi tanpa ada tabrakan animasi maupun pemutar video ganda.
+- Menambahkan popTransitionSpec pada navigasi dua arah sehingga tombol Back dan gestur Predictive Back berjalan rapi dan konsisten.
