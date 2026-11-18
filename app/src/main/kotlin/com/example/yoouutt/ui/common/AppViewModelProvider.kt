@@ -40,10 +40,8 @@ object AppViewModelProvider {
                     PlaylistViewModel(container.videoRepository) as T
                 modelClass.isAssignableFrom(LibraryViewModel::class.java) ->
                     LibraryViewModel(
-                        container.historyRepository,
                         container.savedVideoRepository,
-                        container.customPlaylistRepository,
-                        container.playbackManager
+                        container.customPlaylistRepository
                     ) as T
                 modelClass.isAssignableFrom(SettingsViewModel::class.java) ->
                     SettingsViewModel(container.playbackManager) as T

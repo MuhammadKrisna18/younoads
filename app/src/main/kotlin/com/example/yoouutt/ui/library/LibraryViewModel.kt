@@ -3,13 +3,9 @@ package com.example.yoouutt.ui.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yoouutt.data.model.CustomPlaylist
-import com.example.yoouutt.data.model.DefaultVideoQuality
 import com.example.yoouutt.data.model.SavedVideo
-import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.data.repository.CustomPlaylistRepository
 import com.example.yoouutt.data.repository.SavedVideoRepository
-import com.example.yoouutt.data.repository.WatchHistoryRepository
-import com.example.yoouutt.playback.PlaybackManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,20 +14,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class LibraryViewModel(
-    private val watchHistoryRepository: WatchHistoryRepository,
     private val savedVideoRepository: SavedVideoRepository,
-    private val customPlaylistRepository: CustomPlaylistRepository,
-    private val playbackManager: PlaybackManager
+    private val customPlaylistRepository: CustomPlaylistRepository
 ) : ViewModel() {
-
-    val defaultQuality: StateFlow<DefaultVideoQuality> = playbackManager.defaultQuality
-
-    fun setDefaultQuality(quality: DefaultVideoQuality) {
-        playbackManager.setDefaultQuality(quality)
-    }
-
-    private val _selectedTab = MutableStateFlow(0)
-    val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
     val savedVideos: StateFlow<List<SavedVideo>> = savedVideoRepository.getSavedVideos()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -39,15 +24,8 @@ class LibraryViewModel(
     val customPlaylists: StateFlow<List<CustomPlaylist>> = customPlaylistRepository.getCustomPlaylists()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val historyItems: StateFlow<List<WatchHistoryItem>> = watchHistoryRepository.getHistory()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
     private val _isCreatePlaylistDialogVisible = MutableStateFlow(false)
     val isCreatePlaylistDialogVisible: StateFlow<Boolean> = _isCreatePlaylistDialogVisible.asStateFlow()
-
-    fun selectTab(index: Int) {
-        _selectedTab.value = index.coerceIn(0, 2)
-    }
 
     fun unsaveVideo(videoId: String) {
         viewModelScope.launch {
@@ -58,18 +36,6 @@ class LibraryViewModel(
     fun clearAllSaved() {
         viewModelScope.launch {
             savedVideoRepository.clearAllSavedVideos()
-        }
-    }
-
-    fun deleteHistoryItem(videoId: String) {
-        viewModelScope.launch {
-            watchHistoryRepository.deleteHistory(videoId)
-        }
-    }
-
-    fun clearAllHistory() {
-        viewModelScope.launch {
-            watchHistoryRepository.clearAllHistory()
         }
     }
 

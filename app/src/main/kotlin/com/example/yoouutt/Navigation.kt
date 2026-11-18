@@ -30,7 +30,8 @@ import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BottomNavigationBar
 import com.example.yoouutt.ui.feed.FeedScreen
 import com.example.yoouutt.ui.history.HistoryScreen
-import com.example.yoouutt.ui.library.LibraryScreen
+import com.example.yoouutt.ui.library.PlaylistsScreen
+import com.example.yoouutt.ui.library.SavedVideosScreen
 import com.example.yoouutt.ui.player.InAppPipPlayer
 import com.example.yoouutt.ui.player.PlayerScreen
 import com.example.yoouutt.ui.playlist.PlaylistScreen
@@ -79,16 +80,15 @@ fun MainNavigation() {
                 entry<SettingsKey> {
                     SettingsScreen(
                         onNavigateToPlaylists = {
-                            backStack.add(LibraryKey(initialTab = 1))
+                            backStack.add(PlaylistsKey)
                         },
                         onNavigateToSaved = {
-                            backStack.add(LibraryKey(initialTab = 0))
+                            backStack.add(SavedVideosKey)
                         }
                     )
                 }
-                entry<LibraryKey> { key ->
-                    LibraryScreen(
-                        initialTab = key.initialTab,
+                entry<SavedVideosKey> {
+                    SavedVideosScreen(
                         onVideoClick = { url, title, uploader ->
                             playbackManager.playVideo(url, title, uploader)
                             backStack.add(
@@ -127,6 +127,11 @@ fun MainNavigation() {
                                 )
                             }
                         },
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+                entry<PlaylistsKey> {
+                    PlaylistsScreen(
                         onCustomPlaylistClick = { playlistId, playlistTitle ->
                             backStack.add(CustomPlaylistDetailKey(playlistId, playlistTitle))
                         },
@@ -286,7 +291,7 @@ fun MainNavigation() {
                 BottomNavigationBar(
                     isHomeSelected = currentKey is Main,
                     isHistorySelected = currentKey is HistoryKey,
-                    isSettingsSelected = currentKey is SettingsKey || currentKey is LibraryKey || currentKey is CustomPlaylistDetailKey,
+                    isSettingsSelected = currentKey is SettingsKey || currentKey is SavedVideosKey || currentKey is PlaylistsKey || currentKey is CustomPlaylistDetailKey,
                     onHomeClick = {
                         while (backStack.size > 1 && backStack.lastOrNull() !is Main) {
                             backStack.removeLastOrNull()

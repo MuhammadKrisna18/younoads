@@ -50,10 +50,11 @@ Garis waktu pemutar video (slider) juga otomatis memancarkan gradien warna yang 
 
 Tidak perlu khawatir jika tontonanmu terputus di tengah jalan. Saat video dibuka kembali di lain waktu, video akan otomatis melanjutkan pemutaran langsung dari posisi menit dan detik terakhir tanpa perlu konfirmasi berbelit-belit.
 
-### Koleksi Pribadi: Simpan Video & Bikin Playlist
+### Koleksi Pribadi: Halaman Tersimpan & Playlist Mandiri
 
-- **Simpan Video Favorit**: Tandai video yang kamu sukai dengan sekali sentuh pada tombol Simpan, dan akses kapan saja melalui halaman Koleksi.
-- **Playlist Buatan Sendiri**: Buat daftar putar kustom tanpa batas untuk mengelompokkan video musik, tutorial, atau serial favoritmu. Playlist buatanmu bisa diputar berurutan atau diacak dengan tombol Putar Semua dan Acak.
+- **Halaman Video Tersimpan Mandiri**: Akses langsung seluruh video yang kamu tandai melalui menu Video Tersimpan di pengaturan, lengkap dengan tombol Putar Semua dan opsi pembersihan simpanan.
+- **Halaman Playlist Kustom Mandiri**: Buat dan kelola daftar putar buatanmu sendiri secara terpisah tanpa tercampur dengan riwayat tontonan.
+- **Konfirmasi Aman Saat Menghapus**: Penghapusan riwayat tontonan kini selalu meminta konfirmasi pop-up, baik untuk menghapus satu video maupun seluruh riwayat, sehingga riwayat aman dari sentuhan tidak sengaja.
 
 ### Putar Ulang (Loop) & Lanjut Otomatis (Autoplay)
 
@@ -73,6 +74,7 @@ Seluruh antarmuka aplikasi sudah mendukung penuh Bahasa Indonesia dan Bahasa Ing
 Perpindahan antar halaman dan saat membuka maupun menutup layar pemutar video kini berjalan sangat mulus dan tenang dengan animasi transisi yang seragam, tanpa hentakan maupun kedipan visual.
 
 ### Tipografi Khas JetBrains Mono
+
 Seluruh tulisan di dalam aplikasi kini menggunakan font JetBrains Mono yang terpasang langsung di dalam aplikasi (offline). Tampilan judul, angka durasi waktu, penanda kualitas video, dan menu terlihat semakin rapi, presisi, dan berkarakter.
 
 ### Bebas Login & Privasi 100% Aman
