@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.channel.components.ChannelContent
 import com.example.yoouutt.ui.channel.components.ChannelErrorState
@@ -51,10 +52,11 @@ fun ChannelScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+    AppThemeBackdrop(modifier = modifier) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
+            topBar = {
             ChannelTopBar(
                 channelName = channelName,
                 isSearchOpen = isSearchOpen,
@@ -111,4 +113,5 @@ fun ChannelScreen(
             }
         }
     }
+}
 }

@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoItem
+import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.PlayerUtils
 import com.example.yoouutt.ui.playlist.components.PlaylistContent
@@ -52,10 +53,11 @@ fun PlaylistScreen(
         viewModel.loadPlaylist(playlistUrl)
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+    AppThemeBackdrop(modifier = modifier) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
+            topBar = {
             TopAppBar(
                 title = {
                     Text(
@@ -88,7 +90,7 @@ fun PlaylistScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -117,4 +119,5 @@ fun PlaylistScreen(
             }
         }
     }
+}
 }

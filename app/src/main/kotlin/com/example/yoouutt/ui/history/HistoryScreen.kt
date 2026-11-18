@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.R
 import com.example.yoouutt.data.model.WatchHistoryItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
+import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.history.components.HistoryEmptyState
 import com.example.yoouutt.ui.history.components.HistoryItemRow
@@ -80,10 +81,11 @@ fun HistoryScreen(
         )
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+    AppThemeBackdrop(modifier = modifier) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
+            topBar = {
             TopAppBar(
                 title = {
                     Text(
@@ -116,7 +118,7 @@ fun HistoryScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -156,4 +158,5 @@ fun HistoryScreen(
             }
         }
     }
+}
 }

@@ -33,12 +33,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
+import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.UpdateDialog
 import com.example.yoouutt.ui.feed.components.FeedContentList
 import com.example.yoouutt.ui.feed.components.FeedEmptyState
 import com.example.yoouutt.ui.feed.components.FeedErrorState
-import com.example.yoouutt.ui.feed.components.FeedHeroBackdrop
 import com.example.yoouutt.ui.feed.components.FeedSearchSuggestions
 import com.example.yoouutt.ui.feed.components.FeedSkeletonList
 import com.example.yoouutt.ui.feed.components.FeedTopBar
@@ -140,13 +140,7 @@ fun FeedScreen(
         )
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        FeedHeroBackdrop(modifier = Modifier.align(Alignment.TopCenter))
-
+    AppThemeBackdrop(modifier = modifier) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
