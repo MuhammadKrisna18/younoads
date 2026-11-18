@@ -352,7 +352,7 @@ class PlayerViewModel(
         _seekFeedback.value = feedback
         seekFeedbackJob?.cancel()
         seekFeedbackJob = viewModelScope.launch {
-            delay(800)
+            delay(1200)
             _seekFeedback.value = null
             accumulatedSeekSeconds = 0
             currentSeekDirection = null
