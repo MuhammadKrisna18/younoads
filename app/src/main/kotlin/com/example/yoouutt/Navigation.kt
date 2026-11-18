@@ -54,6 +54,7 @@ fun MainNavigation() {
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             transitionSpec = YouTubeScreenTransitions.appTransitionSpec,
+            popTransitionSpec = YouTubeScreenTransitions.appTransitionSpec,
             entryProvider = entryProvider {
                 entry<Main> {
                     FeedScreen(
@@ -255,7 +256,7 @@ fun MainNavigation() {
             enter = fadeIn(
                 animationSpec = tween(
                     durationMillis = 120,
-                    delayMillis = 80,
+                    delayMillis = 160,
                     easing = FastOutSlowInEasing
                 )
             ),
