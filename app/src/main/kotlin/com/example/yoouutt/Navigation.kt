@@ -7,8 +7,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -255,16 +253,17 @@ fun MainNavigation() {
         AnimatedVisibility(
             visible = !isPlayerScreenVisible,
             enter = fadeIn(
-                animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing)
-            ) + slideInVertically(
-                initialOffsetY = { it / 3 },
-                animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing)
+                animationSpec = tween(
+                    durationMillis = 120,
+                    delayMillis = 80,
+                    easing = FastOutSlowInEasing
+                )
             ),
             exit = fadeOut(
-                animationSpec = tween(durationMillis = 180, easing = FastOutLinearInEasing)
-            ) + slideOutVertically(
-                targetOffsetY = { it / 3 },
-                animationSpec = tween(durationMillis = 180, easing = FastOutLinearInEasing)
+                animationSpec = tween(
+                    durationMillis = 90,
+                    easing = FastOutLinearInEasing
+                )
             ),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {

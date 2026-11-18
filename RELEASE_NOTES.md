@@ -1,21 +1,15 @@
-### YounoAds v4.9 - Catatan Rilis & Pembaruan
+### YounoAds v4.10 - Catatan Rilis & Pembaruan
 
-Pembaruan arsitektur antarmuka, pemisahan halaman koleksi, dan penyempurnaan tipografi:
+Pembaruan optimalisasi transisi layar, eliminasi efek ghosting, dan sinkronisasi navigasi pemutar:
 
-1. Pemisahan Halaman Video Tersimpan & Daftar Putar
-- Memisahkan halaman Video Tersimpan dan Daftar Putar menjadi layar mandiri tersendiri, tidak lagi digabung dalam tab bersama dengan riwayat tontonan.
-- Setiap halaman memiliki bilah judul terpisah, navigasi kembali yang jelas, dan alur pengelolaan yang fokus.
+1. Perbaikan Transisi Layar Antar Halaman (Pure Fast Fade)
+- Menghapus efek skala mengecil (scaleIn dan scaleOut) saat berpindah layar yang sebelumnya menimbulkan efek bayangan tembus pandang (ghosting / double exposure) pada latar belakang transparan.
+- Menerapkan transisi pudar cepat (fade in 140 ms, fade out 100 ms) dengan penetapan prioritas lapisan (targetContentZIndex = 1f) sehingga perpindahan antar layar terasa instan, bersih, dan tajam.
 
-2. Konfirmasi Aman Penghapusan Riwayat
-- Menghapus item video dari riwayat tontonan kini selalu menampilkan pop-up konfirmasi terlebih dahulu untuk mencegah penghapusan yang tidak disengaja.
-- Konfirmasi penghapusan seluruh riwayat tetap terjaga dengan tampilan dialog yang serasi.
+2. Sinkronisasi Animasi Keluar Pemutar Video & Bilah Bawah
+- Memperbaiki koordinasi animasi saat keluar dari layar pemutar video (PlayerScreen) ke beranda atau daftar putar.
+- Menghapus pergeseran vertikal pada bilah bawah serta memberikan jeda halus saat bilah navigasi dan miniplayer muncul kembali, mencegah pemutar video ganda dan bilah bawah saling bertabrakan di layar.
 
-3. Redesign Logo Beranda & Bilah Atas Minimalis
-- Logo di pojok kiri atas beranda kini mengusung ikon pemutar video khas YouTube dengan gaya modern.
-- Menghilangkan tombol musik redundan di samping pencarian agar bilah atas lebih lapang dan bersih.
-
-4. Opsi Resolusi Terendah (144p & 240p)
-- Menambahkan pilihan resolusi bawaan 144p dan 240p di pengaturan kualitas video untuk opsi penghematan kuota internet maksimal.
-
-5. Perapihan Tipografi JetBrains Mono
-- Menyelaraskan ukuran huruf, jarak baris, dan penjarakan karakter JetBrains Mono di seluruh layar aplikasi agar teks tampil seimbang, proporsional, dan nyaman dibaca.
+3. Penyempurnaan Transisi Komponen Antarmuka
+- Mempercepat transisi pemuatan konten feed dari skeleton shimmer ke kartu video asli agar kerangka pemuatan tidak tertinggal di belakang thumbnail.
+- Menyelaraskan kecepatan transisi bilah pencarian di bagian atas beranda.

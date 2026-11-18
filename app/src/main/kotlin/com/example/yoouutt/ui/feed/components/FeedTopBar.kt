@@ -73,8 +73,8 @@ fun FeedTopBar(
         AnimatedContent(
             targetState = isSearchExpanded,
             transitionSpec = {
-                fadeIn(tween(180, easing = FastOutSlowInEasing)) togetherWith
-                fadeOut(tween(120, easing = FastOutSlowInEasing))
+                fadeIn(tween(140, easing = FastOutSlowInEasing)) togetherWith
+                fadeOut(tween(100, easing = FastOutSlowInEasing))
             },
             label = "searchBarTransition"
         ) { expanded ->

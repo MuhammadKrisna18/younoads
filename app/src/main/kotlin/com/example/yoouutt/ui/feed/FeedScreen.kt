@@ -201,7 +201,7 @@ fun FeedScreen(
                     targetState = uiState,
                     contentAlignment = Alignment.Center,
                     transitionSpec = {
-                        fadeIn(animationSpec = tween(280)) togetherWith fadeOut(animationSpec = tween(200))
+                        fadeIn(animationSpec = tween(120)) togetherWith fadeOut(animationSpec = tween(100))
                     },
                     label = "feed_content_transition",
                     modifier = Modifier.fillMaxSize()
