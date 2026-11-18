@@ -11,7 +11,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.ChannelData
 import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.VideoItem
@@ -73,7 +75,7 @@ fun ChannelContent(
         if (currentTab == ChannelTab.VIDEOS) {
             if (videos.isEmpty()) {
                 item(key = "empty_videos") {
-                    ChannelEmptyView(message = "Tidak ada video yang ditemukan")
+                    ChannelEmptyView(message = stringResource(R.string.channel_empty_videos))
                 }
             } else {
                 items(
@@ -99,7 +101,7 @@ fun ChannelContent(
                 }
             } else if (playlists.isEmpty()) {
                 item(key = "empty_playlists") {
-                    ChannelEmptyView(message = "Channel ini belum memiliki playlist")
+                    ChannelEmptyView(message = stringResource(R.string.channel_empty_playlists))
                 }
             } else {
                 items(

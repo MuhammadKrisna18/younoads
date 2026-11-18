@@ -36,11 +36,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.player.PlayerUtils
 
@@ -133,19 +135,19 @@ fun VideoOptionsBottomSheet(
 
             OptionRowItem(
                 icon = Icons.Outlined.ContentCopy,
-                title = "Salin Tautan",
+                title = stringResource(R.string.common_copy_link),
                 subtitle = cleanUrl,
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                    PlayerUtils.copyToClipboard(context, cleanUrl, "Tautan berhasil disalin")
+                    PlayerUtils.copyToClipboard(context, cleanUrl, context.getString(R.string.common_link_copied))
                     onDismiss()
                 }
             )
 
             OptionRowItem(
                 icon = Icons.Outlined.Share,
-                title = "Bagikan Video",
-                subtitle = "Kirim tautan ke aplikasi lain",
+                title = stringResource(R.string.common_share_video),
+                subtitle = stringResource(R.string.options_share_subtitle),
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     PlayerUtils.shareText(context, cleanUrl, video.title)
@@ -157,7 +159,7 @@ fun VideoOptionsBottomSheet(
                 val targetChannelUrl = video.uploaderUrl.ifBlank { video.uploaderName }
                 OptionRowItem(
                     icon = Icons.Outlined.AccountCircle,
-                    title = "Buka Channel",
+                    title = stringResource(R.string.common_open_channel),
                     subtitle = video.uploaderName,
                     onClick = {
                         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)

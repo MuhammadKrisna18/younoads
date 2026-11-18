@@ -115,7 +115,7 @@ fun HistoryItemRow(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Lanjut: ${TextFormatters.formatTimeMs(item.lastPlaybackPositionMs)}",
+                text = stringResource(R.string.history_continue_at, TextFormatters.formatTimeMs(item.lastPlaybackPositionMs)),
                 style = MaterialTheme.typography.labelSmall,
                 color = BrandRed,
                 fontWeight = FontWeight.Medium

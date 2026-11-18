@@ -41,10 +41,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.MaterialTheme
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.player.PlayerUtils
 import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
@@ -115,7 +117,7 @@ fun BoxScope.PlayerControlsOverlay(
             ) {
                 Icon(
                     imageVector = if (isFullscreen) Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (isFullscreen) "Kembali" else "Tutup",
+                    contentDescription = if (isFullscreen) stringResource(R.string.common_back) else stringResource(R.string.common_close),
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
@@ -137,7 +139,7 @@ fun BoxScope.PlayerControlsOverlay(
                     ) {
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
-                            contentDescription = "Video Sebelumnya",
+                            contentDescription = stringResource(R.string.common_previous_video),
                             tint = if (hasPrevious) Color.White else Color.White.copy(alpha = 0.35f),
                             modifier = Modifier.size(30.dp)
                         )
@@ -165,7 +167,7 @@ fun BoxScope.PlayerControlsOverlay(
                     } else {
                         Icon(
                             imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                            contentDescription = if (isPlaying) "Pause" else "Play",
+                            contentDescription = if (isPlaying) stringResource(R.string.player_action_pause) else stringResource(R.string.player_action_play),
                             tint = Color.White,
                             modifier = Modifier.size(32.dp)
                         )
@@ -183,7 +185,7 @@ fun BoxScope.PlayerControlsOverlay(
                     ) {
                         Icon(
                             imageVector = Icons.Default.SkipNext,
-                            contentDescription = "Video Berikutnya",
+                            contentDescription = stringResource(R.string.common_next_video),
                             tint = if (hasNext) Color.White else Color.White.copy(alpha = 0.35f),
                             modifier = Modifier.size(30.dp)
                         )
@@ -251,7 +253,7 @@ fun BoxScope.PlayerControlsOverlay(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Settings,
-                                        contentDescription = "Kualitas Video",
+                                        contentDescription = stringResource(R.string.common_video_quality),
                                         tint = Color.White,
                                         modifier = Modifier.size(15.dp)
                                     )
@@ -274,7 +276,7 @@ fun BoxScope.PlayerControlsOverlay(
                         ) {
                             Icon(
                                 imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
-                                contentDescription = "Layar Penuh",
+                                contentDescription = stringResource(R.string.common_fullscreen),
                                 tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )

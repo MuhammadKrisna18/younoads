@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,21 +52,21 @@ fun HistoryEmptyState(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.youno_empty_history),
-                contentDescription = "Empty History",
+                contentDescription = stringResource(R.string.history_empty_mascot_title),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Belum Ada Riwayat Tontonan",
+            text = stringResource(R.string.history_empty_mascot_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = "Youno-chan belum mencatat video apa pun. Yuk mulai jelajahi feed dan tonton video favoritmu!",
+            text = stringResource(R.string.history_empty_mascot_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF9DA4B8),
             textAlign = TextAlign.Center,
@@ -84,7 +85,7 @@ fun HistoryEmptyState(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Jelajahi Beranda",
+                text = stringResource(R.string.library_btn_explore),
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 color = PureBlack

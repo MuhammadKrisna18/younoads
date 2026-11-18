@@ -109,7 +109,7 @@ fun ResolutionSelectionDialog(
 
                 if (availableResolutions.isEmpty()) {
                     Text(
-                        text = "Tidak ada pilihan resolusi manual untuk video ini.",
+                        text = stringResource(R.string.resolution_empty_message),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(vertical = 16.dp)

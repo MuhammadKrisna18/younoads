@@ -28,11 +28,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.PlaylistItem
 
 @Composable
@@ -88,7 +90,7 @@ fun PlaylistCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${playlist.streamCount} video",
+                        text = stringResource(R.string.library_video_count, playlist.streamCount),
                         color = Color.White,
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.SemiBold
@@ -112,7 +114,7 @@ fun PlaylistCard(
         Spacer(modifier = Modifier.height(3.dp))
 
         Text(
-            text = "${playlist.uploaderName} • Playlist",
+            text = stringResource(R.string.channel_uploader_playlist, playlist.uploaderName),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,

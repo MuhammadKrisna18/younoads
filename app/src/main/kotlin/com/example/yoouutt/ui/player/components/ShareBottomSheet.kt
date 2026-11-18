@@ -42,10 +42,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.player.PlayerUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,7 +102,7 @@ fun ShareBottomSheet(
                 .padding(bottom = 32.dp)
         ) {
             Text(
-                text = "Bagikan Video",
+                text = stringResource(R.string.common_share_video),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
@@ -143,7 +145,7 @@ fun ShareBottomSheet(
                 Button(
                     onClick = {
                         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        val msg = if (includeTimestamp) "Tautan pada menit ${PlayerUtils.formatTime(currentPositionMs)} disalin" else "Tautan berhasil disalin"
+                        val msg = if (includeTimestamp) context.getString(R.string.common_link_copied_at_time, PlayerUtils.formatTime(currentPositionMs)) else context.getString(R.string.common_link_copied)
                         PlayerUtils.copyToClipboard(context, formattedShareUrl, msg)
                         onDismiss()
                     },
@@ -157,13 +159,13 @@ fun ShareBottomSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ContentCopy,
-                        contentDescription = "Salin",
+                        contentDescription = stringResource(R.string.player_action_copy),
                         modifier = Modifier.size(15.dp),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Salin",
+                        text = stringResource(R.string.player_action_copy),
                         fontSize = 12.5.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -193,7 +195,7 @@ fun ShareBottomSheet(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.AccessTime,
-                            contentDescription = "Waktu",
+                            contentDescription = stringResource(R.string.share_time_label),
                             tint = if (includeTimestamp) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
@@ -203,13 +205,13 @@ fun ShareBottomSheet(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Mulai pada ${PlayerUtils.formatTime(currentPositionMs)}",
+                            text = stringResource(R.string.share_start_at, PlayerUtils.formatTime(currentPositionMs)),
                             color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 13.5.sp,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            text = "Tautan akan langsung membuka bagian ini",
+                            text = stringResource(R.string.share_start_at_desc),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 11.5.sp
                         )
@@ -258,7 +260,7 @@ fun ShareBottomSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Share,
-                        contentDescription = "Bagikan ke Aplikasi Lain",
+                        contentDescription = stringResource(R.string.share_share_to_other_apps),
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
@@ -268,13 +270,13 @@ fun ShareBottomSheet(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Bagikan ke Aplikasi Lain",
+                        text = stringResource(R.string.share_share_to_other_apps),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "Kirim tautan lewat WhatsApp, Telegram, dll.",
+                        text = stringResource(R.string.share_share_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
@@ -287,7 +289,7 @@ fun ShareBottomSheet(
                     .clip(RoundedCornerShape(12.dp))
                     .clickable {
                         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                        val msg = if (includeTimestamp) "Tautan pada menit ${PlayerUtils.formatTime(currentPositionMs)} disalin" else "Tautan berhasil disalin"
+                        val msg = if (includeTimestamp) context.getString(R.string.common_link_copied_at_time, PlayerUtils.formatTime(currentPositionMs)) else context.getString(R.string.common_link_copied)
                         PlayerUtils.copyToClipboard(context, formattedShareUrl, msg)
                         onDismiss()
                     }
@@ -303,7 +305,7 @@ fun ShareBottomSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ContentCopy,
-                        contentDescription = "Salin Tautan",
+                        contentDescription = stringResource(R.string.common_copy_link),
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
@@ -313,13 +315,13 @@ fun ShareBottomSheet(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Salin Tautan",
+                        text = stringResource(R.string.common_copy_link),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "Salin URL ke papan klip",
+                        text = stringResource(R.string.share_copy_url_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )

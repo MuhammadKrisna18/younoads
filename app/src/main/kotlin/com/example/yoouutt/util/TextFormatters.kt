@@ -1,11 +1,21 @@
 package com.example.yoouutt.util
 
 import androidx.core.text.HtmlCompat
+import com.example.yoouutt.ui.language.LanguageManager
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.Locale
 
 object TextFormatters {
+
+    private fun isIndonesianLocale(): Boolean {
+        return try {
+            val locale = LanguageManager.resolveLocale(LanguageManager.currentLanguage.value)
+            locale.language.equals("in", ignoreCase = true) || locale.language.equals("id", ignoreCase = true)
+        } catch (_: Exception) {
+            Locale.getDefault().language.equals("in", ignoreCase = true) || Locale.getDefault().language.equals("id", ignoreCase = true)
+        }
+    }
 
     fun cleanHtmlDescription(raw: String): String {
         if (raw.isBlank()) return ""
@@ -42,40 +52,75 @@ object TextFormatters {
 
     fun formatViewCount(views: Long): String {
         if (views <= 0) return ""
+        val isIndo = isIndonesianLocale()
         return when {
             views >= 1_000_000_000 -> {
                 val value = views / 1_000_000_000.0
-                if (value >= 10.0) String.format(Locale.getDefault(), "%.0f M x", value)
-                else String.format(Locale.getDefault(), "%.1f M x", value)
+                if (isIndo) {
+                    if (value >= 10.0) String.format(Locale.getDefault(), "%.0f M x", value)
+                    else String.format(Locale.getDefault(), "%.1f M x", value)
+                } else {
+                    if (value >= 10.0) String.format(Locale.getDefault(), "%.0fB views", value)
+                    else String.format(Locale.getDefault(), "%.1fB views", value)
+                }
             }
             views >= 1_000_000 -> {
                 val value = views / 1_000_000.0
-                if (value >= 10.0) String.format(Locale.getDefault(), "%.0f jt x", value)
-                else String.format(Locale.getDefault(), "%.1f jt x", value)
+                if (isIndo) {
+                    if (value >= 10.0) String.format(Locale.getDefault(), "%.0f jt x", value)
+                    else String.format(Locale.getDefault(), "%.1f jt x", value)
+                } else {
+                    if (value >= 10.0) String.format(Locale.getDefault(), "%.0fM views", value)
+                    else String.format(Locale.getDefault(), "%.1fM views", value)
+                }
             }
             views >= 1_000 -> {
                 val value = views / 1_000.0
-                if (value >= 10.0) String.format(Locale.getDefault(), "%.0f rb x", value)
-                else String.format(Locale.getDefault(), "%.1f rb x", value)
+                if (isIndo) {
+                    if (value >= 10.0) String.format(Locale.getDefault(), "%.0f rb x", value)
+                    else String.format(Locale.getDefault(), "%.1f rb x", value)
+                } else {
+                    if (value >= 10.0) String.format(Locale.getDefault(), "%.0fK views", value)
+                    else String.format(Locale.getDefault(), "%.1fK views", value)
+                }
             }
-            else -> "$views x"
+            else -> {
+                if (isIndo) "$views x"
+                else if (views == 1L) "1 view"
+                else "$views views"
+            }
         }
     }
 
     fun formatSubscriberCount(subscribers: Long): String {
         if (subscribers <= 0) return ""
+        val isIndo = isIndonesianLocale()
         return when {
             subscribers >= 1_000_000 -> {
                 val value = subscribers / 1_000_000.0
-                if (value >= 100.0) String.format(Locale.getDefault(), "%.0f jt subscriber", value)
-                else String.format(Locale.getDefault(), "%.1f jt subscriber", value)
+                if (isIndo) {
+                    if (value >= 100.0) String.format(Locale.getDefault(), "%.0f jt subscriber", value)
+                    else String.format(Locale.getDefault(), "%.1f jt subscriber", value)
+                } else {
+                    if (value >= 100.0) String.format(Locale.getDefault(), "%.0fM subscribers", value)
+                    else String.format(Locale.getDefault(), "%.1fM subscribers", value)
+                }
             }
             subscribers >= 1_000 -> {
                 val value = subscribers / 1_000.0
-                if (value >= 100.0) String.format(Locale.getDefault(), "%.0f rb subscriber", value)
-                else String.format(Locale.getDefault(), "%.1f rb subscriber", value)
+                if (isIndo) {
+                    if (value >= 100.0) String.format(Locale.getDefault(), "%.0f rb subscriber", value)
+                    else String.format(Locale.getDefault(), "%.1f rb subscriber", value)
+                } else {
+                    if (value >= 100.0) String.format(Locale.getDefault(), "%.0fK subscribers", value)
+                    else String.format(Locale.getDefault(), "%.1fK subscribers", value)
+                }
             }
-            else -> "$subscribers subscriber"
+            else -> {
+                if (isIndo) "$subscribers subscriber"
+                else if (subscribers == 1L) "1 subscriber"
+                else "$subscribers subscribers"
+            }
         }
     }
 
@@ -106,7 +151,8 @@ object TextFormatters {
     fun formatRelativeTime(millis: Long): String {
         if (millis <= 0L) return ""
         val diff = System.currentTimeMillis() - millis
-        if (diff < 0L) return "Baru saja"
+        val isIndo = isIndonesianLocale()
+        if (diff < 0L) return if (isIndo) "Baru saja" else "Just now"
 
         val seconds = diff / 1000L
         val minutes = seconds / 60L
@@ -116,40 +162,74 @@ object TextFormatters {
         val months = days / 30L
         val years = days / 365L
 
-        return when {
-            years > 0 -> "$years tahun lalu"
-            months > 0 -> "$months bulan lalu"
-            weeks > 0 -> "$weeks minggu lalu"
-            days > 0 -> "$days hari lalu"
-            hours > 0 -> "$hours jam lalu"
-            minutes > 0 -> "$minutes menit lalu"
-            else -> "Baru saja"
+        return if (isIndo) {
+            when {
+                years > 0 -> "$years tahun lalu"
+                months > 0 -> "$months bulan lalu"
+                weeks > 0 -> "$weeks minggu lalu"
+                days > 0 -> "$days hari lalu"
+                hours > 0 -> "$hours jam lalu"
+                minutes > 0 -> "$minutes menit lalu"
+                else -> "Baru saja"
+            }
+        } else {
+            when {
+                years > 0 -> if (years == 1L) "1 year ago" else "$years years ago"
+                months > 0 -> if (months == 1L) "1 month ago" else "$months months ago"
+                weeks > 0 -> if (weeks == 1L) "1 week ago" else "$weeks weeks ago"
+                days > 0 -> if (days == 1L) "1 day ago" else "$days days ago"
+                hours > 0 -> if (hours == 1L) "1 hour ago" else "$hours hours ago"
+                minutes > 0 -> if (minutes == 1L) "1 minute ago" else "$minutes minutes ago"
+                else -> "Just now"
+            }
         }
     }
 
     fun translateEnglishRelativeDate(text: String): String {
         var result = text
-        val replacements = listOf(
-            "years ago" to "tahun lalu",
-            "year ago" to "tahun lalu",
-            "months ago" to "bulan lalu",
-            "month ago" to "bulan lalu",
-            "weeks ago" to "minggu lalu",
-            "week ago" to "minggu lalu",
-            "days ago" to "hari lalu",
-            "day ago" to "hari lalu",
-            "hours ago" to "jam lalu",
-            "hour ago" to "jam lalu",
-            "minutes ago" to "menit lalu",
-            "minute ago" to "menit lalu",
-            "seconds ago" to "detik lalu",
-            "second ago" to "detik lalu",
-            "Streamed" to "Disiarkan",
-            "streamed" to "disiarkan"
-        )
-        for ((eng, id) in replacements) {
-            if (result.contains(eng, ignoreCase = true)) {
-                result = result.replace(Regex("(?i)" + Regex.escape(eng)), id)
+        val isIndo = isIndonesianLocale()
+        if (isIndo) {
+            val replacements = listOf(
+                "years ago" to "tahun lalu",
+                "year ago" to "tahun lalu",
+                "months ago" to "bulan lalu",
+                "month ago" to "bulan lalu",
+                "weeks ago" to "minggu lalu",
+                "week ago" to "minggu lalu",
+                "days ago" to "hari lalu",
+                "day ago" to "hari lalu",
+                "hours ago" to "jam lalu",
+                "hour ago" to "jam lalu",
+                "minutes ago" to "menit lalu",
+                "minute ago" to "menit lalu",
+                "seconds ago" to "detik lalu",
+                "second ago" to "detik lalu",
+                "Streamed" to "Disiarkan",
+                "streamed" to "disiarkan"
+            )
+            for ((eng, id) in replacements) {
+                if (result.contains(eng, ignoreCase = true)) {
+                    result = result.replace(Regex("(?i)" + Regex.escape(eng)), id)
+                }
+            }
+        } else {
+            val replacements = listOf(
+                "tahun lalu" to "years ago",
+                "bulan lalu" to "months ago",
+                "minggu lalu" to "weeks ago",
+                "hari lalu" to "days ago",
+                "jam lalu" to "hours ago",
+                "menit lalu" to "minutes ago",
+                "detik lalu" to "seconds ago",
+                "Baru saja" to "Just now",
+                "baru saja" to "just now",
+                "Disiarkan" to "Streamed",
+                "disiarkan" to "streamed"
+            )
+            for ((id, eng) in replacements) {
+                if (result.contains(id, ignoreCase = true)) {
+                    result = result.replace(Regex("(?i)" + Regex.escape(id)), eng)
+                }
             }
         }
         return result.trim()

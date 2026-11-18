@@ -25,8 +25,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppViewModelProvider
@@ -254,8 +256,8 @@ fun FeedScreen(
 
     if (showClearHistoryDialog) {
         AppConfirmDialog(
-            title = "Hapus riwayat pencarian?",
-            message = "Semua riwayat pencarian Anda akan dihapus secara permanen.",
+            title = stringResource(R.string.search_clear_history_title),
+            message = stringResource(R.string.search_clear_history_msg),
             onConfirm = {
                 viewModel.clearAllSearchHistory()
                 showClearHistoryDialog = false

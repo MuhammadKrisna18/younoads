@@ -48,7 +48,7 @@ import com.example.yoouutt.R
 fun PlayerSettingsBottomSheet(
     resolutionLabel: String,
     speedText: String,
-    seekIntervalText: String = "10 detik",
+    seekIntervalText: String = "",
     isLoopEnabled: Boolean,
     isAutoplayEnabled: Boolean,
     onSelectQualityClick: () -> Unit,

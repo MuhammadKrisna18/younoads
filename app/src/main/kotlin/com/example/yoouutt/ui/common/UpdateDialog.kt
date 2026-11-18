@@ -26,9 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.update.UpdateInfo
 
 @Composable
@@ -52,7 +54,7 @@ fun UpdateDialog(
         title = {
             Column {
                 Text(
-                    text = "Pembaruan Tersedia",
+                    text = stringResource(R.string.update_dialog_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -63,7 +65,7 @@ fun UpdateDialog(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "Versi Terbaru:",
+                        text = stringResource(R.string.update_dialog_latest_version),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -79,7 +81,7 @@ fun UpdateDialog(
         text = {
             Column {
                 Text(
-                    text = "Apa yang baru di ${updateInfo.versionName}:",
+                    text = stringResource(R.string.update_dialog_whats_new, updateInfo.versionName),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -87,7 +89,7 @@ fun UpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val changelogText = updateInfo.changelog.ifBlank {
-                    "Pembaruan performa dan tampilan antarmuka yang lebih segar."
+                    stringResource(R.string.update_dialog_default_changelog)
                 }
 
                 Box(
@@ -113,7 +115,7 @@ fun UpdateDialog(
                     val progress = downloadProgress
                     val percentage = (progress * 100).toInt()
                     Text(
-                        text = "Mengunduh pembaruan... $percentage%",
+                        text = stringResource(R.string.update_dialog_downloading, percentage),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -129,7 +131,7 @@ fun UpdateDialog(
                     )
                 } else {
                     Text(
-                        text = "Versi baru siap diunduh dan dipasang langsung ke HP Anda.",
+                        text = stringResource(R.string.update_dialog_ready_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -147,7 +149,7 @@ fun UpdateDialog(
                     )
                 ) {
                     Text(
-                        text = "Perbarui Sekarang",
+                        text = stringResource(R.string.update_dialog_btn_update),
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -161,7 +163,7 @@ fun UpdateDialog(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                 ) {
                     Text(
-                        text = "Nanti",
+                        text = stringResource(R.string.update_dialog_btn_later),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }

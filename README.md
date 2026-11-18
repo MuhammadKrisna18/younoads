@@ -53,8 +53,8 @@ Tidak perlu khawatir jika tontonanmu terputus di tengah jalan. Saat video dibuka
 ### Rekomendasi Video Cerdas
 Di bawah video yang sedang kamu putar dan di halaman beranda, tersedia deretan rekomendasi video yang segar dan bervariasi dari berbagai kreator, menyesuaikan topik yang sedang kamu tonton tanpa memonopoli satu saluran saja.
 
-### Dua Bahasa Lengkap (Indonesia & Inggris)
-Seluruh teks dan menu di dalam aplikasi sudah mendukung penuh Bahasa Indonesia dan Bahasa Inggris. Pilihan bahasa bisa diganti secara langsung dari menu Pengaturan tanpa harus memulai ulang aplikasi.
+### Dukungan Penuh Dua Bahasa (Indonesia & Inggris)
+Seluruh antarmuka aplikasi sudah mendukung penuh Bahasa Indonesia dan Bahasa Inggris secara sinkron, mulai dari menu navigasi, dialog opsi, format waktu tonton, jumlah tayangan dan subscriber, hingga rekomendasi wilayah video. Pilihan bahasa bisa diganti kapan saja dengan mudah melalui menu Pengaturan tanpa perlu memulai ulang aplikasi.
 
 ### Bebas Login & Privasi 100% Aman
 YounoAds tidak meminta login akun Google, email, ataupun kata sandi. Seluruh data riwayat pencarian, riwayat tontonan, serta daftar simpanan hanya disimpan di memori HP kamu sendiri dan tidak pernah dikirim ke server mana pun.

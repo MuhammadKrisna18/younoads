@@ -31,10 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.PlaylistData
 import com.example.yoouutt.data.model.VideoItem
 
@@ -148,7 +150,7 @@ fun PlaylistHeaderSection(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Putar Semua",
+                    text = stringResource(R.string.common_play_all),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -175,7 +177,7 @@ fun PlaylistHeaderSection(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Acak",
+                    text = stringResource(R.string.common_shuffle),
                     fontWeight = FontWeight.SemiBold
                 )
             }

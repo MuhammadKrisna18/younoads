@@ -128,7 +128,7 @@ fun ChannelHeaderSection(
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Verified",
+                        contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )

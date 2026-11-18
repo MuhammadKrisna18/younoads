@@ -21,10 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.VideoItem
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.PlayerUtils
@@ -57,7 +59,7 @@ fun PlaylistScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = playlistTitle.ifBlank { "Playlist" },
+                        text = playlistTitle.ifBlank { stringResource(R.string.playlist_default_title) },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,
@@ -69,18 +71,18 @@ fun PlaylistScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = {
-                        PlayerUtils.shareText(context, playlistUrl, "Bagikan Playlist")
+                        PlayerUtils.shareText(context, playlistUrl, context.getString(R.string.common_share_playlist))
                     }) {
                         Icon(
                             imageVector = Icons.Default.Share,
-                            contentDescription = "Share Playlist",
+                            contentDescription = stringResource(R.string.common_share_playlist),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }

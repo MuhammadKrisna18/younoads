@@ -366,7 +366,7 @@ fun CustomPlaylistDetailScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,
-                                contentDescription = "Hapus dari playlist",
+                                contentDescription = stringResource(R.string.common_remove_from_playlist),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }

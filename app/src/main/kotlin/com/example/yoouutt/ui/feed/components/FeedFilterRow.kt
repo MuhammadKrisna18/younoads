@@ -46,10 +46,18 @@ fun FeedFilterRow(
             val themeGradient = LocalYoouuttGradient.current
             val primaryColor = MaterialTheme.colorScheme.primary
 
-            val displayCategory = if (category.equals("Semua", ignoreCase = true) || category.equals("All", ignoreCase = true)) {
-                stringResource(R.string.category_all)
-            } else {
-                category
+            val displayCategory = when (category.lowercase()) {
+                "semua", "all" -> stringResource(R.string.category_all)
+                "trending" -> stringResource(R.string.category_trending)
+                "musik", "music" -> stringResource(R.string.category_music)
+                "gaming" -> stringResource(R.string.category_gaming)
+                "berita", "news" -> stringResource(R.string.category_news)
+                "podcast" -> stringResource(R.string.category_podcast)
+                "teknologi", "technology", "tech" -> stringResource(R.string.category_tech)
+                "film", "movies", "movies & animation" -> stringResource(R.string.category_movies)
+                "video", "videos" -> stringResource(R.string.search_filter_videos)
+                "playlist", "playlists" -> stringResource(R.string.search_filter_playlists)
+                else -> category
             }
 
             Box(

@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class SeekFeedback(
-    val text: String,
+    val seconds: Int,
     val isForward: Boolean
 )
 
@@ -346,7 +346,7 @@ class PlayerViewModel(
         _currentPositionMs.value = target
 
         val feedback = SeekFeedback(
-            text = if (isForward) "+$accumulatedSeekSeconds detik" else "-$accumulatedSeekSeconds detik",
+            seconds = accumulatedSeekSeconds,
             isForward = isForward
         )
         _seekFeedback.value = feedback

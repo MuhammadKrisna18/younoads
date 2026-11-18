@@ -29,11 +29,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.player.PlayerUtils
 import com.example.yoouutt.ui.player.PlayerViewModel
 
@@ -96,7 +98,7 @@ fun VideoPlayerSection(
                     )
                 ) {
                     Text(
-                        text = "Retry",
+                        text = stringResource(R.string.common_retry),
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -168,7 +170,10 @@ fun VideoPlayerSection(
                 DoubleTapSeekFeedback(
                     visible = true,
                     isForward = feedback.isForward,
-                    text = feedback.text
+                    text = stringResource(
+                        if (feedback.isForward) R.string.seek_forward_feedback else R.string.seek_backward_feedback,
+                        feedback.seconds
+                    )
                 )
             }
 

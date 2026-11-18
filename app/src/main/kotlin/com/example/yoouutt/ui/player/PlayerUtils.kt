@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.example.yoouutt.R
 import com.example.yoouutt.util.TextFormatters
 
 import android.graphics.Rect
@@ -133,24 +134,26 @@ object PlayerUtils {
         }
     }
 
-    fun copyToClipboard(context: Context, text: String, message: String = "Tautan berhasil disalin") {
+    fun copyToClipboard(context: Context, text: String, message: String? = null) {
         try {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-            val clip = ClipData.newPlainText("YouTube Link", text)
+            val clip = ClipData.newPlainText("YounoAds", text)
             clipboard?.setPrimaryClip(clip)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            val toastMsg = message ?: context.getString(R.string.common_link_copied)
+            Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
         } catch (_: Exception) {
-            Toast.makeText(context, "Gagal menyalin tautan", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.common_error), Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun shareText(context: Context, text: String, title: String = "Bagikan Video") {
+    fun shareText(context: Context, text: String, title: String? = null) {
         try {
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
                 putExtra(Intent.EXTRA_TEXT, text)
                 type = "text/plain"
             }
-            val shareIntent = Intent.createChooser(sendIntent, title)
+            val chooserTitle = title ?: context.getString(R.string.common_share_video)
+            val shareIntent = Intent.createChooser(sendIntent, chooserTitle)
             context.startActivity(shareIntent)
         } catch (_: Exception) {
         }

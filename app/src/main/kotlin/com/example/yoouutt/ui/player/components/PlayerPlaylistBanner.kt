@@ -44,12 +44,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
@@ -93,7 +95,7 @@ fun PlayerPlaylistBanner(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = playlistContext.playlistTitle.ifBlank { "Daftar Putar" },
+                    text = playlistContext.playlistTitle.ifBlank { stringResource(R.string.playlist_default_title) },
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -104,7 +106,7 @@ fun PlayerPlaylistBanner(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = "${playlistContext.currentIndex + 1} / ${playlistContext.videos.size} video",
+                    text = stringResource(R.string.playlist_position_counter, playlistContext.currentIndex + 1, playlistContext.videos.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.5.sp

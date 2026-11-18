@@ -34,10 +34,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.common.BrandRed
 
 @Composable
@@ -86,13 +88,13 @@ fun FeedSearchSuggestions(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Riwayat Pencarian",
+                        text = stringResource(R.string.search_history_title),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Hapus Semua",
+                        text = stringResource(R.string.search_clear_all),
                         color = BrandRed,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -125,7 +127,7 @@ fun FeedSearchSuggestions(
             ) {
                 Icon(
                     imageVector = Icons.Default.History,
-                    contentDescription = "Riwayat",
+                    contentDescription = stringResource(R.string.nav_history),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
@@ -147,7 +149,7 @@ fun FeedSearchSuggestions(
                 ) {
                     Icon(
                         imageVector = Icons.Default.NorthWest,
-                        contentDescription = "Isi ke pencarian",
+                        contentDescription = stringResource(R.string.search_suggestion_fill),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
@@ -161,7 +163,7 @@ fun FeedSearchSuggestions(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Hapus riwayat",
+                        contentDescription = stringResource(R.string.search_suggestion_delete),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
@@ -208,7 +210,7 @@ fun FeedSearchSuggestions(
                 ) {
                     Icon(
                         imageVector = Icons.Default.NorthWest,
-                        contentDescription = "Isi ke pencarian",
+                        contentDescription = stringResource(R.string.search_suggestion_fill),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
@@ -232,14 +234,14 @@ fun FeedSearchSuggestions(
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
-                        text = "Belum ada riwayat pencarian",
+                        text = stringResource(R.string.search_history_empty_title),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Pencarian Anda akan otomatis tersimpan di sini",
+                        text = stringResource(R.string.search_history_empty_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         fontSize = 12.sp
                     )

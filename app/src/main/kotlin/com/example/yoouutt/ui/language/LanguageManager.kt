@@ -6,9 +6,13 @@ import android.content.res.AssetManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.example.yoouutt.data.local.PlayerPreferences
+import com.example.yoouutt.data.network.OkHttpDownloader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.schabi.newpipe.extractor.NewPipe
+import org.schabi.newpipe.extractor.localization.ContentCountry
+import org.schabi.newpipe.extractor.localization.Localization
 import java.util.Locale
 
 object LanguageManager {
@@ -20,11 +24,23 @@ object LanguageManager {
         val prefs = PlayerPreferences(context.applicationContext)
         preferences = prefs
         _currentLanguage.value = AppLanguage.fromCode(prefs.appLanguage)
+        updateNewPipeLocalization(_currentLanguage.value)
     }
 
     fun setLanguage(language: AppLanguage) {
         _currentLanguage.value = language
         preferences?.appLanguage = language.code
+        updateNewPipeLocalization(language)
+    }
+
+    fun updateNewPipeLocalization(language: AppLanguage) {
+        try {
+            val locale = resolveLocale(language)
+            val localization = Localization(locale.language, locale.country)
+            val contentCountry = ContentCountry(locale.country)
+            NewPipe.init(OkHttpDownloader(), localization, contentCountry)
+        } catch (_: Exception) {
+        }
     }
 
     fun resolveLocale(language: AppLanguage): Locale {

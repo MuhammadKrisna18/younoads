@@ -22,11 +22,13 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.LocalActivity
 import com.example.yoouutt.LocalInPipMode
 import com.example.yoouutt.MainActivity
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.components.AddToPlaylistBottomSheet
 import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
@@ -191,7 +193,7 @@ fun PlayerScreen(
                 onShareClick = { isShareSheetVisible = true },
                 onCopyLinkClick = {
                     val shortUrl = PlayerUtils.formatShortUrl(videoUrl)
-                    PlayerUtils.copyToClipboard(context, shortUrl, "Tautan berhasil disalin")
+                    PlayerUtils.copyToClipboard(context, shortUrl, context.getString(R.string.common_link_copied))
                 },
                 onToggleSave = viewModel::toggleSave,
                 onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
@@ -222,12 +224,12 @@ fun PlayerScreen(
 
     if (isSettingsSheetVisible) {
         val currentSpeed = viewModel.speeds[speedIndex]
-        val formattedSpeedText = if (currentSpeed == 1.0f) "Normal (1.0x)" else "${currentSpeed}x"
+        val formattedSpeedText = if (currentSpeed == 1.0f) stringResource(R.string.settings_speed_normal) else "${currentSpeed}x"
 
         PlayerSettingsBottomSheet(
             resolutionLabel = resolutionLabel,
             speedText = formattedSpeedText,
-            seekIntervalText = "$seekIntervalSeconds detik",
+            seekIntervalText = stringResource(R.string.settings_seconds_suffix, seekIntervalSeconds),
             isLoopEnabled = isLoopEnabled,
             isAutoplayEnabled = isAutoplayEnabled,
             onSelectQualityClick = {

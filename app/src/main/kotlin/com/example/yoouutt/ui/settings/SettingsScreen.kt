@@ -156,8 +156,8 @@ fun SettingsScreen(
                 SettingsActionCard(
                     icon = Icons.Default.Translate,
                     title = stringResource(R.string.settings_language),
-                    subtitle = currentLanguage.description,
-                    value = currentLanguage.displayName,
+                    subtitle = stringResource(currentLanguage.descriptionRes),
+                    value = stringResource(currentLanguage.titleRes),
                     onClick = { showLanguageDialog = true }
                 )
             }

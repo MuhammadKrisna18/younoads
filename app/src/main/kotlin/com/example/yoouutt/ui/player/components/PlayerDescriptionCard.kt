@@ -17,10 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 import com.example.yoouutt.data.model.StreamData
 
 @Composable
@@ -81,7 +83,7 @@ fun PlayerDescriptionCard(
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = if (isExpanded) "Sembunyikan" else "...selengkapnya",
+                    text = if (isExpanded) stringResource(R.string.desc_show_less) else stringResource(R.string.desc_more),
                     fontSize = 11.5.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

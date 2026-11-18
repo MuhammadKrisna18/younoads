@@ -18,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.yoouutt.R
 import com.example.yoouutt.ui.theme.YouTubeRed
 
 @Composable
@@ -65,7 +67,7 @@ fun PlaylistErrorState(
             )
         ) {
             Text(
-                text = "Retry",
+                text = stringResource(R.string.common_retry),
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -83,7 +85,7 @@ fun PlaylistEmptyView(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Playlist ini tidak memiliki video",
+            text = stringResource(R.string.playlist_empty_message),
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFFAAAAAA)
         )

@@ -65,6 +65,10 @@
     <string name="player_action_saved">Tersimpan</string>
     <string name="player_action_playlist">Playlist</string>
     <string name="player_action_settings">Pengaturan</string>
+    <string name="player_action_play">Putar</string>
+    <string name="player_action_pause">Jeda</string>
+    <string name="desc_show_less">Sembunyikan</string>
+    <string name="desc_more">...selengkapnya</string>
 
     <string name="settings_quality">Kualitas</string>
     <string name="settings_speed">Kecepatan pemutaran</string>
@@ -166,4 +170,109 @@
     <string name="settings_saved_desc">Akses dan tonton video yang Anda simpan</string>
     <string name="settings_app_version">Versi Aplikasi</string>
     <string name="settings_app_description">Klien pemutar video bebas iklan dengan estetika anime</string>
+
+    <string name="common_copy_link">Salin Tautan</string>
+    <string name="common_share_video">Bagikan Video</string>
+    <string name="common_share_playlist">Bagikan Playlist</string>
+    <string name="common_open_channel">Buka Channel</string>
+    <string name="common_options_video">Opsi Video</string>
+    <string name="common_fullscreen">Layar Penuh</string>
+    <string name="common_previous_video">Video Sebelumnya</string>
+    <string name="common_next_video">Video Berikutnya</string>
+    <string name="common_video_quality">Kualitas Video</string>
+    <string name="common_play_all">Putar Semua</string>
+    <string name="common_shuffle">Acak</string>
+    <string name="common_remove_from_playlist">Hapus dari playlist</string>
+    <string name="common_link_copied">Tautan berhasil disalin</string>
+    <string name="common_link_copied_at_time">Tautan pada menit %1$s disalin</string>
+
+    <string name="share_share_to_other_apps">Bagikan ke Aplikasi Lain</string>
+    <string name="share_share_desc">Kirim tautan lewat WhatsApp, Telegram, dll.</string>
+    <string name="share_copy_url_desc">Salin URL ke papan klip</string>
+    <string name="share_start_at">Mulai pada %1$s</string>
+    <string name="share_start_at_desc">Tautan akan langsung membuka bagian ini</string>
+    <string name="share_time_label">Waktu</string>
+    <string name="options_share_subtitle">Kirim tautan ke aplikasi lain</string>
+
+    <string name="resolution_empty_message">Tidak ada pilihan resolusi manual untuk video ini.</string>
+
+    <string name="update_dialog_title">Pembaruan Tersedia</string>
+    <string name="update_dialog_latest_version">Versi Terbaru:</string>
+    <string name="update_dialog_whats_new">Apa yang baru di %1$s:</string>
+    <string name="update_dialog_default_changelog">Pembaruan performa dan tampilan antarmuka yang lebih segar.</string>
+    <string name="update_dialog_ready_desc">Versi baru siap diunduh dan dipasang langsung ke HP Anda.</string>
+    <string name="update_dialog_downloading">Mengunduh pembaruan... %1$d%%</string>
+    <string name="update_dialog_btn_update">Perbarui Sekarang</string>
+    <string name="update_dialog_btn_later">Nanti</string>
+
+    <string name="search_clear_history_title">Hapus riwayat pencarian?</string>
+    <string name="search_clear_history_msg">Semua riwayat pencarian Anda akan dihapus secara permanen.</string>
+    <string name="search_clear_all">Hapus Semua</string>
+    <string name="search_suggestion_fill">Isi ke pencarian</string>
+    <string name="search_suggestion_delete">Hapus riwayat</string>
+    <string name="search_history_empty_title">Belum ada riwayat pencarian</string>
+    <string name="search_history_empty_desc">Pencarian Anda akan otomatis tersimpan di sini.</string>
+    <string name="search_empty_mascot_title">Sinyal Tidak Ditemukan</string>
+    <string name="search_empty_mascot_desc">Youno-chan tidak menemukan video atau playlist untuk kata kunci ini. Coba telusuri dengan kata kunci lain!</string>
+
+    <string name="history_empty_mascot_title">Belum Ada Riwayat Tontonan</string>
+    <string name="history_empty_mascot_desc">Youno-chan belum mencatat video apa pun. Yuk mulai jelajahi feed dan tonton video favoritmu!</string>
+    <string name="history_continue_at">Lanjut: %1$s</string>
+    <string name="library_clear_saved_action">Hapus Semua Simpanan</string>
+    <string name="library_clear_history_action">Hapus Semua Riwayat</string>
+
+    <string name="channel_title">Saluran</string>
+    <string name="channel_search_action">Cari di channel</string>
+    <string name="channel_search_close">Tutup Pencarian</string>
+    <string name="channel_search_placeholder">Cari video di channel ini...</string>
+    <string name="channel_empty_videos">Tidak ada video yang ditemukan</string>
+    <string name="channel_empty_playlists">Channel ini belum memiliki playlist</string>
+    <string name="channel_tab_videos">Video</string>
+    <string name="channel_tab_playlists">Playlist</string>
+    <string name="channel_sort_newest">Terbaru</string>
+    <string name="channel_sort_popular">Terpopuler</string>
+    <string name="channel_sort_oldest">Terlama</string>
+    <string name="channel_uploader_playlist">%1$s • Playlist</string>
+    <string name="playlist_default_title">Daftar Putar</string>
+    <string name="playlist_position_counter">%1$d / %2$d video</string>
+    <string name="playlist_empty_message">Playlist ini tidak memiliki video</string>
+
+    <string name="category_trending">Trending</string>
+    <string name="category_podcast">Podcast</string>
+    <string name="search_filter_all">Semua</string>
+    <string name="search_filter_videos">Video</string>
+    <string name="search_filter_playlists">Playlist</string>
+
+    <string name="format_views_million">%1$.1f jt x</string>
+    <string name="format_views_million_integer">%1$.0f jt x</string>
+    <string name="format_views_thousand">%1$.1f rb x</string>
+    <string name="format_views_thousand_integer">%1$.0f rb x</string>
+    <string name="format_views_single">%1$d x</string>
+
+    <string name="format_subs_million">%1$.1f jt subscriber</string>
+    <string name="format_subs_million_integer">%1$.0f jt subscriber</string>
+    <string name="format_subs_thousand">%1$.1f rb subscriber</string>
+    <string name="format_subs_thousand_integer">%1$.0f rb subscriber</string>
+    <string name="format_subs_single">%1$d subscriber</string>
+
+    <string name="format_time_just_now">Baru saja</string>
+    <string name="format_time_years_ago">%1$d tahun lalu</string>
+    <string name="format_time_one_year_ago">1 tahun lalu</string>
+    <string name="format_time_months_ago">%1$d bulan lalu</string>
+    <string name="format_time_one_month_ago">1 bulan lalu</string>
+    <string name="format_time_weeks_ago">%1$d minggu lalu</string>
+    <string name="format_time_one_week_ago">1 minggu lalu</string>
+    <string name="format_time_days_ago">%1$d hari lalu</string>
+    <string name="format_time_one_day_ago">1 hari lalu</string>
+    <string name="format_time_hours_ago">%1$d jam lalu</string>
+    <string name="format_time_one_hour_ago">1 jam lalu</string>
+    <string name="format_time_minutes_ago">%1$d menit lalu</string>
+    <string name="format_time_one_minute_ago">1 menit lalu</string>
+
+    <string name="seek_forward_feedback">+%1$d detik</string>
+    <string name="seek_backward_feedback">-%1$d detik</string>
+
+    <string name="error_load_video">Gagal memuat video</string>
+    <string name="error_load_channel">Gagal memuat profil channel</string>
+    <string name="error_load_playlist">Gagal memuat playlist</string>
 </resources>

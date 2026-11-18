@@ -28,11 +28,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +69,7 @@ fun ChannelTopBar(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.common_back),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
@@ -76,7 +78,7 @@ fun ChannelTopBar(
                 IconButton(onClick = onOpenSearch) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Cari di channel",
+                        contentDescription = stringResource(R.string.channel_search_action),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
@@ -97,7 +99,7 @@ fun ChannelTopBar(
             IconButton(onClick = onCloseSearch) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Tutup Pencarian",
+                    contentDescription = stringResource(R.string.channel_search_close),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -107,7 +109,7 @@ fun ChannelTopBar(
                 onValueChange = onQueryChange,
                 placeholder = {
                     Text(
-                        text = "Cari video di channel ini...",
+                        text = stringResource(R.string.channel_search_placeholder),
                         fontSize = 13.5.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -117,7 +119,7 @@ fun ChannelTopBar(
                         IconButton(onClick = onClearQuery) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = "Hapus",
+                                contentDescription = stringResource(R.string.search_clear),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }

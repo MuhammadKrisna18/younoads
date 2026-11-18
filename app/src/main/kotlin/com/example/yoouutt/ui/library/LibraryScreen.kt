@@ -166,7 +166,7 @@ fun LibraryScreen(
                         IconButton(onClick = { showClearSavedDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteSweep,
-                                contentDescription = "Hapus Semua Simpanan",
+                                contentDescription = stringResource(R.string.library_clear_saved_action),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
@@ -174,7 +174,7 @@ fun LibraryScreen(
                         IconButton(onClick = { showClearHistoryDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteSweep,
-                                contentDescription = "Hapus Semua Riwayat",
+                                contentDescription = stringResource(R.string.library_clear_history_action),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }

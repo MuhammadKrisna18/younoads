@@ -1,7 +1,9 @@
 package com.example.yoouutt.ui.channel
 
-enum class ChannelTab(val title: String) {
-    VIDEOS("Video"),
-    PLAYLISTS("Playlist")
-}
+import androidx.annotation.StringRes
+import com.example.yoouutt.R
 
+enum class ChannelTab(@get:StringRes val titleRes: Int) {
+    VIDEOS(R.string.channel_tab_videos),
+    PLAYLISTS(R.string.channel_tab_playlists)
+}

@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,21 +63,21 @@ fun FeedEmptyState(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.youno_search_empty),
-                contentDescription = "Search Empty",
+                contentDescription = stringResource(R.string.search_empty_mascot_title),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
         }
         Spacer(modifier = Modifier.height(18.dp))
         Text(
-            text = "Sinyal Tidak Ditemukan",
+            text = stringResource(R.string.search_empty_mascot_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = "Youno-chan tidak menemukan video atau playlist untuk kata kunci ini. Coba telusuri dengan kata kunci lain!",
+            text = stringResource(R.string.search_empty_mascot_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF9DA4B8),
             textAlign = TextAlign.Center,
@@ -110,7 +111,7 @@ fun FeedErrorState(
             )
         ) {
             Text(
-                text = "Retry",
+                text = stringResource(R.string.common_retry),
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.5.sp
             )
