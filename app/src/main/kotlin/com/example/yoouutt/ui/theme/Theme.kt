@@ -135,6 +135,291 @@ private val MechaTacticalColorScheme = darkColorScheme(
     outline = MechaOutline
 )
 
+private val NatsuUmiColorScheme = lightColorScheme(
+    primary = NatsuPrimary,
+    onPrimary = PureWhite,
+    primaryContainer = NatsuSurfaceVariant,
+    onPrimaryContainer = NatsuPrimary,
+    secondary = NatsuSecondary,
+    onSecondary = PureBlack,
+    secondaryContainer = NatsuSurfaceVariant,
+    onSecondaryContainer = NatsuTextPrimary,
+    tertiary = NatsuSecondary,
+    background = NatsuBackground,
+    onBackground = NatsuTextPrimary,
+    surface = NatsuSurface,
+    onSurface = NatsuTextPrimary,
+    surfaceVariant = NatsuSurfaceVariant,
+    onSurfaceVariant = NatsuTextSecondary,
+    outline = NatsuOutline
+)
+
+private val MomijiAutumnColorScheme = darkColorScheme(
+    primary = MomijiPrimary,
+    onPrimary = PureWhite,
+    primaryContainer = MomijiSurfaceVariant,
+    onPrimaryContainer = MomijiPrimary,
+    secondary = MomijiSecondary,
+    onSecondary = PureBlack,
+    secondaryContainer = MomijiSurfaceVariant,
+    onSecondaryContainer = MomijiSecondary,
+    tertiary = MomijiTertiary,
+    background = MomijiBackground,
+    onBackground = MomijiForeground,
+    surface = MomijiSurface,
+    onSurface = MomijiForeground,
+    surfaceVariant = MomijiSurfaceVariant,
+    onSurfaceVariant = MomijiOnSurfaceVariant,
+    outline = MomijiOutline
+)
+
+private val FuyuYukiColorScheme = lightColorScheme(
+    primary = FuyuPrimary,
+    onPrimary = PureWhite,
+    primaryContainer = FuyuSurfaceVariant,
+    onPrimaryContainer = FuyuPrimary,
+    secondary = FuyuSecondary,
+    onSecondary = PureWhite,
+    secondaryContainer = FuyuSurfaceVariant,
+    onSecondaryContainer = FuyuSecondary,
+    tertiary = FuyuSecondary,
+    background = FuyuBackground,
+    onBackground = FuyuTextPrimary,
+    surface = FuyuSurface,
+    onSurface = FuyuTextPrimary,
+    surfaceVariant = FuyuSurfaceVariant,
+    onSurfaceVariant = FuyuTextSecondary,
+    outline = FuyuOutline
+)
+
+private val MatchaZenColorScheme = lightColorScheme(
+    primary = MatchaPrimary,
+    onPrimary = PureWhite,
+    primaryContainer = MatchaSurfaceVariant,
+    onPrimaryContainer = MatchaPrimary,
+    secondary = MatchaSecondary,
+    onSecondary = PureBlack,
+    secondaryContainer = MatchaSurfaceVariant,
+    onSecondaryContainer = MatchaTextPrimary,
+    tertiary = MatchaSecondary,
+    background = MatchaBackground,
+    onBackground = MatchaTextPrimary,
+    surface = MatchaSurface,
+    onSurface = MatchaTextPrimary,
+    surfaceVariant = MatchaSurfaceVariant,
+    onSurfaceVariant = MatchaTextSecondary,
+    outline = MatchaOutline
+)
+
+private val OceanAbyssColorScheme = darkColorScheme(
+    primary = AbyssPrimary,
+    onPrimary = PureBlack,
+    primaryContainer = AbyssSurfaceVariant,
+    onPrimaryContainer = AbyssPrimary,
+    secondary = AbyssSecondary,
+    onSecondary = PureBlack,
+    secondaryContainer = AbyssSurfaceVariant,
+    onSecondaryContainer = AbyssSecondary,
+    tertiary = AbyssSecondary,
+    background = AbyssBackground,
+    onBackground = AbyssForeground,
+    surface = AbyssSurface,
+    onSurface = AbyssForeground,
+    surfaceVariant = AbyssSurfaceVariant,
+    onSurfaceVariant = AbyssOnSurfaceVariant,
+    outline = AbyssOutline
+)
+
+private val SumieInkColorScheme = darkColorScheme(
+    primary = SumiePrimary,
+    onPrimary = PureWhite,
+    primaryContainer = SumieSurfaceVariant,
+    onPrimaryContainer = SumiePrimary,
+    secondary = SumieSecondary,
+    onSecondary = PureBlack,
+    secondaryContainer = SumieSurfaceVariant,
+    onSecondaryContainer = SumieSecondary,
+    tertiary = SumiePrimary,
+    background = SumieBackground,
+    onBackground = SumieForeground,
+    surface = SumieSurface,
+    onSurface = SumieForeground,
+    surfaceVariant = SumieSurfaceVariant,
+    onSurfaceVariant = SumieOnSurfaceVariant,
+    outline = SumieOutline
+)
+
+private val DraculaColorScheme = darkColorScheme(
+    primary = DraculaPink,
+    onPrimary = PureBlack,
+    primaryContainer = DraculaSurfaceVariant,
+    onPrimaryContainer = DraculaPink,
+    secondary = DraculaCyan,
+    onSecondary = PureBlack,
+    secondaryContainer = DraculaSurfaceVariant,
+    onSecondaryContainer = DraculaCyan,
+    tertiary = DraculaGreen,
+    background = DraculaBackground,
+    onBackground = DraculaForeground,
+    surface = DraculaSurface,
+    onSurface = DraculaForeground,
+    surfaceVariant = DraculaSurfaceVariant,
+    onSurfaceVariant = DraculaOnSurfaceVariant,
+    outline = DraculaOutline
+)
+
+private val NordColorScheme = darkColorScheme(
+    primary = NordFrostTeal,
+    onPrimary = PureBlack,
+    primaryContainer = NordSurfaceVariant,
+    onPrimaryContainer = NordFrostTeal,
+    secondary = NordFrostBlue,
+    onSecondary = PureBlack,
+    secondaryContainer = NordSurfaceVariant,
+    onSecondaryContainer = NordFrostBlue,
+    tertiary = NordAuroraYellow,
+    background = NordBackground,
+    onBackground = NordForeground,
+    surface = NordSurface,
+    onSurface = NordForeground,
+    surfaceVariant = NordSurfaceVariant,
+    onSurfaceVariant = NordOnSurfaceVariant,
+    outline = NordOutline
+)
+
+private val CatppuccinMochaColorScheme = darkColorScheme(
+    primary = MochaMauve,
+    onPrimary = PureBlack,
+    primaryContainer = MochaSurfaceVariant,
+    onPrimaryContainer = MochaMauve,
+    secondary = MochaSapphire,
+    onSecondary = PureBlack,
+    secondaryContainer = MochaSurfaceVariant,
+    onSecondaryContainer = MochaSapphire,
+    tertiary = MochaPeach,
+    background = MochaBackground,
+    onBackground = MochaForeground,
+    surface = MochaSurface,
+    onSurface = MochaForeground,
+    surfaceVariant = MochaSurfaceVariant,
+    onSurfaceVariant = MochaOnSurfaceVariant,
+    outline = MochaOutline
+)
+
+private val RetroPixelColorScheme = darkColorScheme(
+    primary = RetroPixelBright,
+    onPrimary = RetroPixelBackground,
+    primaryContainer = RetroPixelSurfaceVariant,
+    onPrimaryContainer = RetroPixelBright,
+    secondary = RetroPixelMid,
+    onSecondary = RetroPixelBackground,
+    secondaryContainer = RetroPixelSurfaceVariant,
+    onSecondaryContainer = RetroPixelMid,
+    tertiary = RetroPixelMid,
+    background = RetroPixelBackground,
+    onBackground = RetroPixelBright,
+    surface = RetroPixelSurface,
+    onSurface = RetroPixelBright,
+    surfaceVariant = RetroPixelSurfaceVariant,
+    onSurfaceVariant = RetroPixelMid,
+    outline = RetroPixelOutline
+)
+
+private val TerminalHackerColorScheme = darkColorScheme(
+    primary = TerminalGreen,
+    onPrimary = PureBlack,
+    primaryContainer = TerminalSurfaceVariant,
+    onPrimaryContainer = TerminalGreen,
+    secondary = TerminalLime,
+    onSecondary = PureBlack,
+    secondaryContainer = TerminalSurfaceVariant,
+    onSecondaryContainer = TerminalLime,
+    tertiary = TerminalAmber,
+    background = TerminalBackground,
+    onBackground = TerminalGreen,
+    surface = TerminalSurface,
+    onSurface = TerminalGreen,
+    surfaceVariant = TerminalSurfaceVariant,
+    onSurfaceVariant = Color(0xFF00CC52),
+    outline = TerminalOutline
+)
+
+private val VaporwaveColorScheme = darkColorScheme(
+    primary = VaporwaveHotPink,
+    onPrimary = PureBlack,
+    primaryContainer = VaporwaveSurfaceVariant,
+    onPrimaryContainer = VaporwaveHotPink,
+    secondary = VaporwaveCyan,
+    onSecondary = PureBlack,
+    secondaryContainer = VaporwaveSurfaceVariant,
+    onSecondaryContainer = VaporwaveCyan,
+    tertiary = VaporwaveYellow,
+    background = VaporwaveBackground,
+    onBackground = VaporwaveForeground,
+    surface = VaporwaveSurface,
+    onSurface = VaporwaveForeground,
+    surfaceVariant = VaporwaveSurfaceVariant,
+    onSurfaceVariant = VaporwaveOnSurfaceVariant,
+    outline = VaporwaveOutline
+)
+
+private val SepiaMalamColorScheme = darkColorScheme(
+    primary = SepiaAmber,
+    onPrimary = PureBlack,
+    primaryContainer = SepiaSurfaceVariant,
+    onPrimaryContainer = SepiaAmber,
+    secondary = SepiaGold,
+    onSecondary = PureBlack,
+    secondaryContainer = SepiaSurfaceVariant,
+    onSecondaryContainer = SepiaGold,
+    tertiary = SepiaGold,
+    background = SepiaBackground,
+    onBackground = SepiaForeground,
+    surface = SepiaSurface,
+    onSurface = SepiaForeground,
+    surfaceVariant = SepiaSurfaceVariant,
+    onSurfaceVariant = SepiaOnSurfaceVariant,
+    outline = SepiaOutline
+)
+
+private val KontrasTinggiColorScheme = darkColorScheme(
+    primary = HighContrastYellow,
+    onPrimary = PureBlack,
+    primaryContainer = HighContrastSurfaceVariant,
+    onPrimaryContainer = HighContrastYellow,
+    secondary = HighContrastWhite,
+    onSecondary = PureBlack,
+    secondaryContainer = HighContrastSurfaceVariant,
+    onSecondaryContainer = HighContrastWhite,
+    tertiary = HighContrastYellow,
+    background = HighContrastBackground,
+    onBackground = HighContrastForeground,
+    surface = HighContrastSurface,
+    onSurface = HighContrastForeground,
+    surfaceVariant = HighContrastSurfaceVariant,
+    onSurfaceVariant = HighContrastOnSurfaceVariant,
+    outline = HighContrastOutline
+)
+
+private val AmoledRedupColorScheme = darkColorScheme(
+    primary = AmoledRedupCrimson,
+    onPrimary = PureBlack,
+    primaryContainer = AmoledRedupSurfaceVariant,
+    onPrimaryContainer = AmoledRedupCrimson,
+    secondary = AmoledRedupBurgundy,
+    onSecondary = PureWhite,
+    secondaryContainer = AmoledRedupSurfaceVariant,
+    onSecondaryContainer = AmoledRedupBurgundy,
+    tertiary = AmoledRedupBurgundy,
+    background = AmoledRedupBackground,
+    onBackground = AmoledRedupForeground,
+    surface = AmoledRedupSurface,
+    onSurface = AmoledRedupForeground,
+    surfaceVariant = AmoledRedupSurfaceVariant,
+    onSurfaceVariant = AmoledRedupOnSurfaceVariant,
+    outline = AmoledRedupOutline
+)
+
 val LocalYoouuttGradient = staticCompositionLocalOf { CyberpunkGradient }
 val LocalYoouuttTheme = staticCompositionLocalOf { AppTheme.CYBERPUNK }
 
@@ -145,6 +430,45 @@ fun AppTheme.gradientColors(): List<Color> = when (this) {
     AppTheme.SAKURA_LOFI -> listOf(SakuraPink, PastelLavender)
     AppTheme.CITY_POP_SUNSET -> listOf(SunsetOrange, SunsetAmber)
     AppTheme.MECHA_TACTICAL -> listOf(EvaNeonGreen, TacticalAmber)
+    AppTheme.NATSU_UMI -> listOf(NatsuPrimary, NatsuSecondary)
+    AppTheme.MOMIJI_AUTUMN -> listOf(MomijiPrimary, MomijiSecondary)
+    AppTheme.FUYU_YUKI -> listOf(FuyuPrimary, FuyuSecondary)
+    AppTheme.MATCHA_ZEN -> listOf(MatchaPrimary, MatchaSecondary)
+    AppTheme.OCEAN_ABYSS -> listOf(AbyssPrimary, AbyssSecondary)
+    AppTheme.SUMIE_INK -> listOf(SumiePrimary, SumieSecondary)
+    AppTheme.DRACULA -> listOf(DraculaPink, DraculaPurple)
+    AppTheme.NORD -> listOf(NordFrostTeal, NordFrostBlue)
+    AppTheme.CATPPUCCIN_MOCHA -> listOf(MochaMauve, MochaPink)
+    AppTheme.RETRO_PIXEL -> listOf(RetroPixelBright, RetroPixelMid)
+    AppTheme.TERMINAL_HACKER -> listOf(TerminalGreen, TerminalLime)
+    AppTheme.VAPORWAVE -> listOf(VaporwaveHotPink, VaporwaveCyan)
+    AppTheme.SEPIA_MALAM -> listOf(SepiaAmber, SepiaGold)
+    AppTheme.KONTRAS_TINGGI -> listOf(HighContrastYellow, HighContrastWhite)
+    AppTheme.AMOLED_REDUP -> listOf(AmoledRedupCrimson, Color(0xFF8E0000))
+}
+
+fun AppTheme.previewColors(): List<Color> = when (this) {
+    AppTheme.CYBERPUNK -> listOf(ElectricCyan, NeonMagenta, DarkBackground)
+    AppTheme.MATTE_BLACK -> listOf(OfficialYouTubeRed, MatteBlackSurfaceVariant, MatteBlackBackground)
+    AppTheme.LIGHT -> listOf(Color(0xFFFF0000), Color(0xFF065FD4), LightPureBackground)
+    AppTheme.SAKURA_LOFI -> listOf(SakuraPink, PastelLavender, SakuraBackground)
+    AppTheme.CITY_POP_SUNSET -> listOf(SunsetOrange, SunsetAmber, CityPopBackground)
+    AppTheme.MECHA_TACTICAL -> listOf(EvaNeonGreen, TacticalAmber, MechaBackground)
+    AppTheme.NATSU_UMI -> listOf(NatsuPrimary, NatsuSecondary, NatsuBackground)
+    AppTheme.MOMIJI_AUTUMN -> listOf(MomijiPrimary, MomijiSecondary, MomijiBackground)
+    AppTheme.FUYU_YUKI -> listOf(FuyuPrimary, FuyuSecondary, FuyuBackground)
+    AppTheme.MATCHA_ZEN -> listOf(MatchaPrimary, MatchaSecondary, MatchaBackground)
+    AppTheme.OCEAN_ABYSS -> listOf(AbyssPrimary, AbyssSecondary, AbyssBackground)
+    AppTheme.SUMIE_INK -> listOf(SumiePrimary, SumieSecondary, SumieBackground)
+    AppTheme.DRACULA -> listOf(DraculaPink, DraculaCyan, DraculaBackground)
+    AppTheme.NORD -> listOf(NordFrostTeal, NordFrostBlue, NordBackground)
+    AppTheme.CATPPUCCIN_MOCHA -> listOf(MochaMauve, MochaSapphire, MochaBackground)
+    AppTheme.RETRO_PIXEL -> listOf(RetroPixelBright, RetroPixelOutline, RetroPixelBackground)
+    AppTheme.TERMINAL_HACKER -> listOf(TerminalGreen, TerminalSurfaceVariant, TerminalBackground)
+    AppTheme.VAPORWAVE -> listOf(VaporwaveHotPink, VaporwaveCyan, VaporwaveBackground)
+    AppTheme.SEPIA_MALAM -> listOf(SepiaAmber, SepiaGold, SepiaBackground)
+    AppTheme.KONTRAS_TINGGI -> listOf(HighContrastYellow, HighContrastWhite, HighContrastBackground)
+    AppTheme.AMOLED_REDUP -> listOf(AmoledRedupCrimson, AmoledRedupSurfaceVariant, AmoledRedupBackground)
 }
 
 fun AppTheme.gradient(): Brush = Brush.horizontalGradient(gradientColors())
@@ -156,6 +480,21 @@ fun AppTheme.colorScheme(): ColorScheme = when (this) {
     AppTheme.SAKURA_LOFI -> SakuraLofiColorScheme
     AppTheme.CITY_POP_SUNSET -> CityPopSunsetColorScheme
     AppTheme.MECHA_TACTICAL -> MechaTacticalColorScheme
+    AppTheme.NATSU_UMI -> NatsuUmiColorScheme
+    AppTheme.MOMIJI_AUTUMN -> MomijiAutumnColorScheme
+    AppTheme.FUYU_YUKI -> FuyuYukiColorScheme
+    AppTheme.MATCHA_ZEN -> MatchaZenColorScheme
+    AppTheme.OCEAN_ABYSS -> OceanAbyssColorScheme
+    AppTheme.SUMIE_INK -> SumieInkColorScheme
+    AppTheme.DRACULA -> DraculaColorScheme
+    AppTheme.NORD -> NordColorScheme
+    AppTheme.CATPPUCCIN_MOCHA -> CatppuccinMochaColorScheme
+    AppTheme.RETRO_PIXEL -> RetroPixelColorScheme
+    AppTheme.TERMINAL_HACKER -> TerminalHackerColorScheme
+    AppTheme.VAPORWAVE -> VaporwaveColorScheme
+    AppTheme.SEPIA_MALAM -> SepiaMalamColorScheme
+    AppTheme.KONTRAS_TINGGI -> KontrasTinggiColorScheme
+    AppTheme.AMOLED_REDUP -> AmoledRedupColorScheme
 }
 
 @Composable

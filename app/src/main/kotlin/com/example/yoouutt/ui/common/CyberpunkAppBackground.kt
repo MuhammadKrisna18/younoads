@@ -38,16 +38,21 @@ fun CyberpunkAppBackground(
                 modifier = Modifier.fillMaxSize()
             )
 
+            val topAlpha = if (theme.isLight) 0.85f else 0.72f
+            val midUpperAlpha = if (theme.isLight) 0.18f else 0.08f
+            val midLowerAlpha = if (theme.isLight) 0.24f else 0.12f
+            val bottomAlpha = if (theme.isLight) 0.88f else 0.78f
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                backgroundColor.copy(alpha = 0.72f),
-                                backgroundColor.copy(alpha = 0.08f),
-                                backgroundColor.copy(alpha = 0.12f),
-                                backgroundColor.copy(alpha = 0.78f)
+                                backgroundColor.copy(alpha = topAlpha),
+                                backgroundColor.copy(alpha = midUpperAlpha),
+                                backgroundColor.copy(alpha = midLowerAlpha),
+                                backgroundColor.copy(alpha = bottomAlpha)
                             )
                         )
                     )

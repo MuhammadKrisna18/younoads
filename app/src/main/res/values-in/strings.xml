@@ -81,6 +81,57 @@
 
     <string name="theme_dialog_title">Pilih Tema Aplikasi</string>
     <string name="theme_dialog_subtitle">Pilih skema visual &amp; atmosfer aplikasi</string>
+    <string name="theme_category_standard">Standar</string>
+    <string name="theme_category_anime">Anime</string>
+    <string name="theme_category_special">Khusus</string>
+    <string name="theme_badge_dark">Gelap</string>
+    <string name="theme_badge_light">Terang</string>
+    <string name="theme_badge_character">Karakter</string>
+
+    <string name="theme_cyberpunk_name">Cyberpunk Neo-Tokyo</string>
+    <string name="theme_cyberpunk_desc">Hitam pekat, sian elektrik, magenta neon &amp; hologram Youno-chan</string>
+    <string name="theme_matte_black_name">Hitam Doff (Stealth AMOLED)</string>
+    <string name="theme_matte_black_desc">Hitam murni pekat, aksen merah klasik, tanpa distraksi</string>
+    <string name="theme_light_name">Putih Bersih (Clean Light)</string>
+    <string name="theme_light_desc">Putih modern bersih, kontras teks tinggi, tampilan segar</string>
+    <string name="theme_sakura_name">Sakura Lo-Fi (Pastel Chill)</string>
+    <string name="theme_sakura_desc">Plum lembut, merah muda bunga sakura, lavender pastel</string>
+    <string name="theme_city_pop_name">City Pop Sunset (Tokyo 80s)</string>
+    <string name="theme_city_pop_desc">Indigo tengah malam, jingga senja, kilau kuning keemasan</string>
+    <string name="theme_mecha_name">Mecha Tactical (EVA Sci-Fi)</string>
+    <string name="theme_mecha_desc">Abu-abu baja taktis, hijau asam neon, amber peringatan</string>
+
+    <string name="theme_dracula_name">Dracula Developer</string>
+    <string name="theme_dracula_desc">Palet ungu gelap, merah muda neon dan sian klasik developer</string>
+    <string name="theme_nord_name">Nord Arctic</string>
+    <string name="theme_nord_desc">Nuansa beku Arktik biru dan abu-abu dingin yang tenang</string>
+    <string name="theme_catppuccin_name">Catppuccin Mocha</string>
+    <string name="theme_catppuccin_desc">Warna pastel gelap hangat, lembut dan nyaman untuk mata</string>
+    <string name="theme_retro_pixel_name">Retro Pixel (Game Boy)</string>
+    <string name="theme_retro_pixel_desc">Tampilan monokrom hijau klasik 4 tingkat ala konsol retro</string>
+    <string name="theme_terminal_name">Terminal Hacker CRT</string>
+    <string name="theme_terminal_desc">Teks hijau fosfor di atas layar hitam pekat tabung CRT</string>
+    <string name="theme_vaporwave_name">Vaporwave Neon 90s</string>
+    <string name="theme_vaporwave_desc">Merah muda neon, sian toska, dan ungu senja estetika 90-an</string>
+    <string name="theme_sepia_malam_name">Sepia Malam (Warm Cocoa)</string>
+    <string name="theme_sepia_malam_desc">Cokelat hangat rendah cahaya biru, nyaman menonton malam</string>
+    <string name="theme_kontras_tinggi_name">Kontras Tinggi (Accessibility)</string>
+    <string name="theme_kontras_tinggi_desc">Keterbacaan maksimal dengan hitam pekat dan kuning tegas</string>
+    <string name="theme_amoled_redup_name">AMOLED Merah Redup (Night Vision)</string>
+    <string name="theme_amoled_redup_desc">Merah redup di atas hitam murni, bebas silau di tempat gelap</string>
+
+    <string name="theme_natsu_umi_name">Natsu Umi (Musim Panas)</string>
+    <string name="theme_natsu_umi_desc">Sian cerah musim panas, pasir putih, dan buih laut</string>
+    <string name="theme_momiji_name">Momiji Autumn (Daun Maple)</string>
+    <string name="theme_momiji_desc">Merah daun maple musim gugur, arang hangat, dan amber keemasan</string>
+    <string name="theme_fuyu_yuki_name">Fuyu Yuki (Salju Dingin)</string>
+    <string name="theme_fuyu_yuki_desc">Putih salju sejuk, biru es lembut, dan kabut perak</string>
+    <string name="theme_matcha_name">Matcha Zen (Kedai Teh)</string>
+    <string name="theme_matcha_desc">Hijau sage menenangkan, krem busa matcha, dan kayu hangat</string>
+    <string name="theme_ocean_abyss_name">Ocean Abyss (Palung Laut)</string>
+    <string name="theme_ocean_abyss_desc">Navy laut dalam, aqua bercahaya, dan sian samudera pekat</string>
+    <string name="theme_sumie_name">Sumi-e Ink (Lukisan Tinta)</string>
+    <string name="theme_sumie_desc">Goresan kuas tinta monokrom, kertas washi, dan stempel merah</string>
 
     <string name="language_dialog_title">Pilih Bahasa Aplikasi</string>
     <string name="language_dialog_subtitle">Pilih bahasa tampilan antarmuka</string>

@@ -81,6 +81,57 @@
 
     <string name="theme_dialog_title">Select App Theme</string>
     <string name="theme_dialog_subtitle">Choose visual scheme &amp; app atmosphere</string>
+    <string name="theme_category_standard">Standard</string>
+    <string name="theme_category_anime">Anime</string>
+    <string name="theme_category_special">Special</string>
+    <string name="theme_badge_dark">Dark</string>
+    <string name="theme_badge_light">Light</string>
+    <string name="theme_badge_character">Character</string>
+
+    <string name="theme_cyberpunk_name">Cyberpunk Neo-Tokyo</string>
+    <string name="theme_cyberpunk_desc">Void black, electric cyan, neon magenta &amp; hologram Youno-chan</string>
+    <string name="theme_matte_black_name">Hitam Doff (Stealth AMOLED)</string>
+    <string name="theme_matte_black_desc">Pure black, classic YouTube Red accent, minimal distraction</string>
+    <string name="theme_light_name">Putih Bersih (Clean Light)</string>
+    <string name="theme_light_desc">Modern off-white, high readability text, crisp surface</string>
+    <string name="theme_sakura_name">Sakura Lo-Fi (Pastel Chill)</string>
+    <string name="theme_sakura_desc">Deep muted plum, sakura blossom pink, pastel lavender</string>
+    <string name="theme_city_pop_name">City Pop Sunset (Tokyo 80s)</string>
+    <string name="theme_city_pop_desc">Midnight indigo, sunset amber orange, golden glow</string>
+    <string name="theme_mecha_name">Mecha Tactical (EVA Sci-Fi)</string>
+    <string name="theme_mecha_desc">Gunmetal slate, acid neon green, tactical amber</string>
+
+    <string name="theme_dracula_name">Dracula Developer</string>
+    <string name="theme_dracula_desc">Vampire purple, neon pink and cyan palette for developers</string>
+    <string name="theme_nord_name">Nord Arctic</string>
+    <string name="theme_nord_desc">Arctic blue and slate frost, clean and calm atmosphere</string>
+    <string name="theme_catppuccin_name">Catppuccin Mocha</string>
+    <string name="theme_catppuccin_desc">Warm dark pastel tones, soothing and cozy aesthetic</string>
+    <string name="theme_retro_pixel_name">Retro Pixel (Game Boy)</string>
+    <string name="theme_retro_pixel_desc">Classic 4-tone monochrome greenish retro handheld display</string>
+    <string name="theme_terminal_name">Terminal Hacker CRT</string>
+    <string name="theme_terminal_desc">Phosphor green text on deep cathode ray black</string>
+    <string name="theme_vaporwave_name">Vaporwave Neon 90s</string>
+    <string name="theme_vaporwave_desc">Hot neon pink, cyan teal, and dreamy twilight indigo</string>
+    <string name="theme_sepia_malam_name">Sepia Malam (Warm Cocoa)</string>
+    <string name="theme_sepia_malam_desc">Warm espresso amber, low blue light for night watching</string>
+    <string name="theme_kontras_tinggi_name">Kontras Tinggi (Accessibility)</string>
+    <string name="theme_kontras_tinggi_desc">Maximum legibility with pitch black and vivid yellow</string>
+    <string name="theme_amoled_redup_name">AMOLED Merah Redup (Night Vision)</string>
+    <string name="theme_amoled_redup_desc">Deep night crimson on true black, zero blue light</string>
+
+    <string name="theme_natsu_umi_name">Natsu Umi (Summer Sea)</string>
+    <string name="theme_natsu_umi_desc">Sunlit cyan, white sand, and ocean seafoam</string>
+    <string name="theme_momiji_name">Momiji Autumn (Maple Foliage)</string>
+    <string name="theme_momiji_desc">Warm autumn crimson, deep charcoal, and golden amber</string>
+    <string name="theme_fuyu_yuki_name">Fuyu Yuki (Winter Frost)</string>
+    <string name="theme_fuyu_yuki_desc">Crisp ice white, pale frosted blue, and silver mist</string>
+    <string name="theme_matcha_name">Matcha Zen (Tea House)</string>
+    <string name="theme_matcha_desc">Earthy sage green, matcha foam cream, and warm cedar wood</string>
+    <string name="theme_ocean_abyss_name">Ocean Abyss (Bioluminescent)</string>
+    <string name="theme_ocean_abyss_desc">Abyssal midnight navy, glowing neon aqua, and deep sea teal</string>
+    <string name="theme_sumie_name">Sumi-e Ink (Traditional Mono)</string>
+    <string name="theme_sumie_desc">Monochrome charcoal brushstrokes, rice paper, and crimson seal</string>
 
     <string name="language_dialog_title">Select App Language</string>
     <string name="language_dialog_subtitle">Choose user interface display language</string>

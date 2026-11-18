@@ -146,8 +146,8 @@ fun SettingsScreen(
                 SettingsActionCard(
                     icon = Icons.Default.Palette,
                     title = stringResource(R.string.settings_theme),
-                    subtitle = currentTheme.description,
-                    value = currentTheme.displayName,
+                    subtitle = stringResource(currentTheme.descriptionRes),
+                    value = stringResource(currentTheme.titleRes),
                     onClick = { showThemeDialog = true }
                 )
             }
