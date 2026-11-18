@@ -6,10 +6,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ import com.example.yoouutt.ui.common.UpdateDialog
 import com.example.yoouutt.ui.feed.components.FeedContentList
 import com.example.yoouutt.ui.feed.components.FeedEmptyState
 import com.example.yoouutt.ui.feed.components.FeedErrorState
+import com.example.yoouutt.ui.feed.components.FeedHeroBackdrop
 import com.example.yoouutt.ui.feed.components.FeedSearchSuggestions
 import com.example.yoouutt.ui.feed.components.FeedSkeletonList
 import com.example.yoouutt.ui.feed.components.FeedTopBar
@@ -137,10 +140,17 @@ fun FeedScreen(
         )
     }
 
-    Scaffold(
-        modifier = modifier,
-        containerColor = Color.Transparent,
-        topBar = {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        FeedHeroBackdrop(modifier = Modifier.align(Alignment.TopCenter))
+
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
+            topBar = {
             FeedTopBar(
                 isSearchExpanded = isSearchExpanded,
                 searchQuery = searchQuery,
@@ -251,6 +261,7 @@ fun FeedScreen(
             }
         }
     }
+}
 
     if (showClearHistoryDialog) {
         AppConfirmDialog(

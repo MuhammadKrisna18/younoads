@@ -75,8 +75,8 @@ fun PlaylistsScreen(
     }
 
     Scaffold(
-        modifier = modifier,
-        containerColor = Color.Transparent,
+        modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -110,7 +110,7 @@ fun PlaylistsScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
     ) { innerPadding ->

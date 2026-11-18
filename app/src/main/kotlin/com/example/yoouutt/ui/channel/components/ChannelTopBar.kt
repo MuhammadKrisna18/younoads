@@ -84,7 +84,7 @@ fun ChannelTopBar(
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent
+                containerColor = MaterialTheme.colorScheme.background
             )
         )
     } else {

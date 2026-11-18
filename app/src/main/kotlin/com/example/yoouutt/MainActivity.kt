@@ -12,6 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,7 +25,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.yoouutt.ui.common.CyberpunkAppBackground
 import com.example.yoouutt.ui.language.LanguageManager
 import com.example.yoouutt.ui.player.PipActionHelper
 import com.example.yoouutt.ui.player.PipBroadcastReceiver
@@ -76,13 +76,11 @@ class MainActivity : ComponentActivity() {
                 LocalConfiguration provides localizedConfig
             ) {
                 YoouuttTheme(appTheme = currentTheme) {
-                    CyberpunkAppBackground {
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = Color.Transparent
-                        ) {
-                            MainNavigation()
-                        }
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        MainNavigation()
                     }
                 }
             }

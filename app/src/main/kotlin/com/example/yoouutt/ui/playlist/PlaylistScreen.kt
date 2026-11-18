@@ -53,8 +53,8 @@ fun PlaylistScreen(
     }
 
     Scaffold(
-        modifier = modifier,
-        containerColor = Color.Transparent,
+        modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -88,7 +88,7 @@ fun PlaylistScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         }

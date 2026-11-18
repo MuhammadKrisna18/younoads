@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -139,7 +140,7 @@ fun PlayerScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(if (isEffectiveFullscreen) Color.Black else Color.Transparent)
+            .background(if (isEffectiveFullscreen) Color.Black else MaterialTheme.colorScheme.background)
     ) {
         val baseModifier = if (isEffectiveFullscreen) {
             Modifier.fillMaxSize()
