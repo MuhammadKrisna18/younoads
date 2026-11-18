@@ -69,7 +69,11 @@ Di bawah video yang sedang kamu putar dan di halaman beranda, tersedia deretan r
 Seluruh antarmuka aplikasi sudah mendukung penuh Bahasa Indonesia dan Bahasa Inggris secara sinkron, mulai dari menu navigasi, dialog opsi, format waktu tonton, jumlah tayangan dan subscriber, hingga rekomendasi wilayah video. Pilihan bahasa bisa diganti kapan saja dengan mudah melalui menu Pengaturan tanpa perlu memulai ulang aplikasi.
 
 ### Animasi Transisi Halus & Selaras
+
 Perpindahan antar halaman dan saat membuka maupun menutup layar pemutar video kini berjalan sangat mulus dan tenang dengan animasi transisi yang seragam, tanpa hentakan maupun kedipan visual.
+
+### Tipografi Khas JetBrains Mono
+Seluruh tulisan di dalam aplikasi kini menggunakan font JetBrains Mono yang terpasang langsung di dalam aplikasi (offline). Tampilan judul, angka durasi waktu, penanda kualitas video, dan menu terlihat semakin rapi, presisi, dan berkarakter.
 
 ### Bebas Login & Privasi 100% Aman
 

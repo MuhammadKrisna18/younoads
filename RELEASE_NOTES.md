@@ -1,12 +1,11 @@
-### YounoAds v4.7 - Catatan Rilis & Pembaruan
+### YounoAds v4.8 - Catatan Rilis & Pembaruan
 
-Pembaruan menyeluruh untuk sinkronisasi bahasa dan kehalusan animasi:
+Pembaruan tipografi visual aplikasi dengan font JetBrains Mono:
 
-1. Transisi Navigasi yang Seragam dan Halus
-- Perpindahan antar halaman kini menggunakan efek transisi lembut yang seragam di seluruh aplikasi.
-- Saat kembali dari pemutar video ke beranda, animasi berjalan mulus dan tenang tanpa hentakan visual maupun kedipan layar.
-- Bilah navigasi bawah dan pemutar mini tampil selaras dengan animasi memudar yang terkoordinasi.
+1. Font JetBrains Mono Terpasang Lokal (Bundled Font)
+- Seluruh antarmuka aplikasi kini menggunakan font JetBrains Mono secara menyeluruh.
+- Font terpasang langsung di dalam aplikasi secara lokal (offline) tanpa bergantung pada koneksi internet atau layanan Google.
 
-2. Dukungan Penuh Dua Bahasa (Indonesia & Inggris)
-- Seluruh teks pada tombol, dialog, menu pengaturan, informasi tontonan, dan halaman detail kini tersinkronisasi penuh sesuai pilihan bahasa.
-- Perubahan bahasa dapat dilakukan langsung melalui pengaturan tanpa perlu menutup atau memulai ulang aplikasi.
+2. Tampilan Angka dan Teks Lebih Rapi & Presisi
+- Teks judul, label menu, nama channel, dan dialog pengaturan tampil lebih berkarakter dan modern.
+- Penunjuk durasi video, angka penonton, dan badge resolusi video terlihat lurus dan presisi berkat tipografi monospace.
