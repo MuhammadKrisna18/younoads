@@ -280,7 +280,8 @@ fun CustomPlaylistDetailScreen(
                             title = stringResource(R.string.playlist_empty_title),
                             message = stringResource(R.string.playlist_empty_desc),
                             actionButtonText = stringResource(R.string.library_btn_explore),
-                            onActionClick = onBack
+                            onActionClick = onBack,
+                            fallbackIcon = Icons.AutoMirrored.Filled.QueueMusic
                         )
                     }
                 }
