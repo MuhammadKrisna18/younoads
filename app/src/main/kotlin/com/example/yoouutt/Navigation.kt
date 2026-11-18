@@ -22,7 +22,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.VideoItem
-import com.example.yoouutt.ui.animation.YouTubeScreenTransitions
+import com.example.yoouutt.ui.animation.GlobalNavigationTransitions
 import com.example.yoouutt.ui.channel.ChannelScreen
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BottomNavigationBar
@@ -53,8 +53,8 @@ fun MainNavigation() {
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
-            transitionSpec = YouTubeScreenTransitions.appTransitionSpec,
-            popTransitionSpec = YouTubeScreenTransitions.appTransitionSpec,
+            transitionSpec = GlobalNavigationTransitions.forwardTransitionSpec,
+            popTransitionSpec = GlobalNavigationTransitions.popTransitionSpec,
             entryProvider = entryProvider {
                 entry<Main> {
                     FeedScreen(
