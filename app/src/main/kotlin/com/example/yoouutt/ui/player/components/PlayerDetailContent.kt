@@ -36,9 +36,7 @@ fun PlayerDetailContent(
     playlistContext: PlaylistContext? = null,
     isSaved: Boolean,
     isDescriptionExpanded: Boolean,
-    videoUrl: String,
     onShareClick: () -> Unit,
-    onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
     onAddToPlaylistClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
@@ -110,10 +108,8 @@ fun PlayerDetailContent(
 
             item(key = "action_pills") {
                 PlayerActionPillRow(
-                    videoUrl = videoUrl,
                     isSaved = isSaved,
                     onShareClick = onShareClick,
-                    onCopyLinkClick = onCopyLinkClick,
                     onToggleSave = onToggleSave,
                     onAddToPlaylistClick = onAddToPlaylistClick,
                     onSettingsClick = onSettingsClick

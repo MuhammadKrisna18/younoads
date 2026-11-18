@@ -12,7 +12,6 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,10 +23,8 @@ import com.example.yoouutt.R
 
 @Composable
 fun PlayerActionPillRow(
-    videoUrl: String,
     isSaved: Boolean,
     onShareClick: () -> Unit,
-    onCopyLinkClick: () -> Unit,
     onToggleSave: () -> Unit,
     onAddToPlaylistClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -49,15 +46,6 @@ fun PlayerActionPillRow(
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onShareClick()
-            }
-        )
-
-        ActionPill(
-            icon = Icons.Outlined.ContentCopy,
-            label = stringResource(R.string.player_action_copy),
-            onClick = {
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                onCopyLinkClick()
             }
         )
 

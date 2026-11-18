@@ -191,12 +191,7 @@ fun PlayerScreen(
                     playlistContext = playlistContext,
                     isSaved = isSaved,
                     isDescriptionExpanded = isDescriptionExpanded,
-                    videoUrl = videoUrl,
                     onShareClick = { isShareSheetVisible = true },
-                    onCopyLinkClick = {
-                        val shortUrl = PlayerUtils.formatShortUrl(videoUrl)
-                        PlayerUtils.copyToClipboard(context, shortUrl, context.getString(R.string.common_link_copied))
-                    },
                     onToggleSave = viewModel::toggleSave,
                     onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
                     onSettingsClick = viewModel::showSettingsSheet,
