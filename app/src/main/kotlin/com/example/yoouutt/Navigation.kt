@@ -1,6 +1,14 @@
 package com.example.yoouutt
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -242,11 +250,24 @@ fun MainNavigation() {
             }
         )
 
-        if (!isPlayerScreenVisible) {
+        AnimatedVisibility(
+            visible = !isPlayerScreenVisible,
+            enter = fadeIn(
+                animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing)
+            ) + slideInVertically(
+                initialOffsetY = { it / 3 },
+                animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing)
+            ),
+            exit = fadeOut(
+                animationSpec = tween(durationMillis = 180, easing = FastOutLinearInEasing)
+            ) + slideOutVertically(
+                targetOffsetY = { it / 3 },
+                animationSpec = tween(durationMillis = 180, easing = FastOutLinearInEasing)
+            ),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
             Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 val playback = currentPlayback
                 if (playback != null) {
