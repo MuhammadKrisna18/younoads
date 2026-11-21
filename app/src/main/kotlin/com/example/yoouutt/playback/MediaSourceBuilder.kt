@@ -6,6 +6,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
@@ -17,9 +18,11 @@ class MediaSourceBuilder(
     context: Context
 ) {
     private val httpDataSourceFactory = ResilientHttpDataSourceFactory()
+    private val cachedDataSourceFactory: DataSource.Factory =
+        MediaCacheManager.createCacheDataSourceFactory(context, httpDataSourceFactory)
 
     val defaultMediaSourceFactory: DefaultMediaSourceFactory =
-        DefaultMediaSourceFactory(context).setDataSourceFactory(httpDataSourceFactory)
+        DefaultMediaSourceFactory(context).setDataSourceFactory(cachedDataSourceFactory)
 
     fun buildMediaSource(
         resolution: VideoResolutionOption?,

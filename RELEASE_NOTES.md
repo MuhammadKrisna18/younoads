@@ -1,3 +1,23 @@
+### YounoAds v4.17 - Catatan Rilis & Pembaruan
+
+Pembaruan arsitektur transmisi jaringan dan mesin cache pemutaran video mandiri untuk pengalaman streaming tanpa jeda (Zero-Buffering Playback):
+
+1. Resilient OkHttp Streaming Engine & Mekanisme Fallback
+- Mengintegrasikan OkHttpDataSource resmi berbasis protokol HTTP/2 dengan connection pool terpadu (8 concurrent connections, keep-alive 5 menit) untuk transfer data video berkecepatan tinggi.
+- Resilient Fallback Otomatis: Menyediakan mekanisme pengalihan instan ke DefaultHttpDataSource (HttpURLConnection) jika terjadi gangguan handshake TLS, pembatasan koneksi ISP, atau error transmisi jaringan tanpa memutus jalannya video.
+
+2. Fast-Start Buffer Tuning
+- Mengoptimalkan DefaultLoadControl dengan ambang batas awal (bufferForPlaybackMs) diturunkan ke 600ms dan bufferForPlaybackAfterRebufferMs ke 1200ms.
+- Menjadikan video mulai memutar lebih dari 2x lebih cepat segera setelah chunk data pertama tiba di perangkat tanpa menunggu alokasi buffer berlebih.
+
+3. Media Caching Lokal (Zero-Buffering Rewind)
+- Mengimplementasikan CacheDataSource berbasis SimpleCache ExoPlayer berkapasitas 200MB dengan eviksi otomatis Least Recently Used (LRU).
+- Potongan video dan audio yang sudah dimuat otomatis disimpan di penyimpanan cache lokal berkecepatan tinggi.
+- Scrubbing & Rewind Instan: Pengguna dapat melompat mundur (seek back) atau memutar ulang bagian video tanpa buffering dan tanpa menggunakan kuota data internet tambahan.
+- Proteksi FLAG_IGNORE_CACHE_ON_ERROR untuk memastikan integritas pemutaran tetap aman jika terjadi kendala pada penyimpanan lokal.
+
+---
+
 ### YounoAds v4.16 - Catatan Rilis & Pembaruan
 
 Pembaruan animasi pembuka aplikasi (Splash Screen) adaptif tema dan perombakan antarmuka seekbar pemutar video menempel rapat di bibir bawah layar ala YouTube native:

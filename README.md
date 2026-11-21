@@ -18,6 +18,13 @@ Selain pemutaran video yang mulus, YounoAds hadir dengan sentuhan visual bertema
 
 Nikmati konten video apa saja dari awal sampai selesai tanpa terpotong jeda iklan di tengah video, baik untuk klip pendek maupun video berdurasi panjang.
 
+### Streaming Cepat & Bebas Buffering (OkHttp HTTP/2 & Smart Media Cache)
+
+Didukung oleh arsitektur jaringan canggih yang memaksimalkan kecepatan pemutaran dan menghemat kuota:
+- **Resilient OkHttp Engine**: Menggunakan protokol HTTP/2 dengan connection pool terpadu untuk transfer data streaming berkecepatan tinggi serta mekanisme pengalihan otomatis (fallback) ke DefaultHttpDataSource jika terjadi kendala jaringan.
+- **Fast-Start Buffer**: Waktu awal mulai pemutaran (buffer-for-playback) dioptimalkan hanya 600ms sehingga video memutar seketika tanpa waktu tunggu yang lama.
+- **Zero-Buffering Rewind (Media Cache 200MB)**: Potongan video yang telah diputar otomatis tersimpan dalam media cache lokal. Saat melompat mundur (seek back) atau mengulang bagian video, pemutaran langsung berjalan seketika dari penyimpanan lokal tanpa perlu buffering ulang dan tanpa memakan kuota internet.
+
 ### Suara Tetap Jalan di Latar Belakang
 
 Ingin mendengarkan musik, podcast, atau rekaman sambil membalas pesan atau mengunci layar HP? Suara video akan tetap berputar di latar belakang dengan kontrol pemutar praktis di bilah notifikasi HP kamu.
