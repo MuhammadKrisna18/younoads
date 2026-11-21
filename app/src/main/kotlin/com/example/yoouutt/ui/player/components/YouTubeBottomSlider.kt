@@ -68,18 +68,18 @@ fun InteractiveSeekBar(
 
     val activeProgress = if (isDragging) dragProgress else progress
     val animatedTrackHeight by animateDpAsState(
-        targetValue = if (isDragging) 5.dp else 3.5.dp,
+        targetValue = if (isDragging) 4.5.dp else 3.dp,
         label = "trackHeight"
     )
     val animatedThumbRadius by animateDpAsState(
-        targetValue = if (isDragging) 8.5.dp else 6.dp,
+        targetValue = if (isDragging) 7.5.dp else 5.5.dp,
         label = "thumbRadius"
     )
 
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .height(36.dp)
+            .height(26.dp)
             .pointerInput(totalDuration) {
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
@@ -115,23 +115,24 @@ fun InteractiveSeekBar(
                     onScrubbing(false, targetMs)
                 }
             },
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.BottomStart
     ) {
         val totalWidthPx = constraints.maxWidth.toFloat().coerceAtLeast(1f)
 
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(36.dp)
+                .height(26.dp)
         ) {
             val canvasWidth = size.width
-            val centerY = size.height / 2f
             val trackStroke = animatedTrackHeight.toPx()
+            val thumbRadiusPx = animatedThumbRadius.toPx()
+            val trackY = size.height - thumbRadiusPx
 
             drawLine(
                 color = Color.White.copy(alpha = 0.25f),
-                start = Offset(0f, centerY),
-                end = Offset(canvasWidth, centerY),
+                start = Offset(0f, trackY),
+                end = Offset(canvasWidth, trackY),
                 strokeWidth = trackStroke,
                 cap = StrokeCap.Round
             )
@@ -140,23 +141,24 @@ fun InteractiveSeekBar(
             if (bufferedX > 0f) {
                 drawLine(
                     color = Color.White.copy(alpha = 0.45f),
-                    start = Offset(0f, centerY),
-                    end = Offset(bufferedX, centerY),
+                    start = Offset(0f, trackY),
+                    end = Offset(bufferedX, trackY),
                     strokeWidth = trackStroke,
                     cap = StrokeCap.Round
                 )
             }
 
-            val playedX = canvasWidth * activeProgress
-            if (playedX > 0f) {
+            val lineEndX = canvasWidth * activeProgress
+            val playedX = (canvasWidth * activeProgress).coerceIn(thumbRadiusPx, canvasWidth - thumbRadiusPx)
+            if (lineEndX > 0f) {
                 drawLine(
                     brush = Brush.horizontalGradient(
                         colors = gradientColors,
                         startX = 0f,
-                        endX = playedX.coerceAtLeast(1f)
+                        endX = lineEndX.coerceAtLeast(1f)
                     ),
-                    start = Offset(0f, centerY),
-                    end = Offset(playedX, centerY),
+                    start = Offset(0f, trackY),
+                    end = Offset(lineEndX, trackY),
                     strokeWidth = trackStroke,
                     cap = StrokeCap.Round
                 )
@@ -165,18 +167,18 @@ fun InteractiveSeekBar(
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = thumbColors,
-                    center = Offset(playedX, centerY),
-                    radius = animatedThumbRadius.toPx().coerceAtLeast(1f)
+                    center = Offset(playedX, trackY),
+                    radius = thumbRadiusPx.coerceAtLeast(1f)
                 ),
-                radius = animatedThumbRadius.toPx(),
-                center = Offset(playedX, centerY)
+                radius = thumbRadiusPx,
+                center = Offset(playedX, trackY)
             )
 
             if (isDragging) {
                 drawCircle(
                     color = Color.White,
-                    radius = (animatedThumbRadius * 0.45f).toPx(),
-                    center = Offset(playedX, centerY)
+                    radius = (thumbRadiusPx * 0.45f),
+                    center = Offset(playedX, trackY)
                 )
             }
         }
@@ -188,10 +190,11 @@ fun InteractiveSeekBar(
             val thumbX = totalWidthPx * dragProgress
             val badgeOffsetX = (thumbX - badgeWidthApprox / 2f)
                 .coerceIn(0f, (totalWidthPx - badgeWidthApprox).coerceAtLeast(0f))
+            val badgeOffsetY = with(density) { (-44).dp.roundToPx() }
 
             Box(
                 modifier = Modifier
-                    .offset { IntOffset(badgeOffsetX.roundToInt(), -40) }
+                    .offset { IntOffset(badgeOffsetX.roundToInt(), badgeOffsetY) }
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color.Black.copy(alpha = 0.85f))
                     .padding(horizontal = 8.dp, vertical = 3.dp)

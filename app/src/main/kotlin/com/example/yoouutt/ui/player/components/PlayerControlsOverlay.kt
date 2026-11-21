@@ -197,19 +197,7 @@ fun BoxScope.PlayerControlsOverlay(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(bottom = 6.dp)
             ) {
-                InteractiveSeekBar(
-                    currentPositionMs = currentPositionMs,
-                    bufferedPositionMs = bufferedPositionMs,
-                    durationMs = durationMs,
-                    onScrubbing = onScrubbing,
-                    onSeek = onSeek,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                )
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -220,7 +208,7 @@ fun BoxScope.PlayerControlsOverlay(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color.Black.copy(alpha = 0.6f))
+                            .background(Color.Black.copy(alpha = 0.5f))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
@@ -283,6 +271,15 @@ fun BoxScope.PlayerControlsOverlay(
                         }
                     }
                 }
+
+                InteractiveSeekBar(
+                    currentPositionMs = currentPositionMs,
+                    bufferedPositionMs = bufferedPositionMs,
+                    durationMs = durationMs,
+                    onScrubbing = onScrubbing,
+                    onSeek = onSeek,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
