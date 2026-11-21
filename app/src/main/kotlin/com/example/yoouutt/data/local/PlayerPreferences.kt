@@ -27,6 +27,10 @@ class PlayerPreferences(context: Context) {
         get() = prefs.getString(KEY_APP_LANGUAGE, "SYSTEM") ?: "SYSTEM"
         set(value) = prefs.edit().putString(KEY_APP_LANGUAGE, value).apply()
 
+    var appIcon: String
+        get() = prefs.getString(KEY_APP_ICON, "DEFAULT") ?: "DEFAULT"
+        set(value) = prefs.edit().putString(KEY_APP_ICON, value).apply()
+
     var defaultQuality: String
         get() = prefs.getString(KEY_DEFAULT_QUALITY, DefaultVideoQuality.AUTO.code) ?: DefaultVideoQuality.AUTO.code
         set(value) = prefs.edit().putString(KEY_DEFAULT_QUALITY, value).apply()
@@ -38,6 +42,7 @@ class PlayerPreferences(context: Context) {
         private const val KEY_SEEK_INTERVAL = "seek_interval_seconds"
         private const val KEY_APP_THEME = "app_theme"
         private const val KEY_APP_LANGUAGE = "app_language"
+        private const val KEY_APP_ICON = "app_icon"
         private const val KEY_DEFAULT_QUALITY = "default_video_quality"
     }
 }

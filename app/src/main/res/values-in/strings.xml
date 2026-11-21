@@ -76,6 +76,8 @@
     <string name="settings_add_to_playlist">Tambahkan ke playlist</string>
     <string name="settings_theme">Tema aplikasi</string>
     <string name="settings_language">Bahasa aplikasi</string>
+    <string name="settings_app_icon">Ikon aplikasi</string>
+    <string name="settings_app_icon_desc">Pilih ikon launcher di layar utama</string>
     <string name="settings_loop">Putar ulang video (Loop)</string>
     <string name="settings_autoplay">Putar otomatis (Autoplay)</string>
     <string name="settings_speed_normal">Normal (1.0x)</string>
@@ -170,6 +172,29 @@
     <string name="language_in_desc">Bahasa Indonesia baku dan natural</string>
     <string name="language_en_title">English</string>
     <string name="language_en_desc">Antarmuka berbahasa Inggris</string>
+
+    <string name="app_icon_dialog_title">Pilih Ikon Aplikasi</string>
+    <string name="app_icon_dialog_subtitle">Kustomisasi ikon launcher di layar utama Anda</string>
+    <string name="app_icon_default_name">Original YounoAds</string>
+    <string name="app_icon_default_desc">Merah marun klasik dengan aksen play</string>
+    <string name="app_icon_cyberpunk_name">Cyberpunk Neo</string>
+    <string name="app_icon_cyberpunk_desc">Hitam pekat dengan sian elektrik dan neon magenta</string>
+    <string name="app_icon_sakura_name">Sakura Pastel</string>
+    <string name="app_icon_sakura_desc">Plum lembut dengan merah muda kelopak sakura</string>
+    <string name="app_icon_stealth_name">Stealth AMOLED</string>
+    <string name="app_icon_stealth_desc">Hitam pekat obsidian dengan aksen merah minimalis</string>
+    <string name="app_icon_light_name">Clean Light</string>
+    <string name="app_icon_light_desc">Putih salju bersih dengan aksen merah cerah</string>
+    <string name="app_icon_youno_name">Youno Mascot</string>
+    <string name="app_icon_youno_desc">Siluet karakter maskot anime Youno-chan</string>
+    <string name="app_icon_retro_name">Retro Pixel</string>
+    <string name="app_icon_retro_desc">Palet hijau monokrom konsol genggam 8-bit</string>
+    <string name="app_icon_citypop_name">City Pop 80s</string>
+    <string name="app_icon_citypop_desc">Indigo senja Tokyo dengan jingga matahari terbenam</string>
+    <string name="app_icon_mecha_name">Mecha Tactical</string>
+    <string name="app_icon_mecha_desc">Abu-abu baja dengan hijau neon taktis</string>
+    <string name="app_icon_terminal_name">Terminal CRT</string>
+    <string name="app_icon_terminal_desc">Hijau fosfor matriks di atas hitam tabung CRT</string>
 
     <string name="settings_default_quality">Kualitas Video Default</string>
     <string name="default_quality_dialog_title">Kualitas Video Default</string>

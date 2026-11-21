@@ -76,6 +76,8 @@
     <string name="settings_add_to_playlist">Add to playlist</string>
     <string name="settings_theme">App theme</string>
     <string name="settings_language">App language</string>
+    <string name="settings_app_icon">App icon</string>
+    <string name="settings_app_icon_desc">Choose launcher app icon</string>
     <string name="settings_loop">Repeat video (Loop)</string>
     <string name="settings_autoplay">Autoplay</string>
     <string name="settings_speed_normal">Normal (1.0x)</string>
@@ -170,6 +172,29 @@
     <string name="language_in_desc">Bahasa Indonesia baku dan natural</string>
     <string name="language_en_title">English</string>
     <string name="language_en_desc">Standard English interface</string>
+
+    <string name="app_icon_dialog_title">Select App Icon</string>
+    <string name="app_icon_dialog_subtitle">Personalize your home screen launcher icon</string>
+    <string name="app_icon_default_name">Original YounoAds</string>
+    <string name="app_icon_default_desc">Classic crimson red with play mark</string>
+    <string name="app_icon_cyberpunk_name">Cyberpunk Neo</string>
+    <string name="app_icon_cyberpunk_desc">Void black with cyan and neon magenta</string>
+    <string name="app_icon_sakura_name">Sakura Pastel</string>
+    <string name="app_icon_sakura_desc">Delicate plum purple with blossom pink</string>
+    <string name="app_icon_stealth_name">Stealth AMOLED</string>
+    <string name="app_icon_stealth_desc">Pure obsidian black with minimalist red</string>
+    <string name="app_icon_light_name">Clean Light</string>
+    <string name="app_icon_light_desc">Pure arctic white with vibrant scarlet</string>
+    <string name="app_icon_youno_name">Youno Mascot</string>
+    <string name="app_icon_youno_desc">Signature anime character silhouette</string>
+    <string name="app_icon_retro_name">Retro Pixel</string>
+    <string name="app_icon_retro_desc">Classic 8-bit handheld green palette</string>
+    <string name="app_icon_citypop_name">City Pop 80s</string>
+    <string name="app_icon_citypop_desc">Tokyo twilight indigo with sunset orange</string>
+    <string name="app_icon_mecha_name">Mecha Tactical</string>
+    <string name="app_icon_mecha_desc">Gunmetal grey with tactical acid green</string>
+    <string name="app_icon_terminal_name">Terminal CRT</string>
+    <string name="app_icon_terminal_desc">Phosphor matrix green on cathode ray black</string>
 
     <string name="settings_default_quality">Default Quality</string>
     <string name="default_quality_dialog_title">Default Video Quality</string>

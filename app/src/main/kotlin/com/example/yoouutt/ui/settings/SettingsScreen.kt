@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
+import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Info
@@ -57,6 +58,8 @@ import com.example.yoouutt.BuildConfig
 import com.example.yoouutt.R
 import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.ui.common.AppViewModelProvider
+import com.example.yoouutt.ui.icon.AppIconManager
+import com.example.yoouutt.ui.icon.components.AppIconSelectionDialog
 import com.example.yoouutt.ui.language.LanguageManager
 import com.example.yoouutt.ui.language.components.LanguageSelectionDialog
 import com.example.yoouutt.ui.player.components.DefaultQualitySelectionDialog
@@ -74,10 +77,12 @@ fun SettingsScreen(
     val defaultQuality by viewModel.defaultQuality.collectAsStateWithLifecycle()
     val currentTheme by ThemeManager.currentTheme.collectAsStateWithLifecycle()
     val currentLanguage by LanguageManager.currentLanguage.collectAsStateWithLifecycle()
+    val currentIcon by AppIconManager.currentIcon.collectAsStateWithLifecycle()
 
     var showQualityDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showIconDialog by remember { mutableStateOf(false) }
 
     if (showQualityDialog) {
         DefaultQualitySelectionDialog(
@@ -100,6 +105,14 @@ fun SettingsScreen(
             currentLanguage = currentLanguage,
             onLanguageSelected = LanguageManager::setLanguage,
             onDismiss = { showLanguageDialog = false }
+        )
+    }
+
+    if (showIconDialog) {
+        AppIconSelectionDialog(
+            currentIcon = currentIcon,
+            onIconSelected = AppIconManager::setIcon,
+            onDismiss = { showIconDialog = false }
         )
     }
 
@@ -151,6 +164,16 @@ fun SettingsScreen(
                     subtitle = stringResource(currentTheme.descriptionRes),
                     value = stringResource(currentTheme.titleRes),
                     onClick = { showThemeDialog = true }
+                )
+            }
+
+            item {
+                SettingsActionCard(
+                    icon = Icons.Default.AppShortcut,
+                    title = stringResource(R.string.settings_app_icon),
+                    subtitle = stringResource(currentIcon.descriptionRes),
+                    value = stringResource(currentIcon.titleRes),
+                    onClick = { showIconDialog = true }
                 )
             }
 
