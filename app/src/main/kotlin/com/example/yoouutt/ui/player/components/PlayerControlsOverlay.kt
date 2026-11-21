@@ -110,7 +110,7 @@ fun BoxScope.PlayerControlsOverlay(
                 onClick = onBackClick,
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(8.dp)
+                    .padding(if (isFullscreen) 16.dp else 8.dp)
                     .size(36.dp)
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
@@ -197,11 +197,12 @@ fun BoxScope.PlayerControlsOverlay(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
+                    .padding(bottom = if (isFullscreen) 6.dp else 0.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
+                        .padding(horizontal = if (isFullscreen) 20.dp else 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -278,7 +279,9 @@ fun BoxScope.PlayerControlsOverlay(
                     durationMs = durationMs,
                     onScrubbing = onScrubbing,
                     onSeek = onSeek,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = if (isFullscreen) 16.dp else 0.dp)
                 )
             }
         }
