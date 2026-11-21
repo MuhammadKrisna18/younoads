@@ -4,8 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.yoouutt.YoouuttApp
+import com.example.yoouutt.data.download.VideoDownloadManager
 import com.example.yoouutt.data.model.CustomPlaylist
 import com.example.yoouutt.data.model.CustomPlaylistItem
+import com.example.yoouutt.data.model.DownloadRequest
+import com.example.yoouutt.data.model.DownloadStatus
 import com.example.yoouutt.data.model.FeedItem
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.SavedVideo
@@ -40,7 +44,8 @@ class PlayerViewModel(
     private val historyRepository: WatchHistoryRepository,
     private val videoRepository: VideoRepository,
     private val savedVideoRepository: SavedVideoRepository,
-    private val customPlaylistRepository: CustomPlaylistRepository
+    private val customPlaylistRepository: CustomPlaylistRepository,
+    private val downloadManager: VideoDownloadManager = YoouuttApp.instance.container.downloadManager
 ) : ViewModel() {
 
     val currentPlayback: StateFlow<ActivePlayback?> = playbackManager.currentPlayback
@@ -113,6 +118,14 @@ class PlayerViewModel(
     private val _isSaved = MutableStateFlow(false)
     val isSaved: StateFlow<Boolean> = _isSaved.asStateFlow()
 
+    private val _isDownloaded = MutableStateFlow(false)
+    val isDownloaded: StateFlow<Boolean> = _isDownloaded.asStateFlow()
+
+    private val _isDownloadDialogVisible = MutableStateFlow(false)
+    val isDownloadDialogVisible: StateFlow<Boolean> = _isDownloadDialogVisible.asStateFlow()
+
+    val downloadProgressMap: StateFlow<Map<String, Int>> = downloadManager.downloadProgressMap
+
     val speeds = listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
     private val _speedIndex = MutableStateFlow(2)
     val speedIndex: StateFlow<Int> = _speedIndex.asStateFlow()
@@ -146,6 +159,55 @@ class PlayerViewModel(
     init {
         startProgressTracking()
         observeCurrentPlaybackForRecommendations()
+        observeDownloads()
+    }
+
+    private fun observeDownloads() {
+        viewModelScope.launch {
+            downloadManager.getDownloads().collect { downloads ->
+                val currentId = currentPlayback.value?.videoId.orEmpty()
+                if (currentId.isNotBlank()) {
+                    _isDownloaded.value = downloads.any { it.videoId == currentId && it.status == DownloadStatus.COMPLETED }
+                }
+            }
+        }
+    }
+
+    private fun checkDownloadedStatus(videoId: String) {
+        if (videoId.isBlank()) {
+            _isDownloaded.value = false
+            return
+        }
+        viewModelScope.launch {
+            _isDownloaded.value = downloadManager.isDownloaded(videoId)
+        }
+    }
+
+    fun showDownloadDialog() {
+        _isDownloadDialogVisible.value = true
+    }
+
+    fun dismissDownloadDialog() {
+        _isDownloadDialogVisible.value = false
+    }
+
+    fun startDownload(qualityLabel: String, downloadUrl: String, isAudioOnly: Boolean) {
+        val playback = currentPlayback.value ?: return
+        val id = playback.videoId.ifBlank { PlayerUtils.extractVideoId(playback.videoUrl) }
+        val thumbUrl = if (id.isNotBlank()) "https://i.ytimg.com/vi/$id/hqdefault.jpg" else ""
+        val request = DownloadRequest(
+            videoId = id,
+            videoUrl = playback.videoUrl,
+            title = playback.title,
+            uploader = playback.uploaderName,
+            thumbnailUrl = thumbUrl,
+            downloadUrl = downloadUrl,
+            qualityLabel = qualityLabel,
+            isAudioOnly = isAudioOnly,
+            durationMs = _durationMs.value
+        )
+        downloadManager.startDownload(request)
+        _isDownloadDialogVisible.value = false
     }
 
     fun initVideo(videoUrl: String) {
@@ -157,7 +219,11 @@ class PlayerViewModel(
                 if (playback != null) {
                     val videoKey = playback.videoId.ifBlank { playback.videoUrl }
                     checkSavedStatus(videoKey)
-                    if (playback.streamData != null) {
+                    checkDownloadedStatus(playback.videoId)
+                    if (playback.videoUrl.startsWith("file:")) {
+                        _isLoadingRecommendations.value = false
+                        _recommendedVideos.value = emptyList()
+                    } else if (playback.streamData != null) {
                         if (currentLoadedRecommendationVideoId != videoKey) {
                             currentLoadedRecommendationVideoId = videoKey
                             loadRecommendations(playback)
@@ -167,6 +233,7 @@ class PlayerViewModel(
                     }
                 } else {
                     _isSaved.value = false
+                    _isDownloaded.value = false
                     currentLoadedRecommendationVideoId = null
                     recommendationJob?.cancel()
                     _recommendedVideos.value = emptyList()

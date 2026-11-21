@@ -28,6 +28,7 @@ import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.common.BottomNavigationBar
 import com.example.yoouutt.ui.feed.FeedScreen
 import com.example.yoouutt.ui.history.HistoryScreen
+import com.example.yoouutt.ui.library.DownloadsScreen
 import com.example.yoouutt.ui.library.PlaylistsScreen
 import com.example.yoouutt.ui.library.SavedVideosScreen
 import com.example.yoouutt.ui.player.InAppPipPlayer
@@ -83,7 +84,25 @@ fun MainNavigation() {
                         },
                         onNavigateToSaved = {
                             backStack.add(SavedVideosKey)
+                        },
+                        onNavigateToDownloads = {
+                            backStack.add(DownloadsKey)
                         }
+                    )
+                }
+                entry<DownloadsKey> {
+                    DownloadsScreen(
+                        onVideoClick = { download ->
+                            playbackManager.playOfflineVideo(download)
+                            backStack.add(
+                                PlayerKey(
+                                    videoUrl = download.videoUrl,
+                                    title = download.title,
+                                    uploader = download.uploader
+                                )
+                            )
+                        },
+                        onBack = { backStack.removeLastOrNull() }
                     )
                 }
                 entry<SavedVideosKey> {

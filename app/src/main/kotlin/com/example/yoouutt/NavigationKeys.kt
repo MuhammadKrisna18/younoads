@@ -16,6 +16,9 @@ data object SettingsKey : NavKey
 data object SavedVideosKey : NavKey
 
 @Serializable
+data object DownloadsKey : NavKey
+
+@Serializable
 data object PlaylistsKey : NavKey
 
 @Serializable

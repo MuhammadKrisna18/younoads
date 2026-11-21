@@ -25,6 +25,20 @@ Didukung oleh arsitektur jaringan canggih yang memaksimalkan kecepatan pemutaran
 - **Fast-Start Buffer**: Waktu awal mulai pemutaran (buffer-for-playback) dioptimalkan hanya 600ms sehingga video memutar seketika tanpa waktu tunggu yang lama.
 - **Zero-Buffering Rewind (Media Cache 200MB)**: Potongan video yang telah diputar otomatis tersimpan dalam media cache lokal. Saat melompat mundur (seek back) atau mengulang bagian video, pemutaran langsung berjalan seketika dari penyimpanan lokal tanpa perlu buffering ulang dan tanpa memakan kuota internet.
 
+### Segmen Bab Video (Video Chapters)
+
+Menonton video berdurasi panjang, tutorial, podcast, atau album musik kini jauh lebih terarah dan efisien:
+- **Pendeteksian Bab Otomatis**: Mendukung penguraian segmen bab baik langsung dari data YouTube resmi maupun stempel waktu deskripsi pengunggah.
+- **Pemisah Bab Visual (Tick Marks)**: Bilah garis waktu (seekbar) memiliki celah penanda antar bab sehingga kamu tahu persis pergantian topik video.
+- **Badge Navigasi Scrubbing**: Saat menggeser slider, gelembung waktu menampilkan nama bab secara real-time dan judul bab aktif tertera langsung di samping penanda durasi pemutar.
+
+### Unduh & Putar Video Offline (100% Offline Mode)
+
+Simpan video dan musik favorit langsung ke penyimpanan ponsel untuk ditonton kapan pun tanpa koneksi internet:
+- **Download Latar Belakang Mandiri**: Proses unduhan berjalan di latar belakang menggunakan mesin streaming OkHttp terisolasi dengan notifikasi progres interaktif di bilah status ponsel.
+- **Tiga Pilihan Format**: Pilih kualitas video 720p MP4 untuk ketajaman visual, 360p MP4 untuk hemat penyimpanan, atau audio M4A jika hanya ingin mendengarkan musik/podcast.
+- **Pemutaran Lokal Tanpa Kuota**: Buka halaman Media Unduhan di menu Pengaturan untuk memutar berkas yang telah diunduh seketika tanpa perlu sinyal seluler atau Wi-Fi.
+
 ### Suara Tetap Jalan di Latar Belakang
 
 Ingin mendengarkan musik, podcast, atau rekaman sambil membalas pesan atau mengunci layar HP? Suara video akan tetap berputar di latar belakang dengan kontrol pemutar praktis di bilah notifikasi HP kamu.

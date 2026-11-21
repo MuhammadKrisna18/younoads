@@ -35,10 +35,13 @@ fun PlayerDetailContent(
     streamData: StreamData?,
     playlistContext: PlaylistContext? = null,
     isSaved: Boolean,
+    isDownloaded: Boolean = false,
+    downloadProgress: Int? = null,
     isDescriptionExpanded: Boolean,
     onShareClick: () -> Unit,
     onToggleSave: () -> Unit,
     onAddToPlaylistClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onToggleDescription: () -> Unit,
     onPlaylistVideoClick: ((Int) -> Unit)? = null,
@@ -109,9 +112,12 @@ fun PlayerDetailContent(
             item(key = "action_pills") {
                 PlayerActionPillRow(
                     isSaved = isSaved,
+                    isDownloaded = isDownloaded,
+                    downloadProgress = downloadProgress,
                     onShareClick = onShareClick,
                     onToggleSave = onToggleSave,
                     onAddToPlaylistClick = onAddToPlaylistClick,
+                    onDownloadClick = onDownloadClick,
                     onSettingsClick = onSettingsClick
                 )
             }

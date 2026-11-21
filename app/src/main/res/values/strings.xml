@@ -332,4 +332,20 @@
     <string name="error_load_video">Failed to load video</string>
     <string name="error_load_channel">Failed to load channel profile</string>
     <string name="error_load_playlist">Failed to load playlist</string>
+
+    <string name="player_action_download">Download</string>
+    <string name="player_action_downloaded">Downloaded</string>
+    <string name="player_action_downloading">Downloading...</string>
+    <string name="downloads_title">Downloads</string>
+    <string name="downloads_empty_title">No Downloads Yet</string>
+    <string name="downloads_empty_desc">Downloaded videos and audio will appear here and can be played offline without an internet connection.</string>
+    <string name="download_dialog_title">Download Media</string>
+    <string name="download_dialog_subtitle">Choose file quality to save on device</string>
+    <string name="download_option_high">High Quality Video (720p MP4)</string>
+    <string name="download_option_standard">Standard Video (360p MP4)</string>
+    <string name="download_option_audio">Audio Only (M4A)</string>
+    <string name="download_delete_confirm_title">Delete Download?</string>
+    <string name="download_delete_confirm_msg">This media file will be permanently removed from your device storage.</string>
+    <string name="settings_downloads_title">Offline Downloads</string>
+    <string name="settings_downloads_desc">Manage offline saved videos and music</string>
 </resources>

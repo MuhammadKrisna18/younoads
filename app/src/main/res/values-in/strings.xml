@@ -332,4 +332,20 @@
     <string name="error_load_video">Gagal memuat video</string>
     <string name="error_load_channel">Gagal memuat profil channel</string>
     <string name="error_load_playlist">Gagal memuat playlist</string>
+
+    <string name="player_action_download">Unduh</string>
+    <string name="player_action_downloaded">Diunduh</string>
+    <string name="player_action_downloading">Mengunduh...</string>
+    <string name="downloads_title">Unduhan</string>
+    <string name="downloads_empty_title">Belum Ada Unduhan</string>
+    <string name="downloads_empty_desc">Video dan audio yang kamu unduh akan tersimpan di sini dan dapat diputar secara offline tanpa kuota internet.</string>
+    <string name="download_dialog_title">Unduh Media</string>
+    <string name="download_dialog_subtitle">Pilih kualitas file untuk disimpan di memori perangkat</string>
+    <string name="download_option_high">Video Jernih (720p MP4)</string>
+    <string name="download_option_standard">Video Standar (360p MP4)</string>
+    <string name="download_option_audio">Audio Saja (M4A)</string>
+    <string name="download_delete_confirm_title">Hapus Unduhan?</string>
+    <string name="download_delete_confirm_msg">File media ini akan dihapus secara permanen dari penyimpanan perangkat kamu.</string>
+    <string name="settings_downloads_title">Media Unduhan</string>
+    <string name="settings_downloads_desc">Kelola video dan audio yang tersimpan secara offline</string>
 </resources>

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
@@ -71,6 +72,7 @@ import com.example.yoouutt.ui.theme.components.ThemeSelectionDialog
 fun SettingsScreen(
     onNavigateToPlaylists: () -> Unit,
     onNavigateToSaved: () -> Unit,
+    onNavigateToDownloads: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -207,6 +209,15 @@ fun SettingsScreen(
                     title = stringResource(R.string.settings_saved_title),
                     subtitle = stringResource(R.string.settings_saved_desc),
                     onClick = onNavigateToSaved
+                )
+            }
+
+            item {
+                SettingsActionCard(
+                    icon = Icons.Default.DownloadDone,
+                    title = stringResource(R.string.settings_downloads_title),
+                    subtitle = stringResource(R.string.settings_downloads_desc),
+                    onClick = onNavigateToDownloads
                 )
             }
 

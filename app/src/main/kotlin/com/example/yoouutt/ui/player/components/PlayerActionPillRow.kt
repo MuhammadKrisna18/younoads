@@ -10,8 +10,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.DownloadDone
+import androidx.compose.material.icons.filled.Downloading
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,9 +28,12 @@ import com.example.yoouutt.R
 @Composable
 fun PlayerActionPillRow(
     isSaved: Boolean,
+    isDownloaded: Boolean = false,
+    downloadProgress: Int? = null,
     onShareClick: () -> Unit,
     onToggleSave: () -> Unit,
     onAddToPlaylistClick: () -> Unit,
+    onDownloadClick: () -> Unit = {},
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,6 +63,24 @@ fun PlayerActionPillRow(
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onToggleSave()
+            }
+        )
+
+        ActionPill(
+            icon = when {
+                isDownloaded -> Icons.Default.DownloadDone
+                downloadProgress != null -> Icons.Default.Downloading
+                else -> Icons.Outlined.Download
+            },
+            label = when {
+                isDownloaded -> stringResource(R.string.player_action_downloaded)
+                downloadProgress != null -> "$downloadProgress%"
+                else -> stringResource(R.string.player_action_download)
+            },
+            isActive = isDownloaded || downloadProgress != null,
+            onClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onDownloadClick()
             }
         )
 

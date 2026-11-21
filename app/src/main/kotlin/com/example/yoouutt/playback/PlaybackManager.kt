@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -17,6 +18,7 @@ import com.example.yoouutt.MainActivity
 import com.example.yoouutt.data.local.PlayerPreferences
 import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.DefaultVideoQuality
+import com.example.yoouutt.data.model.DownloadedVideo
 import com.example.yoouutt.data.model.PlaylistContext
 import com.example.yoouutt.data.model.PlaylistItem
 import com.example.yoouutt.data.model.StreamData
@@ -291,6 +293,62 @@ class PlaybackManager(
                     _errorMessage.value = throwable.localizedMessage ?: "Gagal memuat video"
                 }
         }
+    }
+
+    fun playOfflineVideo(download: DownloadedVideo) {
+        saveProgress()
+        exoPlayer.stop()
+        exoPlayer.clearMediaItems()
+        _isLoading.value = true
+        _errorMessage.value = null
+        queueManager.clear()
+        _upcomingRecommendations.value = emptyList()
+
+        val fileUri = Uri.fromFile(java.io.File(download.filePath))
+        val metadata = buildMetadata(
+            title = download.title,
+            uploaderName = download.uploader,
+            videoId = download.videoId
+        )
+
+        val offlineStreamData = StreamData(
+            videoId = download.videoId,
+            title = download.title,
+            uploaderName = download.uploader,
+            streamUrl = fileUri.toString(),
+            isHls = false,
+            availableResolutions = listOf(
+                VideoResolutionOption(
+                    label = download.qualityLabel,
+                    height = 720,
+                    videoUrl = fileUri.toString(),
+                    isVideoOnly = false
+                )
+            )
+        )
+
+        _currentPlayback.value = ActivePlayback(
+            videoUrl = fileUri.toString(),
+            title = download.title,
+            uploaderName = download.uploader,
+            videoId = download.videoId,
+            streamData = offlineStreamData
+        )
+
+        _availableResolutions.value = offlineStreamData.availableResolutions
+        _currentResolution.value = offlineStreamData.availableResolutions.firstOrNull()
+        _availableAudioTracks.value = emptyList()
+        _currentAudioTrack.value = null
+        _isLoading.value = false
+
+        val mediaItem = MediaItem.Builder()
+            .setUri(fileUri)
+            .setMediaMetadata(metadata)
+            .build()
+
+        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
+        exoPlayer.play()
     }
 
     fun togglePlayPause() {

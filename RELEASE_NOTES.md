@@ -1,3 +1,21 @@
+### YounoAds v4.18 - Catatan Rilis & Pembaruan
+
+Pembaruan fitur Video Chapters (Segmen Bab Video) dan mesin Download Mode Offline mandiri dengan pemutaran 100% lokal tanpa koneksi internet:
+
+1. Video Chapters (Segmen Bab Video Terintegrasi)
+- Ekstraksi Otomatis: Mendeteksi segmen bab langsung dari metadata stream YouTube maupun penguraian stempel waktu (timestamps) pada deskripsi video secara akurat.
+- Penanda Visual pada Garis Waktu: Garis seekbar menampilkan celah batas bab (tick marks) antar segmen video.
+- Badge & Judul Bab Aktif: Saat menggeser (scrubbing), gelembung indikator menampilkan judul bab yang sedang dituju, serta judul bab yang sedang diputar tampil otomatis di bilah durasi kontrol pemutar.
+
+2. Unduhan & Pemutaran Offline Mandiri (Offline Download Mode)
+- Mesin Unduhan Latar Belakang OkHttp: Mengunduh konten video dan audio secara streaming di latar belakang dengan notifikasi progres unduhan native Android yang interaktif.
+- Pilihan Kualitas Fleksibel: Dialog pemilihan unduhan mendukung Video Kualitas Tinggi (720p MP4), Video Standar (360p MP4), dan Audio Saja (M4A).
+- Manajemen Berkas Scoped Storage: Berkas tersimpan rapi pada direktori Film/Musik perangkat dengan proteksi berkas sementara (.tmp) dan sanitasi nama berkas yang aman.
+- Layar Media Unduhan: Halaman khusus di menu Pengaturan untuk meninjau seluruh koleksi unduhan lengkap dengan ukuran berkas, progres unduhan, dan dialog konfirmasi hapus.
+- Pemutaran 100% Offline: Memutar video dan lagu unduhan langsung dari berkas lokal via ExoPlayer tanpa membutuhkan akses internet, bebas jeda buffering, dan tanpa memakan kuota data.
+
+---
+
 ### YounoAds v4.17 - Catatan Rilis & Pembaruan
 
 Pembaruan arsitektur transmisi jaringan dan mesin cache pemutaran video mandiri untuk pengalaman streaming tanpa jeda (Zero-Buffering Playback):

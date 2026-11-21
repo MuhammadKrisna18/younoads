@@ -6,6 +6,7 @@ import com.example.yoouutt.YoouuttApp
 import com.example.yoouutt.ui.channel.ChannelViewModel
 import com.example.yoouutt.ui.feed.FeedViewModel
 import com.example.yoouutt.ui.history.HistoryViewModel
+import com.example.yoouutt.ui.library.DownloadsViewModel
 import com.example.yoouutt.ui.library.LibraryViewModel
 import com.example.yoouutt.ui.player.PlayerViewModel
 import com.example.yoouutt.ui.playlist.PlaylistViewModel
@@ -34,7 +35,8 @@ object AppViewModelProvider {
                         container.historyRepository,
                         container.videoRepository,
                         container.savedVideoRepository,
-                        container.customPlaylistRepository
+                        container.customPlaylistRepository,
+                        container.downloadManager
                     ) as T
                 modelClass.isAssignableFrom(PlaylistViewModel::class.java) ->
                     PlaylistViewModel(container.videoRepository) as T
@@ -43,6 +45,8 @@ object AppViewModelProvider {
                         container.savedVideoRepository,
                         container.customPlaylistRepository
                     ) as T
+                modelClass.isAssignableFrom(DownloadsViewModel::class.java) ->
+                    DownloadsViewModel(container.downloadManager) as T
                 modelClass.isAssignableFrom(SettingsViewModel::class.java) ->
                     SettingsViewModel(container.playbackManager) as T
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

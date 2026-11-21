@@ -35,6 +35,7 @@ import com.example.yoouutt.ui.common.AppThemeBackdrop
 import com.example.yoouutt.ui.common.AppViewModelProvider
 import com.example.yoouutt.ui.player.components.AddToPlaylistBottomSheet
 import com.example.yoouutt.ui.player.components.CreatePlaylistDialog
+import com.example.yoouutt.ui.player.components.DownloadSelectionDialog
 import com.example.yoouutt.ui.player.components.PlaybackSpeedSelectionDialog
 import com.example.yoouutt.ui.player.components.PlayerDetailContent
 import com.example.yoouutt.ui.player.components.PlayerSettingsBottomSheet
@@ -63,6 +64,9 @@ fun PlayerScreen(
     val isEffectiveFullscreen = isFullscreen || isDeviceLandscape
     val isDescriptionExpanded by viewModel.isDescriptionExpanded.collectAsStateWithLifecycle()
     val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
+    val isDownloaded by viewModel.isDownloaded.collectAsStateWithLifecycle()
+    val isDownloadDialogVisible by viewModel.isDownloadDialogVisible.collectAsStateWithLifecycle()
+    val downloadProgressMap by viewModel.downloadProgressMap.collectAsStateWithLifecycle()
     val isAutoplayEnabled by viewModel.isAutoplayEnabled.collectAsStateWithLifecycle()
     val isLoopEnabled by viewModel.isLoopEnabled.collectAsStateWithLifecycle()
     val speedIndex by viewModel.speedIndex.collectAsStateWithLifecycle()
@@ -183,6 +187,7 @@ fun PlayerScreen(
                 val currentTitle = currentPlayback?.title?.takeIf { it.isNotBlank() } ?: fallbackTitle
                 val currentUploader = currentPlayback?.uploaderName?.takeIf { it.isNotBlank() } ?: fallbackUploader
                 val streamData = currentPlayback?.streamData
+                val currentDownloadProgress = currentPlayback?.videoId?.let { downloadProgressMap[it] }
 
                 PlayerDetailContent(
                     currentTitle = currentTitle,
@@ -190,10 +195,13 @@ fun PlayerScreen(
                     streamData = streamData,
                     playlistContext = playlistContext,
                     isSaved = isSaved,
+                    isDownloaded = isDownloaded,
+                    downloadProgress = currentDownloadProgress,
                     isDescriptionExpanded = isDescriptionExpanded,
                     onShareClick = { isShareSheetVisible = true },
                     onToggleSave = viewModel::toggleSave,
                     onAddToPlaylistClick = viewModel::showAddToPlaylistSheet,
+                    onDownloadClick = viewModel::showDownloadDialog,
                     onSettingsClick = viewModel::showSettingsSheet,
                     onToggleDescription = viewModel::toggleDescription,
                     onPlaylistVideoClick = viewModel::playPlaylistIndex,
@@ -309,6 +317,16 @@ fun PlayerScreen(
         CreatePlaylistDialog(
             onDismiss = viewModel::dismissCreatePlaylistDialog,
             onCreate = viewModel::createPlaylistAndAddCurrentVideo
+        )
+    }
+
+    if (isDownloadDialogVisible) {
+        DownloadSelectionDialog(
+            streamData = currentPlayback?.streamData,
+            onSelectDownload = { qualityLabel, downloadUrl, isAudioOnly ->
+                viewModel.startDownload(qualityLabel, downloadUrl, isAudioOnly)
+            },
+            onDismiss = viewModel::dismissDownloadDialog
         )
     }
 }
