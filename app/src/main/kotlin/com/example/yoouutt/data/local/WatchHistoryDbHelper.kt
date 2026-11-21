@@ -83,6 +83,25 @@ class WatchHistoryDbHelper(context: Context) : SQLiteOpenHelper(
             )
             """.trimIndent()
         )
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS $TABLE_DOWNLOADS (
+                $COL_DL_VIDEO_ID TEXT PRIMARY KEY,
+                $COL_DL_URL TEXT NOT NULL,
+                $COL_DL_TITLE TEXT NOT NULL,
+                $COL_DL_UPLOADER TEXT NOT NULL,
+                $COL_DL_THUMBNAIL TEXT NOT NULL,
+                $COL_DL_FILE_PATH TEXT NOT NULL,
+                $COL_DL_FILE_SIZE INTEGER NOT NULL DEFAULT 0,
+                $COL_DL_QUALITY TEXT NOT NULL,
+                $COL_DL_IS_AUDIO INTEGER NOT NULL DEFAULT 0,
+                $COL_DL_DURATION INTEGER NOT NULL DEFAULT 0,
+                $COL_DL_STATUS INTEGER NOT NULL DEFAULT 0,
+                $COL_DL_PROGRESS INTEGER NOT NULL DEFAULT 0,
+                $COL_DL_DOWNLOADED_AT INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -143,11 +162,32 @@ class WatchHistoryDbHelper(context: Context) : SQLiteOpenHelper(
                 """.trimIndent()
             )
         }
+        if (oldVersion < 4) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS $TABLE_DOWNLOADS (
+                    $COL_DL_VIDEO_ID TEXT PRIMARY KEY,
+                    $COL_DL_URL TEXT NOT NULL,
+                    $COL_DL_TITLE TEXT NOT NULL,
+                    $COL_DL_UPLOADER TEXT NOT NULL,
+                    $COL_DL_THUMBNAIL TEXT NOT NULL,
+                    $COL_DL_FILE_PATH TEXT NOT NULL,
+                    $COL_DL_FILE_SIZE INTEGER NOT NULL DEFAULT 0,
+                    $COL_DL_QUALITY TEXT NOT NULL,
+                    $COL_DL_IS_AUDIO INTEGER NOT NULL DEFAULT 0,
+                    $COL_DL_DURATION INTEGER NOT NULL DEFAULT 0,
+                    $COL_DL_STATUS INTEGER NOT NULL DEFAULT 0,
+                    $COL_DL_PROGRESS INTEGER NOT NULL DEFAULT 0,
+                    $COL_DL_DOWNLOADED_AT INTEGER NOT NULL
+                )
+                """.trimIndent()
+            )
+        }
     }
 
     companion object {
         const val DATABASE_NAME = "younoads_history.db"
-        const val DATABASE_VERSION = 3
+        const val DATABASE_VERSION = 4
         const val TABLE_NAME = "watch_history"
         const val COL_VIDEO_ID = "video_id"
         const val COL_VIDEO_URL = "video_url"
@@ -193,5 +233,20 @@ class WatchHistoryDbHelper(context: Context) : SQLiteOpenHelper(
         const val COL_CPI_DURATION = "duration"
         const val COL_CPI_ADDED_AT = "added_at"
         const val COL_CPI_SORT_ORDER = "sort_order"
+
+        const val TABLE_DOWNLOADS = "downloaded_videos"
+        const val COL_DL_VIDEO_ID = "video_id"
+        const val COL_DL_URL = "video_url"
+        const val COL_DL_TITLE = "title"
+        const val COL_DL_UPLOADER = "uploader_name"
+        const val COL_DL_THUMBNAIL = "thumbnail_url"
+        const val COL_DL_FILE_PATH = "file_path"
+        const val COL_DL_FILE_SIZE = "file_size_bytes"
+        const val COL_DL_QUALITY = "quality_label"
+        const val COL_DL_IS_AUDIO = "is_audio_only"
+        const val COL_DL_DURATION = "duration_ms"
+        const val COL_DL_STATUS = "download_status"
+        const val COL_DL_PROGRESS = "download_progress"
+        const val COL_DL_DOWNLOADED_AT = "downloaded_at"
     }
 }
