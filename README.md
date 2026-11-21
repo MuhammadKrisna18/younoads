@@ -26,15 +26,24 @@ Ingin mendengarkan musik, podcast, atau rekaman sambil membalas pesan atau mengu
 
 Saat sedang memutar video, kamu cukup mengusap layar ke atas atau menekan tombol Home untuk kembali ke menu utama ponsel. Video akan otomatis mengecil menjadi jendela mengambang di pojok layar sehingga kamu bisa menonton sambil membuka aplikasi lain. Di jendela mengambang ini, kamu juga bisa langsung menjeda, melompat mundur, atau berganti ke mode suara saja.
 
-### Koleksi 21 Pilihan Tema Menarik
+### Koleksi 31 Pilihan Tema Menarik
 
-Tampilan aplikasi bisa disesuaikan dengan suasana hatimu. Tersedia 21 tema pilihan yang dikelompokkan dengan rapi ke dalam tiga kategori:
+Tampilan aplikasi bisa disesuaikan dengan suasana hatimu. Tersedia 31 tema pilihan yang dikelompokkan dengan rapi ke dalam lima kategori:
 
 - **Standar**: Pilihan Hitam Doff murni yang hemat baterai layar AMOLED dan Putih Bersih yang cerah dan rapi.
-- **Anime & Musiman**: 10 tema estetik dengan karakter maskot anime Youno-chan, mulai dari suasana Cyberpunk, Sakura mekar, City Pop 80-an, Mecha futuristik, hingga 4 musim Jepang (Natsu Umi di pantai musim panas, Momiji di musim gugur, Fuyu Yuki di tengah salju, kedai teh Matcha Zen, palung laut Ocean Abyss, dan lukisan tinta Sumi-e).
+- **Anime & Musiman**: 10 tema estetik dengan karakter maskot anime Youno-chan, mulai dari suasana Cyberpunk Neo-Tokyo, Sakura mekar, City Pop 80-an, Mecha futuristik, hingga 4 musim Jepang (Natsu Umi di pantai musim panas, Momiji di musim gugur, Fuyu Yuki di tengah salju, kedai teh Matcha Zen, palung laut Ocean Abyss, dan lukisan tinta Sumi-e).
+- **Dinamis (Material You)**: 5 tema dinamis berbasis Monet Engine yang mengekstrak palet warna dari wallpaper ponselmu secara otomatis (Material Gelap Dinamis, AMOLED Hitam Dinamis, Material Terang Dinamis, Dinamis Cerah Menyala, dan Kaca Transparan Dinamis).
+- **Siklus Waktu (Smart Cycle)**: 5 tema cerdas yang otomatis berevolusi dan bertransisi mengikuti jam nyata dari pagi, siang, senja, malam, hingga tengah malam (Siklus Karakter Youno-chan, Siklus Sirkadian Ramah Mata, Siklus Panorama Alam & Musim, Siklus Estetika Digital Retro, dan Siklus Dinamis Siang & Malam).
 - **Khusus & Malam**: 9 palet warna populer seperti tema Dracula, Nord dingin, Catppuccin pastel, nuansa konsol retro Game Boy, layar terminal hijau klasik, mode sepia malam yang ramah mata, hingga merah redup agar tidak silau di ruangan gelap.
 
 Garis waktu pemutar video (slider) juga otomatis memancarkan gradien warna yang serasi dengan tema yang sedang kamu gunakan.
+
+### Ilustrasi Status Kosong Cerdas (Theme-Adaptive Empty State)
+
+Saat halaman belum memiliki konten (seperti Video Tersimpan, Riwayat Tontonan, Detail Daftar Putar Kustom, atau Hasil Pencarian), tampilan status kosong otomatis menyesuaikan diri:
+- **Tema Anime & Siklus Karakter**: Menampilkan artwork karakter anime tema aktif yang serasi.
+- **Tema Non-Anime**: Menampilkan ikon vektor bertema yang minimalis, modern, dan bersih tanpa gambar anime.
+- Seluruh teks dan tombol aksi otomatis mengikuti palet warna Material 3 tema aktif.
 
 ### Bebas Atur Kualitas Video
 
@@ -43,7 +52,7 @@ Garis waktu pemutar video (slider) juga otomatis memancarkan gradien warna yang 
 
 ### Kontrol Praktis & Gestur Ketuk Cepat
 
-- **Lompatan Waktu Ketuk Ganda**: Cukup ketuk dua kali di sisi kanan layar untuk melompat maju, atau sisi kiri untuk mundur. Kamu juga bisa mengetuk berulang kali untuk melompat lebih jauh (10, 15, 20 detik). Interval lompatan bisa diatur sesukamu di menu pengaturan.
+- **Lompatan Waktu Ketuk Ganda (Standar YouTube)**: Cukup ketuk dua kali di sisi kanan layar untuk melompat maju, atau sisi kiri untuk mundur. Dilengkapi jendela waktu responsif 1200ms sesuai standar resmi YouTube, kamu bisa mengetuk berulang kali untuk melompat lebih jauh (10, 15, 20 detik). Interval lompatan bisa diatur sesukamu di menu pengaturan.
 - **Kecepatan Putar Fleksibel**: Video bisa diperlambat (0.5x, 0.75x) atau dipercepat (1.25x hingga 2.0x) dengan mudah.
 
 ### Lanjut Tonton Otomatis (Auto-Resume)

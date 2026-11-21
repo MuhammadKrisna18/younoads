@@ -1,25 +1,32 @@
-### YounoAds v4.13 - Catatan Rilis & Pembaruan
+### YounoAds v4.14 - Catatan Rilis & Pembaruan
 
-Pembaruan transisi navigasi global Seamless Crossfade, integrasi tema dinamis pada pemutar video dan layar status kosong, serta peningkatan kenyamanan pemutaran:
+Pembaruan besar sistem tema visual dengan penambahan kategori Dynamic System (Material You) dan Time-Adaptive (Smart Cycle), integrasi mesin deteksi waktu lokal, dan optimalisasi status visual:
 
-1. Transisi Navigasi Global Seamless Crossfade
-- Menyeragamkan seluruh transisi halaman menggunakan animasi Seamless Crossfade (fadeIn 160ms dan fadeOut 130ms) yang tersentralisasi pada NavigationTransitions.
-- Menghadirkan ilusi visual yang memukau di mana wallpaper karakter tema tetap stabil dan diam sempurna saat berpindah halaman tanpa ada robekan maupun tabrakan animasi.
+1. Kategori Baru: Dynamic System (Material You Monet Engine)
+- Menghadirkan 5 tema dinamis baru yang mengekstrak palet warna wallpaper perangkat pengguna secara otomatis pada Android 12+ (API 31+):
+  - Dynamic Material Dark: Mode gelap Material 3 yang menyatu dengan wallpaper ponsel.
+  - Dynamic AMOLED Black: Latar 100% hitam pekat hemat daya dengan aksen warna wallpaper.
+  - Dynamic Material Light: Tampilan terang bersih yang selaras dengan warna perangkat.
+  - Dynamic Vibrant Pulse: Kontras gelap dengan aksen warna dinamis bersaturasi tinggi.
+  - Dynamic Frosted Glass: Nuansa permukaan akrilik lembut dengan sentuhan warna wallpaper.
+- Dilengkapi skema warna fallback Google Material 3 Baseline yang aman untuk perangkat Android di bawah versi 12.
 
-2. Wallpaper Karakter Tema pada Layar Pemutar Video
-- Menghadirkan artwork karakter tema aktif pada layar pemutar video (PlayerScreen) saat mode potret dengan gradasi scrim gelap yang elegan di balik detail dan rekomendasi video.
-- Menjaga area video player (16:9) serta mode layar penuh (landscape) tetap 100% hitam pekat untuk memaksimalkan fokus menonton.
+2. Kategori Baru: Time-Adaptive / Smart Cycle (Siklus Waktu Pintar)
+- Memperkenalkan 5 tema siklus waktu otomatis yang berevolusi sepanjang hari berdasarkan jam nyata:
+  - Siklus Karakter Youno-chan: Sakura Lo-Fi pagi hari, Matcha Zen siang hari, City Pop senja, Cyberpunk Neo-Tokyo malam hari, dan Ocean Abyss tengah malam.
+  - Siklus Sirkadian Ramah Mata: Putih Bersih pagi hari, Kontras Tinggi siang hari, Sepia Malam senja, Hitam Doff malam hari, dan AMOLED Merah Redup tengah malam.
+  - Siklus Panorama Alam & Musim: Fuyu Yuki fajar salju, Matcha Zen siang, Momiji Autumn senja maple, Sumi-e Ink malam, dan Ocean Abyss larut malam.
+  - Siklus Estetika Digital Retro: Retro Pixel Game Boy siang hari, Vaporwave senja 90-an, Dracula Developer malam hari, dan Terminal Hacker CRT tengah malam.
+  - Siklus Dinamis Siang & Malam: Dynamic Light siang hari, Dynamic Frosted senja, Dynamic Dark malam hari, dan Dynamic AMOLED tengah malam.
 
-3. Ilustrasi Status Kosong Dinamis Mengikuti Tema (Theme-Adaptive Empty State)
-- Halaman tanpa konten (Video Tersimpan, Riwayat Tontonan, Detail Daftar Putar Kustom, dan Hasil Pencarian) kini secara cerdas menyesuaikan tampilannya dengan tema aktif.
-- Pada tema anime: Menampilkan karakter anime dari tema aktif yang sedang dipilih (Cyberpunk, Sakura Lo-Fi, City Pop, Mecha, Natsu Umi, Momiji, Fuyu Yuki, Matcha Zen, Ocean Abyss, Sumi-e).
-- Pada tema non-anime: Menampilkan ikon vektor minimalis modern (Bookmark, History, Playlist, Search) di dalam lencana bertema tanpa menampilkan ilustrasi anime.
-- Seluruh teks dan tombol pada status kosong kini dinamis mengikuti palet warna Material 3 tema aktif.
+3. Arsitektur SmartTimeEngine Reaktif & Hemat Daya
+- Mesin waktu cerdas mendeteksi 5 fase waktu lokal (Pagi, Siang, Senja, Malam, dan Larut Malam) menggunakan siaran OS Android native (ACTION_TIME_TICK) tanpa proses background polling yang menguras baterai.
+- Tema aktif dan warna antarmuka bertransisi tepat waktu saat jam berganti.
 
-4. Penyesuaian Durasi Double Tap to Seek (Standar YouTube)
-- Memperpanjang toleransi waktu ketukan beruntun dan tampilan indikator visual lompat waktu dari 800ms menjadi 1200ms mengikuti standar resmi YouTube.
-- Memberikan kenyamanan lebih bagi jari pengguna untuk menambah lompatan durasi video tanpa terburu-buru.
+4. Status Kosong Adaptif Tema (Theme-Adaptive Empty State)
+- Menampilkan ilustrasi karakter anime pada tema kategori Anime dan tema siklus berkarakter.
+- Menampilkan ikon vektor bertema yang minimalis, rapi, dan bersih pada tema non-anime.
 
-5. Perapihan Komponen Pemutar Video
-- Menghapus tombol duplikat Salin Tautan pada baris aksi PlayerScreen karena fungsi salin tautan (dengan atau tanpa stempel waktu) sudah terintegrasi secara lengkap di dalam panel Berbagi (Share).
-- Membersihkan dead code dan parameter tak terpakai pada komponen PlayerActionPillRow dan PlayerDetailContent.
+5. Peningkatan UI Dialog Pemilihan Tema
+- Baris tab kategori tema kini mendukung scroll horizontal mulus sehingga seluruh kategori (Standar, Anime, Dinamis, Siklus Waktu, Khusus) tertata rapi tanpa terpotong.
+- Penambahan badge khusus "Siklus" dan indikator 3 titik warna representasi pergantian waktu pada tema siklus.
