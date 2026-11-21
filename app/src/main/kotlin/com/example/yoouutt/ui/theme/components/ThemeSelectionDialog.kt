@@ -212,7 +212,8 @@ fun ThemeSelectionDialog(
                                     ) {
                                         Text(
                                             text = stringResource(
-                                                if (theme.isLight) R.string.theme_badge_light
+                                                if (theme.category == ThemeCategory.TIME_ADAPTIVE) R.string.theme_badge_cycle
+                                                else if (theme.isLight) R.string.theme_badge_light
                                                 else R.string.theme_badge_dark
                                             ),
                                             fontSize = 10.sp,

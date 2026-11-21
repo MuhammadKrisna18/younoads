@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.yoouutt.ui.theme.time.SmartTimeEngine
 
 private val Shapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
@@ -519,6 +520,11 @@ fun AppTheme.gradientColors(context: Context? = null): List<Color> = when (this)
             listOf(Color(0xFFB0C6FF), Color(0xFFD8E2FF))
         }
     }
+    AppTheme.TIME_YOUNO_CYCLE,
+    AppTheme.TIME_CIRCADIAN,
+    AppTheme.TIME_NATURE,
+    AppTheme.TIME_RETRO,
+    AppTheme.TIME_DYNAMIC -> SmartTimeEngine.resolveTheme(this).gradientColors(context)
     AppTheme.DRACULA -> listOf(DraculaPink, DraculaPurple)
     AppTheme.NORD -> listOf(NordFrostTeal, NordFrostBlue)
     AppTheme.CATPPUCCIN_MOCHA -> listOf(MochaMauve, MochaPink)
@@ -581,6 +587,19 @@ fun AppTheme.previewColors(context: Context? = null): List<Color> = when (this) 
             listOf(scheme.primary, scheme.secondary, Color(0xFF12141A))
         } else {
             listOf(Color(0xFFB0C6FF), Color(0xFFD8E2FF), Color(0xFF12141A))
+        }
+    }
+    AppTheme.TIME_YOUNO_CYCLE -> listOf(SakuraPink, SunsetOrange, ElectricCyan)
+    AppTheme.TIME_CIRCADIAN -> listOf(Color(0xFF065FD4), SepiaAmber, AmoledRedupCrimson)
+    AppTheme.TIME_NATURE -> listOf(FuyuPrimary, MomijiPrimary, SumiePrimary)
+    AppTheme.TIME_RETRO -> listOf(RetroPixelBright, VaporwaveHotPink, TerminalGreen)
+    AppTheme.TIME_DYNAMIC -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val light = dynamicLightColorScheme(context)
+            val dark = dynamicDarkColorScheme(context)
+            listOf(light.primary, dark.secondary, dark.primary)
+        } else {
+            listOf(Color(0xFF6750A4), Color(0xFFB0C6FF), Color(0xFF80D4FF))
         }
     }
     AppTheme.DRACULA -> listOf(DraculaPink, DraculaCyan, DraculaBackground)
@@ -679,6 +698,11 @@ fun AppTheme.colorScheme(context: Context? = null): ColorScheme = when (this) {
     AppTheme.SEPIA_MALAM -> SepiaMalamColorScheme
     AppTheme.KONTRAS_TINGGI -> KontrasTinggiColorScheme
     AppTheme.AMOLED_REDUP -> AmoledRedupColorScheme
+    AppTheme.TIME_YOUNO_CYCLE,
+    AppTheme.TIME_CIRCADIAN,
+    AppTheme.TIME_NATURE,
+    AppTheme.TIME_RETRO,
+    AppTheme.TIME_DYNAMIC -> SmartTimeEngine.resolveTheme(this).colorScheme(context)
 }
 
 @Composable
@@ -687,12 +711,13 @@ fun YoouuttTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+    val effectiveTheme = SmartTimeEngine.rememberEffectiveTheme(appTheme)
     CompositionLocalProvider(
-        LocalYoouuttTheme provides appTheme,
-        LocalYoouuttGradient provides appTheme.gradient(context)
+        LocalYoouuttTheme provides effectiveTheme,
+        LocalYoouuttGradient provides effectiveTheme.gradient(context)
     ) {
         MaterialTheme(
-            colorScheme = appTheme.colorScheme(context),
+            colorScheme = effectiveTheme.colorScheme(context),
             typography = Typography,
             shapes = Shapes,
             content = content

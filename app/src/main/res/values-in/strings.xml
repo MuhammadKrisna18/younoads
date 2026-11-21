@@ -88,10 +88,12 @@
     <string name="theme_category_standard">Standar</string>
     <string name="theme_category_anime">Anime</string>
     <string name="theme_category_dynamic">Dinamis</string>
+    <string name="theme_category_time_adaptive">Siklus Waktu</string>
     <string name="theme_category_special">Khusus</string>
     <string name="theme_badge_dark">Gelap</string>
     <string name="theme_badge_light">Terang</string>
     <string name="theme_badge_character">Karakter</string>
+    <string name="theme_badge_cycle">Siklus</string>
 
     <string name="theme_cyberpunk_name">Cyberpunk Neo-Tokyo</string>
     <string name="theme_cyberpunk_desc">Hitam pekat, sian elektrik, magenta neon &amp; hologram Youno-chan</string>
@@ -116,6 +118,17 @@
     <string name="theme_dynamic_vibrant_desc">Aksen saturasi dinamis paling menyala di atas kanvas gelap pekat</string>
     <string name="theme_dynamic_frosted_name">Kaca Transparan Dinamis</string>
     <string name="theme_dynamic_frosted_desc">Permukaan akrilik lembut dengan sentuhan warna dari wallpaper ponsel</string>
+
+    <string name="theme_time_youno_name">Siklus Karakter Youno-chan</string>
+    <string name="theme_time_youno_desc">Sakura pagi, Matcha siang, City Pop senja, Cyberpunk malam, Palung Laut larut malam</string>
+    <string name="theme_time_circadian_name">Siklus Sirkadian Ramah Mata</string>
+    <string name="theme_time_circadian_desc">Terang bersih siang, sepia senja, hitam murni malam, amoled redup larut malam</string>
+    <string name="theme_time_nature_name">Siklus Panorama Alam &amp; Musim</string>
+    <string name="theme_time_nature_desc">Salju dingin fajar, kedai teh siang, daun maple senja, lukisan tinta malam</string>
+    <string name="theme_time_retro_name">Siklus Estetika Digital Retro</string>
+    <string name="theme_time_retro_desc">Pixel retro siang, vaporwave senja 90-an, ungu dracula malam, terminal hacker tengah malam</string>
+    <string name="theme_time_dynamic_name">Siklus Dinamis Siang &amp; Malam</string>
+    <string name="theme_time_dynamic_desc">Material terang siang, akrilik senja, gelap dinamis malam, hitam amoled tengah malam</string>
 
     <string name="theme_dracula_name">Dracula Developer</string>
     <string name="theme_dracula_desc">Palet ungu gelap, merah muda neon dan sian klasik developer</string>

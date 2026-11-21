@@ -10,6 +10,7 @@ enum class ThemeCategory(
     STANDAR(R.string.theme_category_standard),
     ANIME(R.string.theme_category_anime),
     DYNAMIC(R.string.theme_category_dynamic),
+    TIME_ADAPTIVE(R.string.theme_category_time_adaptive),
     SPECIAL(R.string.theme_category_special)
 }
 
@@ -301,6 +302,58 @@ enum class AppTheme(
         hologramAlpha = 0f,
         displayName = "Dynamic Frosted Glass",
         description = "Soft translucent acrylic surface with wallpaper-toned highlights"
+    ),
+    TIME_YOUNO_CYCLE(
+        id = "TIME_YOUNO_CYCLE",
+        category = ThemeCategory.TIME_ADAPTIVE,
+        titleRes = R.string.theme_time_youno_name,
+        descriptionRes = R.string.theme_time_youno_desc,
+        hasHologramBackdrop = true,
+        hologramAlpha = 0.55f,
+        backdropResId = R.drawable.youno_backdrop,
+        displayName = "Youno-chan Anime Cycle",
+        description = "Sakura morning, Matcha noon, City Pop dusk, Cyberpunk night, Abyss late night"
+    ),
+    TIME_CIRCADIAN(
+        id = "TIME_CIRCADIAN",
+        category = ThemeCategory.TIME_ADAPTIVE,
+        titleRes = R.string.theme_time_circadian_name,
+        descriptionRes = R.string.theme_time_circadian_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Circadian Eye Care Cycle",
+        description = "Light morning, High Contrast noon, Warm Sepia dusk, Stealth Black night, Red Vision midnight"
+    ),
+    TIME_NATURE(
+        id = "TIME_NATURE",
+        category = ThemeCategory.TIME_ADAPTIVE,
+        titleRes = R.string.theme_time_nature_name,
+        descriptionRes = R.string.theme_time_nature_desc,
+        hasHologramBackdrop = true,
+        hologramAlpha = 0.5f,
+        backdropResId = R.drawable.youno_backdrop_fuyu,
+        displayName = "Four Seasons Nature Cycle",
+        description = "Fuyu Yuki cool dawn, Matcha Zen afternoon, Momiji Autumn sunset, Sumi-e Ink night"
+    ),
+    TIME_RETRO(
+        id = "TIME_RETRO",
+        category = ThemeCategory.TIME_ADAPTIVE,
+        titleRes = R.string.theme_time_retro_name,
+        descriptionRes = R.string.theme_time_retro_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Digital Retro Neon Cycle",
+        description = "Pixel daylight, Vaporwave 90s dusk, Dracula night, Terminal Hacker midnight"
+    ),
+    TIME_DYNAMIC(
+        id = "TIME_DYNAMIC",
+        category = ThemeCategory.TIME_ADAPTIVE,
+        titleRes = R.string.theme_time_dynamic_name,
+        descriptionRes = R.string.theme_time_dynamic_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Dynamic Monet Day-to-Night",
+        description = "Dynamic Light daytime, Frosted Glass sunset, Material Dark night, AMOLED midnight"
     );
 
     companion object {

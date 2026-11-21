@@ -88,10 +88,12 @@
     <string name="theme_category_standard">Standard</string>
     <string name="theme_category_anime">Anime</string>
     <string name="theme_category_dynamic">Dynamic</string>
+    <string name="theme_category_time_adaptive">Time Cycle</string>
     <string name="theme_category_special">Special</string>
     <string name="theme_badge_dark">Dark</string>
     <string name="theme_badge_light">Light</string>
     <string name="theme_badge_character">Character</string>
+    <string name="theme_badge_cycle">Cycle</string>
 
     <string name="theme_cyberpunk_name">Cyberpunk Neo-Tokyo</string>
     <string name="theme_cyberpunk_desc">Void black, electric cyan, neon magenta &amp; hologram Youno-chan</string>
@@ -116,6 +118,17 @@
     <string name="theme_dynamic_vibrant_desc">High-saturation dynamic wallpaper accents on deep dark surface</string>
     <string name="theme_dynamic_frosted_name">Dynamic Frosted Glass</string>
     <string name="theme_dynamic_frosted_desc">Soft dynamic acrylic surface with wallpaper-toned highlights</string>
+
+    <string name="theme_time_youno_name">Youno-chan Anime Cycle</string>
+    <string name="theme_time_youno_desc">Sakura morning, Matcha noon, City Pop dusk, Cyberpunk night, Abyss late night</string>
+    <string name="theme_time_circadian_name">Circadian Eye Care</string>
+    <string name="theme_time_circadian_desc">Clean light midday, warm sepia sunset, stealth black night, red vision midnight</string>
+    <string name="theme_time_nature_name">Four Seasons Nature</string>
+    <string name="theme_time_nature_desc">Cool snow dawn, zen tea afternoon, autumn maple sunset, sumi-e ink night</string>
+    <string name="theme_time_retro_name">Digital Retro Neon</string>
+    <string name="theme_time_retro_desc">Retro pixel midday, 90s vaporwave sunset, dracula purple night, hacker green midnight</string>
+    <string name="theme_time_dynamic_name">Dynamic Monet Day-to-Night</string>
+    <string name="theme_time_dynamic_desc">Clean light day, frosted sunset, dynamic dark evening, true black amoled midnight</string>
 
     <string name="theme_dracula_name">Dracula Developer</string>
     <string name="theme_dracula_desc">Vampire purple, neon pink and cyan palette for developers</string>

@@ -36,7 +36,8 @@ fun ThemeAdaptiveEmptyIllustration(
     val themeGradient = LocalYoouuttGradient.current
     val backdropResId = theme.backdropResId
 
-    if (theme.category == ThemeCategory.ANIME && backdropResId != null) {
+    val isAnimeTheme = theme.category == ThemeCategory.ANIME || (theme.category == ThemeCategory.TIME_ADAPTIVE && theme.hasHologramBackdrop)
+    if (isAnimeTheme && backdropResId != null) {
         Box(
             modifier = modifier
                 .size(animeSize)
