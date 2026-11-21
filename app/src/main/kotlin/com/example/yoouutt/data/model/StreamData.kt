@@ -20,6 +20,11 @@ data class AudioTrackOption(
     val bitrate: Int = 0
 )
 
+data class VideoChapter(
+    val title: String,
+    val startTimeSeconds: Long
+)
+
 data class StreamData(
     val videoId: String,
     val title: String,
@@ -36,5 +41,6 @@ data class StreamData(
     val availableResolutions: List<VideoResolutionOption> = emptyList(),
     val selectedResolution: VideoResolutionOption? = null,
     val availableAudioTracks: List<AudioTrackOption> = emptyList(),
-    val selectedAudioTrack: AudioTrackOption? = null
+    val selectedAudioTrack: AudioTrackOption? = null,
+    val chapters: List<VideoChapter> = emptyList()
 )

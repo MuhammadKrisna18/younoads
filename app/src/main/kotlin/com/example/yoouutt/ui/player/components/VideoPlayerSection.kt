@@ -69,6 +69,8 @@ fun VideoPlayerSection(
     val scrubPositionMs by viewModel.scrubPositionMs.collectAsStateWithLifecycle()
     val controlsVisible by viewModel.controlsVisible.collectAsStateWithLifecycle()
     val seekFeedback by viewModel.seekFeedback.collectAsStateWithLifecycle()
+    val currentPlayback by viewModel.currentPlayback.collectAsStateWithLifecycle()
+    val chapters = currentPlayback?.streamData?.chapters.orEmpty()
 
     Box(modifier = modifier) {
         if (isLoading) {
@@ -163,7 +165,8 @@ fun VideoPlayerSection(
                 hasPrevious = hasPrevious,
                 hasNext = hasNext,
                 onPreviousClick = onPreviousClick,
-                onNextClick = onNextClick
+                onNextClick = onNextClick,
+                chapters = chapters
             )
 
             seekFeedback?.let { feedback ->
@@ -182,6 +185,7 @@ fun VideoPlayerSection(
                     currentPositionMs = currentPositionMs,
                     bufferedPositionMs = bufferedPositionMs,
                     durationMs = durationMs,
+                    chapters = chapters,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }

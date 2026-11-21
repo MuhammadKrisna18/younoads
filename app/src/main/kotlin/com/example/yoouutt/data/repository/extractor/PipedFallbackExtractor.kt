@@ -245,7 +245,8 @@ class PipedFallbackExtractor(
             availableResolutions = sortedResolutions,
             selectedResolution = selectedResolution,
             availableAudioTracks = audioOptions,
-            selectedAudioTrack = audioOptions.firstOrNull()
+            selectedAudioTrack = audioOptions.firstOrNull(),
+            chapters = ChapterExtractor.parseChaptersFromDescription(description)
         )
     }
 
@@ -420,7 +421,8 @@ class PipedFallbackExtractor(
             availableResolutions = sortedResolutions,
             selectedResolution = selectedResolution,
             availableAudioTracks = audioOptions,
-            selectedAudioTrack = audioOptions.firstOrNull()
+            selectedAudioTrack = audioOptions.firstOrNull(),
+            chapters = ChapterExtractor.parseChaptersFromDescription(description)
         )
     }
 }

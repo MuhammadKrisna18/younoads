@@ -35,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +44,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.MaterialTheme
 import com.example.yoouutt.R
+import com.example.yoouutt.data.model.VideoChapter
 import com.example.yoouutt.ui.player.PlayerUtils
 import com.example.yoouutt.ui.theme.LocalYoouuttGradient
 
@@ -71,6 +74,7 @@ fun BoxScope.PlayerControlsOverlay(
     hasNext: Boolean = false,
     onPreviousClick: () -> Unit = {},
     onNextClick: () -> Unit = {},
+    chapters: List<VideoChapter> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
@@ -206,18 +210,44 @@ fun BoxScope.PlayerControlsOverlay(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val currentChapterTitle = remember(chapters, currentPositionMs) {
+                        chapters.lastOrNull { (it.startTimeSeconds * 1000L) <= currentPositionMs }?.title
+                    }
+
                     Box(
                         modifier = Modifier
+                            .weight(1f, fill = false)
                             .clip(RoundedCornerShape(4.dp))
                             .background(Color.Black.copy(alpha = 0.5f))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
-                        Text(
-                            text = "${PlayerUtils.formatTime(currentPositionMs)} / ${PlayerUtils.formatTime(durationMs)}",
-                            fontSize = 11.5.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "${PlayerUtils.formatTime(currentPositionMs)} / ${PlayerUtils.formatTime(durationMs)}",
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White
+                            )
+                            if (!currentChapterTitle.isNullOrBlank()) {
+                                Text(
+                                    text = "•",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White.copy(alpha = 0.6f)
+                                )
+                                Text(
+                                    text = currentChapterTitle,
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
                     }
 
                     Row(
@@ -279,6 +309,7 @@ fun BoxScope.PlayerControlsOverlay(
                     durationMs = durationMs,
                     onScrubbing = onScrubbing,
                     onSeek = onSeek,
+                    chapters = chapters,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = if (isFullscreen) 16.dp else 0.dp)

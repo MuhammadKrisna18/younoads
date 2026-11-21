@@ -29,13 +29,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yoouutt.data.model.VideoChapter
 import com.example.yoouutt.ui.player.PlayerUtils
 import com.example.yoouutt.ui.theme.LocalYoouuttTheme
 import com.example.yoouutt.ui.theme.gradientColors
@@ -48,7 +51,8 @@ fun InteractiveSeekBar(
     durationMs: Long,
     onScrubbing: (Boolean, Long) -> Unit,
     onSeek: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chapters: List<VideoChapter> = emptyList()
 ) {
     val view = LocalView.current
     val context = LocalContext.current
@@ -164,6 +168,23 @@ fun InteractiveSeekBar(
                 )
             }
 
+            if (chapters.size >= 2) {
+                val gapStroke = 2.dp.toPx()
+                val gapHalf = trackStroke / 2f + 1.dp.toPx()
+                chapters.drop(1).forEach { chapter ->
+                    val chapterMs = chapter.startTimeSeconds * 1000L
+                    if (chapterMs in 1 until totalDuration) {
+                        val chapterX = (chapterMs.toFloat() / totalDuration.toFloat()) * canvasWidth
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(chapterX, trackY - gapHalf),
+                            end = Offset(chapterX, trackY + gapHalf),
+                            strokeWidth = gapStroke
+                        )
+                    }
+                }
+            }
+
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = thumbColors,
@@ -186,24 +207,34 @@ fun InteractiveSeekBar(
         if (isDragging) {
             val scrubMs = (dragProgress * totalDuration).toLong()
             val timeText = PlayerUtils.formatTime(scrubMs)
-            val badgeWidthApprox = with(density) { 56.dp.toPx() }
+            val activeChapter = chapters.lastOrNull { (it.startTimeSeconds * 1000L) <= scrubMs }
+            val badgeText = if (activeChapter != null && activeChapter.title.isNotBlank()) {
+                "$timeText • ${activeChapter.title}"
+            } else {
+                timeText
+            }
+            var badgeWidthPx by remember { mutableFloatStateOf(0f) }
+            val badgeWidthCalculated = if (badgeWidthPx > 0f) badgeWidthPx else with(density) { (if (activeChapter != null) 120.dp else 56.dp).toPx() }
             val thumbX = totalWidthPx * dragProgress
-            val badgeOffsetX = (thumbX - badgeWidthApprox / 2f)
-                .coerceIn(0f, (totalWidthPx - badgeWidthApprox).coerceAtLeast(0f))
+            val badgeOffsetX = (thumbX - badgeWidthCalculated / 2f)
+                .coerceIn(8f, (totalWidthPx - badgeWidthCalculated - 8f).coerceAtLeast(8f))
             val badgeOffsetY = with(density) { (-44).dp.roundToPx() }
 
             Box(
                 modifier = Modifier
                     .offset { IntOffset(badgeOffsetX.roundToInt(), badgeOffsetY) }
+                    .onSizeChanged { badgeWidthPx = it.width.toFloat() }
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color.Black.copy(alpha = 0.85f))
                     .padding(horizontal = 8.dp, vertical = 3.dp)
             ) {
                 Text(
-                    text = timeText,
+                    text = badgeText,
                     color = Color.White,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -215,7 +246,8 @@ fun MinimalBottomProgressBar(
     currentPositionMs: Long,
     bufferedPositionMs: Long,
     durationMs: Long,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chapters: List<VideoChapter> = emptyList()
 ) {
     val theme = LocalYoouuttTheme.current
     val context = LocalContext.current
@@ -264,6 +296,23 @@ fun MinimalBottomProgressBar(
                 strokeWidth = stroke
             )
         }
+
+        if (chapters.size >= 2) {
+            val gapStroke = 1.5.dp.toPx()
+            val gapHalf = stroke / 2f + 0.5.dp.toPx()
+            chapters.drop(1).forEach { chapter ->
+                val chapterMs = chapter.startTimeSeconds * 1000L
+                if (chapterMs in 1 until totalDuration) {
+                    val chapterX = (chapterMs.toFloat() / totalDuration.toFloat()) * canvasWidth
+                    drawLine(
+                        color = Color.Black,
+                        start = Offset(chapterX, centerY - gapHalf),
+                        end = Offset(chapterX, centerY + gapHalf),
+                        strokeWidth = gapStroke
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -275,7 +324,8 @@ fun YouTubeBottomSlider(
     isControlsVisible: Boolean,
     onScrubbing: (Boolean, Long) -> Unit,
     onSeek: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chapters: List<VideoChapter> = emptyList()
 ) {
     if (isControlsVisible) {
         InteractiveSeekBar(
@@ -284,14 +334,16 @@ fun YouTubeBottomSlider(
             durationMs = durationMs,
             onScrubbing = onScrubbing,
             onSeek = onSeek,
-            modifier = modifier
+            modifier = modifier,
+            chapters = chapters
         )
     } else {
         MinimalBottomProgressBar(
             currentPositionMs = currentPositionMs,
             bufferedPositionMs = bufferedPositionMs,
             durationMs = durationMs,
-            modifier = modifier
+            modifier = modifier,
+            chapters = chapters
         )
     }
 }

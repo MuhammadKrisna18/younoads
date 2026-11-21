@@ -212,6 +212,8 @@ class StreamExtractionHelper(
                 emptyList()
             }
 
+            val chapters = ChapterExtractor.extractChapters(streamExtractor, cleanDesc)
+
             val streamData = StreamData(
                 videoId = streamExtractor.id,
                 streamUrl = streamUrl,
@@ -228,7 +230,8 @@ class StreamExtractionHelper(
                 availableResolutions = availableResolutions,
                 selectedResolution = selectedResolution,
                 availableAudioTracks = availableAudioTracks,
-                selectedAudioTrack = selectedAudioTrack
+                selectedAudioTrack = selectedAudioTrack,
+                chapters = chapters
             )
             streamCache.put(videoUrl, Pair(streamData, System.currentTimeMillis()))
             return streamData
