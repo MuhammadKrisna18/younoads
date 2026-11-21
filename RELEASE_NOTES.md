@@ -1,3 +1,22 @@
+### YounoAds v4.16 - Catatan Rilis & Pembaruan
+
+Pembaruan animasi pembuka aplikasi (Splash Screen) adaptif tema dan perombakan antarmuka seekbar pemutar video menempel rapat di bibir bawah layar ala YouTube native:
+
+1. Splash Screen Animasi Sinematik (2.5 Detik)
+- Menghadirkan layar pembuka in-app adaptif tema dengan durasi 2.5 detik (2500ms).
+- Menampilkan logo ikon launcher aktif pengguna yang berpendar lembut (ambient glow) dengan animasi scale-in dan fade-in.
+- Dilengkapi garis indikator pemuatan halus berbasis gradien tema dari 0% hingga 100% serta tipografi elegan JetBrains Mono.
+- Pre-loading di Latar Belakang: Konten beranda (home feed) langsung mulai dimuat di latar belakang saat splash screen tampil, sehingga ketika transisi fade-out selesai, halaman utama sudah siap pakai tanpa jeda loading kosong.
+- Proteksi Cold Start: Splash screen hanya berjalan saat aplikasi dibuka dari keadaan mati (cold start), dan tidak akan muncul kembali saat rotasi layar atau kembali dari background/PiP.
+
+2. Desain Seekbar Pemutar Video Menempel Tepi Bawah (YouTube Native Style)
+- Perombakan urutan tata letak kontrol bawah: baris info waktu dan tombol opsi diposisikan di atas, sedangkan seekbar diposisikan tepat di bibir paling bawah video.
+- Garis seekbar membentang penuh edge-to-edge dengan clamping radius thumb scrubber agar lingkaran titik tidak terpotong di sudut layar.
+- Transisi tanpa lompat: posisi garis seekbar aktif kini selaras pada baseline Y yang sama dengan progress bar minimalis saat kontrol disembunyikan.
+- Penyesuaian Inset Mode Layar Penuh (Landscape): Menambahkan margin adaptif pada mode fullscreen untuk melindungi dari terpicunya gestur navigasi sistem Android dan menghindari kamera punch-hole / sudut melengkung ponsel.
+
+---
+
 ### YounoAds v4.15 - Catatan Rilis & Pembaruan
 
 Pembaruan fitur kustomisasi ikon aplikasi launcher mandiri dengan 10 varian estetika, integrasi pengalih komponen Android native, dan penyempurnaan dokumentasi:

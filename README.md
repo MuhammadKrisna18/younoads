@@ -36,7 +36,15 @@ Tampilan aplikasi bisa disesuaikan dengan suasana hatimu. Tersedia 31 tema pilih
 - **Siklus Waktu (Smart Cycle)**: 5 tema cerdas yang otomatis berevolusi dan bertransisi mengikuti jam nyata dari pagi, siang, senja, malam, hingga tengah malam (Siklus Karakter Youno-chan, Siklus Sirkadian Ramah Mata, Siklus Panorama Alam & Musim, Siklus Estetika Digital Retro, dan Siklus Dinamis Siang & Malam).
 - **Khusus & Malam**: 9 palet warna populer seperti tema Dracula, Nord dingin, Catppuccin pastel, nuansa konsol retro Game Boy, layar terminal hijau klasik, mode sepia malam yang ramah mata, hingga merah redup agar tidak silau di ruangan gelap.
 
-Garis waktu pemutar video (slider) juga otomatis memancarkan gradien warna yang serasi dengan tema yang sedang kamu gunakan.
+Garis waktu pemutar video (slider) juga otomatis memancarkan gradien warna yang serasi dengan tema yang sedang kamu gunakan. Garis seekbar kini menempel rapat di bibir paling bawah video frame persis seperti YouTube resmi, dilengkapi baris durasi waktu dan tombol opsi di atasnya serta margin proteksi gestur saat mode layar penuh horizontal.
+
+### Layar Pembuka Sinematik (Theme-Adaptive Splash Screen)
+
+Pengalaman visual dimulai sejak detik pertama membuka aplikasi dengan layar pembuka berdurasi 2.5 detik:
+- **Adaptif Tema & Ikon**: Logo utama otomatis menyesuaikan ikon launcher yang aktif, dipadukan pendaran cahaya (ambient glow) bersumber dari gradien tema yang kamu pilih.
+- **Indikator Progres Mulus**: Dilengkapi garis progres gradien halus selama 2.5 detik dan tipografi khas JetBrains Mono.
+- **Pre-loading Cerdas**: Halaman beranda langsung memuat feed video di latar belakang saat splash screen tampil, sehingga saat animasi memudar, video langsung siap ditonton tanpa jeda kosong.
+- **Hanya Muncul di Cold Start**: Splash screen hanya aktif saat aplikasi pertama kali dibuka dari keadaan mati dan tidak akan mengganggu saat kembali dari aplikasi lain atau mode Picture-in-Picture.
 
 ### Kustomisasi Ikon Aplikasi (10 Pilihan Ikon Launcher)
 
