@@ -131,9 +131,10 @@ class PlaybackManager(
             .setBufferDurationsMs(
                 15000,
                 50000,
-                1500,
-                2500
+                600,
+                1200
             )
+            .setPrioritizeTimeOverSizeThresholds(true)
             .build()
 
         ExoPlayer.Builder(context)

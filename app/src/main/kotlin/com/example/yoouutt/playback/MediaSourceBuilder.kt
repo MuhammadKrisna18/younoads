@@ -1,24 +1,22 @@
 package com.example.yoouutt.playback
 
 import android.content.Context
+import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
-import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import com.example.yoouutt.data.model.AudioTrackOption
 import com.example.yoouutt.data.model.VideoResolutionOption
 
+@OptIn(UnstableApi::class)
 class MediaSourceBuilder(
     context: Context
 ) {
-    private val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-        .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-        .setAllowCrossProtocolRedirects(true)
-        .setConnectTimeoutMs(20000)
-        .setReadTimeoutMs(20000)
+    private val httpDataSourceFactory = ResilientHttpDataSourceFactory()
 
     val defaultMediaSourceFactory: DefaultMediaSourceFactory =
         DefaultMediaSourceFactory(context).setDataSourceFactory(httpDataSourceFactory)
