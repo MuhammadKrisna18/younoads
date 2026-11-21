@@ -38,6 +38,13 @@ Tampilan aplikasi bisa disesuaikan dengan suasana hatimu. Tersedia 31 tema pilih
 
 Garis waktu pemutar video (slider) juga otomatis memancarkan gradien warna yang serasi dengan tema yang sedang kamu gunakan.
 
+### Kustomisasi Ikon Aplikasi (10 Pilihan Ikon Launcher)
+
+Tampilan ikon aplikasi di layar utama ponsel dapat disesuaikan langsung dengan selera visual pengguna melalui menu Pengaturan:
+- **10 Varian Ikon**: Tersedia pilihan Original YounoAds, Cyberpunk Neo, Sakura Pastel, Stealth AMOLED, Clean Light, Youno Mascot, Retro Pixel, City Pop 80s, Mecha Tactical, dan Terminal CRT.
+- **Transisi Mulus Tanpa Gangguan**: Pergantian ikon berlangsung seketika tanpa menutup paksa aplikasi atau memerlukan mulai ulang ponsel berkat pengalih komponen native Android.
+- **Pratinjau Visual & Haptic**: Dialog pemilihan dilengkapi pratinjau visual tajam berbasis vektor drawable dan umpan balik getaran haptik saat ikon dipilih.
+
 ### Ilustrasi Status Kosong Cerdas (Theme-Adaptive Empty State)
 
 Saat halaman belum memiliki konten (seperti Video Tersimpan, Riwayat Tontonan, Detail Daftar Putar Kustom, atau Hasil Pencarian), tampilan status kosong otomatis menyesuaikan diri:
@@ -124,6 +131,9 @@ Sangat aman. Semua data disimpan secara privat di dalam penyimpanan lokal ponsel
 
 **Bagaimana cara memperbarui YounoAds ke versi terbaru?**  
 Aplikasi sudah dilengkapi fitur pemeriksa pembaruan otomatis. Saat ada versi baru, notifikasi akan langsung muncul di dalam aplikasi dengan tombol unduh dan pasang.
+
+**Bagaimana jika muncul peringatan Play Protect saat memasang atau memperbarui aplikasi?**  
+Karena YounoAds didistribusikan secara mandiri di GitHub (sideloading) tanpa melalui Google Play Store, Play Protect dapat menampilkan dialog verifikasi aplikasi dari sumber luar. Anda cukup memilih opsi "Detail selengkapnya" lalu tekan "Tetap pasang" (Install anyway). Seluruh kode sumber aplikasi bersifat terbuka, bebas iklan, dan tidak memuat pelacak apa pun.
 
 ---
 

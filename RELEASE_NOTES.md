@@ -1,3 +1,34 @@
+### YounoAds v4.15 - Catatan Rilis & Pembaruan
+
+Pembaruan fitur kustomisasi ikon aplikasi launcher mandiri dengan 10 varian estetika, integrasi pengalih komponen Android native, dan penyempurnaan dokumentasi:
+
+1. Kustomisasi Ikon Aplikasi (App Icon Selector)
+- Menghadirkan 10 pilihan ikon launcher yang dapat dipilih langsung melalui menu Pengaturan:
+  - Original YounoAds: Merah marun klasik dengan aksen play bawaan.
+  - Cyberpunk Neo: Latar hitam pekat dengan aksen sian elektrik dan neon magenta.
+  - Sakura Pastel: Ungu plum lembut berpadu merah muda kelopak bunga sakura.
+  - Stealth AMOLED: Hitam pekat obsidian murni dengan aksen merah minimalis.
+  - Clean Light: Putih salju bersih dengan aksen merah cerah kontras tinggi.
+  - Youno Mascot: Siluet karakter anime maskot Youno-chan.
+  - Retro Pixel: Palet hijau monokrom konsol genggam retro 8-bit.
+  - City Pop 80s: Indigo senja Tokyo dengan gradasi jingga keemasan.
+  - Mecha Tactical: Abu-abu baja taktis dengan aksen hijau neon asam.
+  - Terminal CRT: Teks hijau fosfor matriks di atas layar hitam tabung CRT.
+
+2. Arsitektur AppIconManager Native & Reaktif
+- Menggunakan mekanisme pergantian komponen Android native (PackageManager.setComponentEnabledSetting) dengan target activity alias.
+- Menerapkan flag DONT_KILL_APP dan strategi aktivasi komponen target sebelum menonaktifkan komponen lama sehingga transisi berjalan mulus tanpa force close atau restart aplikasi.
+- Status ikon disimpan secara persisten di penyimpanan preferensi lokal dan dipantau melalui StateFlow reaktif.
+
+3. Pratinjau Visual & Dialog Pemilihan Modern
+- Dialog pemilihan Material 3 dilengkapi kartu pratinjau visual tajam berbasis vektor drawable.
+- Menampilkan nama tema ikon, ringkasan deskripsi visual, indikator centang pada ikon aktif, serta umpan balik getaran haptik saat opsi dipilih.
+
+4. Panduan Pemasangan & Keamanan
+- Penambahan panduan verifikasi Google Play Protect pada berkas dokumentasi bagi pengguna yang memasang atau memperbarui file APK mandiri dari GitHub.
+
+---
+
 ### YounoAds v4.14 - Catatan Rilis & Pembaruan
 
 Pembaruan besar sistem tema visual dengan penambahan kategori Dynamic System (Material You) dan Time-Adaptive (Smart Cycle), integrasi mesin deteksi waktu lokal, dan optimalisasi status visual:
