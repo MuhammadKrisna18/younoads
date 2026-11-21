@@ -1,16 +1,21 @@
 package com.example.yoouutt.ui.theme
 
+import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 private val Shapes = Shapes(
@@ -420,10 +425,48 @@ private val AmoledRedupColorScheme = darkColorScheme(
     outline = AmoledRedupOutline
 )
 
+private val DynamicDarkFallbackColorScheme = darkColorScheme(
+    primary = Color(0xFFD0BCFF),
+    onPrimary = Color(0xFF381E72),
+    primaryContainer = Color(0xFF4F378B),
+    onPrimaryContainer = Color(0xFFEADDFF),
+    secondary = Color(0xFFCCC2DC),
+    onSecondary = Color(0xFF332D41),
+    secondaryContainer = Color(0xFF4A4458),
+    onSecondaryContainer = Color(0xFFE8DEF8),
+    tertiary = Color(0xFFEFB8C8),
+    background = Color(0xFF1C1B1F),
+    onBackground = Color(0xFFE6E1E5),
+    surface = Color(0xFF1C1B1F),
+    onSurface = Color(0xFFE6E1E5),
+    surfaceVariant = Color(0xFF49454F),
+    onSurfaceVariant = Color(0xFFCAC4D0),
+    outline = Color(0xFF938F99)
+)
+
+private val DynamicLightFallbackColorScheme = lightColorScheme(
+    primary = Color(0xFF6750A4),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFEADDFF),
+    onPrimaryContainer = Color(0xFF21005D),
+    secondary = Color(0xFF625B71),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFE8DEF8),
+    onSecondaryContainer = Color(0xFF1D192B),
+    tertiary = Color(0xFF7D5260),
+    background = Color(0xFFFFFBFE),
+    onBackground = Color(0xFF1C1B1F),
+    surface = Color(0xFFFFFBFE),
+    onSurface = Color(0xFF1C1B1F),
+    surfaceVariant = Color(0xFFE7E0EC),
+    onSurfaceVariant = Color(0xFF49454F),
+    outline = Color(0xFF79747E)
+)
+
 val LocalYoouuttGradient = staticCompositionLocalOf { CyberpunkGradient }
 val LocalYoouuttTheme = staticCompositionLocalOf { AppTheme.CYBERPUNK }
 
-fun AppTheme.gradientColors(): List<Color> = when (this) {
+fun AppTheme.gradientColors(context: Context? = null): List<Color> = when (this) {
     AppTheme.CYBERPUNK -> listOf(ElectricCyan, NeonMagenta)
     AppTheme.MATTE_BLACK -> listOf(OfficialYouTubeRed, Color(0xFFCC0000))
     AppTheme.LIGHT -> listOf(Color(0xFFFF0000), Color(0xFF065FD4))
@@ -436,6 +479,46 @@ fun AppTheme.gradientColors(): List<Color> = when (this) {
     AppTheme.MATCHA_ZEN -> listOf(MatchaPrimary, MatchaSecondary)
     AppTheme.OCEAN_ABYSS -> listOf(AbyssPrimary, AbyssSecondary)
     AppTheme.SUMIE_INK -> listOf(SumiePrimary, SumieSecondary)
+    AppTheme.DYNAMIC_DARK -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.secondary)
+        } else {
+            listOf(Color(0xFFD0BCFF), Color(0xFFCCC2DC))
+        }
+    }
+    AppTheme.DYNAMIC_AMOLED -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.tertiary)
+        } else {
+            listOf(Color(0xFF80D4FF), Color(0xFF4FD8EB))
+        }
+    }
+    AppTheme.DYNAMIC_LIGHT -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicLightColorScheme(context)
+            listOf(scheme.primary, scheme.secondary)
+        } else {
+            listOf(Color(0xFF6750A4), Color(0xFF625B71))
+        }
+    }
+    AppTheme.DYNAMIC_VIBRANT -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.tertiary)
+        } else {
+            listOf(Color(0xFF70F3FF), Color(0xFFFF79B0))
+        }
+    }
+    AppTheme.DYNAMIC_FROSTED -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary.copy(alpha = 0.85f), scheme.secondary.copy(alpha = 0.85f))
+        } else {
+            listOf(Color(0xFFB0C6FF), Color(0xFFD8E2FF))
+        }
+    }
     AppTheme.DRACULA -> listOf(DraculaPink, DraculaPurple)
     AppTheme.NORD -> listOf(NordFrostTeal, NordFrostBlue)
     AppTheme.CATPPUCCIN_MOCHA -> listOf(MochaMauve, MochaPink)
@@ -447,7 +530,7 @@ fun AppTheme.gradientColors(): List<Color> = when (this) {
     AppTheme.AMOLED_REDUP -> listOf(AmoledRedupCrimson, Color(0xFF8E0000))
 }
 
-fun AppTheme.previewColors(): List<Color> = when (this) {
+fun AppTheme.previewColors(context: Context? = null): List<Color> = when (this) {
     AppTheme.CYBERPUNK -> listOf(ElectricCyan, NeonMagenta, DarkBackground)
     AppTheme.MATTE_BLACK -> listOf(OfficialYouTubeRed, MatteBlackSurfaceVariant, MatteBlackBackground)
     AppTheme.LIGHT -> listOf(Color(0xFFFF0000), Color(0xFF065FD4), LightPureBackground)
@@ -460,6 +543,46 @@ fun AppTheme.previewColors(): List<Color> = when (this) {
     AppTheme.MATCHA_ZEN -> listOf(MatchaPrimary, MatchaSecondary, MatchaBackground)
     AppTheme.OCEAN_ABYSS -> listOf(AbyssPrimary, AbyssSecondary, AbyssBackground)
     AppTheme.SUMIE_INK -> listOf(SumiePrimary, SumieSecondary, SumieBackground)
+    AppTheme.DYNAMIC_DARK -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.secondary, scheme.background)
+        } else {
+            listOf(Color(0xFFD0BCFF), Color(0xFFCCC2DC), Color(0xFF1C1B1F))
+        }
+    }
+    AppTheme.DYNAMIC_AMOLED -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.secondary, PureBlack)
+        } else {
+            listOf(Color(0xFF80D4FF), Color(0xFF4FD8EB), PureBlack)
+        }
+    }
+    AppTheme.DYNAMIC_LIGHT -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicLightColorScheme(context)
+            listOf(scheme.primary, scheme.secondary, scheme.background)
+        } else {
+            listOf(Color(0xFF6750A4), Color(0xFF625B71), Color(0xFFFFFBFE))
+        }
+    }
+    AppTheme.DYNAMIC_VIBRANT -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.tertiary, Color(0xFF08080A))
+        } else {
+            listOf(Color(0xFF70F3FF), Color(0xFFFF79B0), Color(0xFF08080A))
+        }
+    }
+    AppTheme.DYNAMIC_FROSTED -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val scheme = dynamicDarkColorScheme(context)
+            listOf(scheme.primary, scheme.secondary, Color(0xFF12141A))
+        } else {
+            listOf(Color(0xFFB0C6FF), Color(0xFFD8E2FF), Color(0xFF12141A))
+        }
+    }
     AppTheme.DRACULA -> listOf(DraculaPink, DraculaCyan, DraculaBackground)
     AppTheme.NORD -> listOf(NordFrostTeal, NordFrostBlue, NordBackground)
     AppTheme.CATPPUCCIN_MOCHA -> listOf(MochaMauve, MochaSapphire, MochaBackground)
@@ -471,9 +594,9 @@ fun AppTheme.previewColors(): List<Color> = when (this) {
     AppTheme.AMOLED_REDUP -> listOf(AmoledRedupCrimson, AmoledRedupSurfaceVariant, AmoledRedupBackground)
 }
 
-fun AppTheme.gradient(): Brush = Brush.horizontalGradient(gradientColors())
+fun AppTheme.gradient(context: Context? = null): Brush = Brush.horizontalGradient(gradientColors(context))
 
-fun AppTheme.colorScheme(): ColorScheme = when (this) {
+fun AppTheme.colorScheme(context: Context? = null): ColorScheme = when (this) {
     AppTheme.CYBERPUNK -> CyberpunkColorScheme
     AppTheme.MATTE_BLACK -> MatteBlackColorScheme
     AppTheme.LIGHT -> CleanLightColorScheme
@@ -486,6 +609,67 @@ fun AppTheme.colorScheme(): ColorScheme = when (this) {
     AppTheme.MATCHA_ZEN -> MatchaZenColorScheme
     AppTheme.OCEAN_ABYSS -> OceanAbyssColorScheme
     AppTheme.SUMIE_INK -> SumieInkColorScheme
+    AppTheme.DYNAMIC_DARK -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicDarkColorScheme(context)
+        } else {
+            DynamicDarkFallbackColorScheme
+        }
+    }
+    AppTheme.DYNAMIC_AMOLED -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicDarkColorScheme(context).copy(
+                background = PureBlack,
+                surface = PureBlack,
+                surfaceVariant = Color(0xFF161616)
+            )
+        } else {
+            DynamicDarkFallbackColorScheme.copy(
+                background = PureBlack,
+                surface = PureBlack,
+                surfaceVariant = Color(0xFF161616)
+            )
+        }
+    }
+    AppTheme.DYNAMIC_LIGHT -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicLightColorScheme(context)
+        } else {
+            DynamicLightFallbackColorScheme
+        }
+    }
+    AppTheme.DYNAMIC_VIBRANT -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicDarkColorScheme(context).copy(
+                background = Color(0xFF08080A),
+                surface = Color(0xFF101014),
+                surfaceVariant = Color(0xFF1C1C24)
+            )
+        } else {
+            DynamicDarkFallbackColorScheme.copy(
+                primary = Color(0xFF70F3FF),
+                secondary = Color(0xFFFF79B0),
+                background = Color(0xFF08080A),
+                surface = Color(0xFF101014),
+                surfaceVariant = Color(0xFF1C1C24)
+            )
+        }
+    }
+    AppTheme.DYNAMIC_FROSTED -> {
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicDarkColorScheme(context).copy(
+                background = Color(0xFF12141A),
+                surface = Color(0xFF1A1D24),
+                surfaceVariant = Color(0xFF242832)
+            )
+        } else {
+            DynamicDarkFallbackColorScheme.copy(
+                background = Color(0xFF12141A),
+                surface = Color(0xFF1A1D24),
+                surfaceVariant = Color(0xFF242832)
+            )
+        }
+    }
     AppTheme.DRACULA -> DraculaColorScheme
     AppTheme.NORD -> NordColorScheme
     AppTheme.CATPPUCCIN_MOCHA -> CatppuccinMochaColorScheme
@@ -502,12 +686,13 @@ fun YoouuttTheme(
     appTheme: AppTheme = AppTheme.CYBERPUNK,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
     CompositionLocalProvider(
         LocalYoouuttTheme provides appTheme,
-        LocalYoouuttGradient provides appTheme.gradient()
+        LocalYoouuttGradient provides appTheme.gradient(context)
     ) {
         MaterialTheme(
-            colorScheme = appTheme.colorScheme(),
+            colorScheme = appTheme.colorScheme(context),
             typography = Typography,
             shapes = Shapes,
             content = content

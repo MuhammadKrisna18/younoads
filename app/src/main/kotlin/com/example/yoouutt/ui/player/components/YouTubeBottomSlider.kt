@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -50,9 +51,10 @@ fun InteractiveSeekBar(
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
+    val context = LocalContext.current
     val density = LocalDensity.current
     val theme = LocalYoouuttTheme.current
-    val gradientColors = remember(theme) { theme.gradientColors() }
+    val gradientColors = remember(theme, context) { theme.gradientColors(context) }
     val thumbColors = remember(theme) {
         listOf(Color.White, gradientColors.first(), gradientColors.last())
     }
@@ -213,7 +215,8 @@ fun MinimalBottomProgressBar(
     modifier: Modifier = Modifier
 ) {
     val theme = LocalYoouuttTheme.current
-    val gradientColors = remember(theme) { theme.gradientColors() }
+    val context = LocalContext.current
+    val gradientColors = remember(theme, context) { theme.gradientColors(context) }
 
     val totalDuration = durationMs.coerceAtLeast(1L)
     val progress = (currentPositionMs.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)

@@ -87,6 +87,7 @@
     <string name="theme_dialog_subtitle">Pilih skema visual &amp; atmosfer aplikasi</string>
     <string name="theme_category_standard">Standar</string>
     <string name="theme_category_anime">Anime</string>
+    <string name="theme_category_dynamic">Dinamis</string>
     <string name="theme_category_special">Khusus</string>
     <string name="theme_badge_dark">Gelap</string>
     <string name="theme_badge_light">Terang</string>
@@ -104,6 +105,17 @@
     <string name="theme_city_pop_desc">Indigo tengah malam, jingga senja, kilau kuning keemasan</string>
     <string name="theme_mecha_name">Mecha Tactical (EVA Sci-Fi)</string>
     <string name="theme_mecha_desc">Abu-abu baja taktis, hijau asam neon, amber peringatan</string>
+
+    <string name="theme_dynamic_dark_name">Material Gelap Dinamis</string>
+    <string name="theme_dynamic_dark_desc">Ekstraksi warna wallpaper ponsel secara otomatis dalam mode gelap</string>
+    <string name="theme_dynamic_amoled_name">AMOLED Hitam Dinamis</string>
+    <string name="theme_dynamic_amoled_desc">Hitam pekat murni dengan aksen warna dinamis dari wallpaper ponsel</string>
+    <string name="theme_dynamic_light_name">Material Terang Dinamis</string>
+    <string name="theme_dynamic_light_desc">Tampilan terang bersih yang selaras dengan wallpaper perangkat Anda</string>
+    <string name="theme_dynamic_vibrant_name">Dinamis Cerah Menyala</string>
+    <string name="theme_dynamic_vibrant_desc">Aksen saturasi dinamis paling menyala di atas kanvas gelap pekat</string>
+    <string name="theme_dynamic_frosted_name">Kaca Transparan Dinamis</string>
+    <string name="theme_dynamic_frosted_desc">Permukaan akrilik lembut dengan sentuhan warna dari wallpaper ponsel</string>
 
     <string name="theme_dracula_name">Dracula Developer</string>
     <string name="theme_dracula_desc">Palet ungu gelap, merah muda neon dan sian klasik developer</string>

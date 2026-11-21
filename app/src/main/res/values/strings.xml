@@ -87,6 +87,7 @@
     <string name="theme_dialog_subtitle">Choose visual scheme &amp; app atmosphere</string>
     <string name="theme_category_standard">Standard</string>
     <string name="theme_category_anime">Anime</string>
+    <string name="theme_category_dynamic">Dynamic</string>
     <string name="theme_category_special">Special</string>
     <string name="theme_badge_dark">Dark</string>
     <string name="theme_badge_light">Light</string>
@@ -104,6 +105,17 @@
     <string name="theme_city_pop_desc">Midnight indigo, sunset amber orange, golden glow</string>
     <string name="theme_mecha_name">Mecha Tactical (EVA Sci-Fi)</string>
     <string name="theme_mecha_desc">Gunmetal slate, acid neon green, tactical amber</string>
+
+    <string name="theme_dynamic_dark_name">Dynamic Material Dark</string>
+    <string name="theme_dynamic_dark_desc">Extracts dynamic colors from your wallpaper in Material 3 dark mode</string>
+    <string name="theme_dynamic_amoled_name">Dynamic AMOLED Black</string>
+    <string name="theme_dynamic_amoled_desc">True black background with dynamic wallpaper color accents</string>
+    <string name="theme_dynamic_light_name">Dynamic Material Light</string>
+    <string name="theme_dynamic_light_desc">Clean light surface dynamically matched to your device wallpaper</string>
+    <string name="theme_dynamic_vibrant_name">Dynamic Vibrant Pulse</string>
+    <string name="theme_dynamic_vibrant_desc">High-saturation dynamic wallpaper accents on deep dark surface</string>
+    <string name="theme_dynamic_frosted_name">Dynamic Frosted Glass</string>
+    <string name="theme_dynamic_frosted_desc">Soft dynamic acrylic surface with wallpaper-toned highlights</string>
 
     <string name="theme_dracula_name">Dracula Developer</string>
     <string name="theme_dracula_desc">Vampire purple, neon pink and cyan palette for developers</string>

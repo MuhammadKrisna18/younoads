@@ -9,6 +9,7 @@ enum class ThemeCategory(
 ) {
     STANDAR(R.string.theme_category_standard),
     ANIME(R.string.theme_category_anime),
+    DYNAMIC(R.string.theme_category_dynamic),
     SPECIAL(R.string.theme_category_special)
 }
 
@@ -249,6 +250,57 @@ enum class AppTheme(
         hologramAlpha = 0f,
         displayName = "AMOLED Merah Redup (Night Vision)",
         description = "Deep night crimson on true black, zero blue light"
+    ),
+    DYNAMIC_DARK(
+        id = "DYNAMIC_DARK",
+        category = ThemeCategory.DYNAMIC,
+        titleRes = R.string.theme_dynamic_dark_name,
+        descriptionRes = R.string.theme_dynamic_dark_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Dynamic Material Dark",
+        description = "Material 3 dark palette automatically adapted from device wallpaper"
+    ),
+    DYNAMIC_AMOLED(
+        id = "DYNAMIC_AMOLED",
+        category = ThemeCategory.DYNAMIC,
+        titleRes = R.string.theme_dynamic_amoled_name,
+        descriptionRes = R.string.theme_dynamic_amoled_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Dynamic AMOLED Black",
+        description = "True pitch black background with dynamic wallpaper accents"
+    ),
+    DYNAMIC_LIGHT(
+        id = "DYNAMIC_LIGHT",
+        category = ThemeCategory.DYNAMIC,
+        titleRes = R.string.theme_dynamic_light_name,
+        descriptionRes = R.string.theme_dynamic_light_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        isLight = true,
+        displayName = "Dynamic Material Light",
+        description = "Clean light surface dynamically matching device wallpaper"
+    ),
+    DYNAMIC_VIBRANT(
+        id = "DYNAMIC_VIBRANT",
+        category = ThemeCategory.DYNAMIC,
+        titleRes = R.string.theme_dynamic_vibrant_name,
+        descriptionRes = R.string.theme_dynamic_vibrant_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Dynamic Vibrant Pulse",
+        description = "High-saturation dynamic accents with deep contrast"
+    ),
+    DYNAMIC_FROSTED(
+        id = "DYNAMIC_FROSTED",
+        category = ThemeCategory.DYNAMIC,
+        titleRes = R.string.theme_dynamic_frosted_name,
+        descriptionRes = R.string.theme_dynamic_frosted_desc,
+        hasHologramBackdrop = false,
+        hologramAlpha = 0f,
+        displayName = "Dynamic Frosted Glass",
+        description = "Soft translucent acrylic surface with wallpaper-toned highlights"
     );
 
     companion object {
