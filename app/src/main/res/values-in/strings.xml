@@ -224,6 +224,7 @@
     <string name="settings_saved_desc">Akses dan tonton video yang Anda simpan</string>
     <string name="settings_app_version">Versi Aplikasi</string>
     <string name="settings_app_description">Klien pemutar video bebas iklan dengan estetika anime</string>
+    <string name="splash_tagline">Bebas Iklan • Estetika Anime</string>
 
     <string name="common_copy_link">Salin Tautan</string>
     <string name="common_share_video">Bagikan Video</string>

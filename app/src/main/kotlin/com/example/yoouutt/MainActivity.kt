@@ -10,6 +10,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +23,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +38,7 @@ import com.example.yoouutt.ui.player.PipBroadcastReceiver
 import com.example.yoouutt.ui.player.enterPipMode
 import com.example.yoouutt.ui.player.updatePipAutoEnter
 import com.example.yoouutt.ui.player.updatePipParams
+import com.example.yoouutt.ui.splash.SplashScreen
 import com.example.yoouutt.ui.theme.ThemeManager
 import com.example.yoouutt.ui.theme.YoouuttTheme
 import kotlinx.coroutines.launch
@@ -76,11 +84,28 @@ class MainActivity : ComponentActivity() {
                 LocalConfiguration provides localizedConfig
             ) {
                 YoouuttTheme(appTheme = currentTheme) {
+                    var isSplashVisible by rememberSaveable { mutableStateOf(!hasShownSplash) }
+
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        MainNavigation()
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            MainNavigation()
+
+                            AnimatedVisibility(
+                                visible = isSplashVisible,
+                                enter = fadeIn(tween(150)),
+                                exit = fadeOut(tween(400))
+                            ) {
+                                SplashScreen(
+                                    onSplashFinished = {
+                                        hasShownSplash = true
+                                        isSplashVisible = false
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -177,5 +202,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private var hasShownSplash = false
     }
 }

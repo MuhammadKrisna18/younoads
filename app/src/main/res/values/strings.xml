@@ -224,6 +224,7 @@
     <string name="settings_saved_desc">Access and watch your bookmarked videos</string>
     <string name="settings_app_version">App Version</string>
     <string name="settings_app_description">Ad-free streaming client with anime aesthetics</string>
+    <string name="splash_tagline">Ad-Free Streaming • Anime Aesthetics</string>
 
     <string name="common_copy_link">Copy Link</string>
     <string name="common_share_video">Share Video</string>
