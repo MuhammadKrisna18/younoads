@@ -56,6 +56,7 @@ fun MainNavigation() {
             onBack = { backStack.removeLastOrNull() },
             transitionSpec = GlobalNavigationTransitions.forwardTransitionSpec,
             popTransitionSpec = GlobalNavigationTransitions.popTransitionSpec,
+            predictivePopTransitionSpec = GlobalNavigationTransitions.predictivePopTransitionSpec,
             entryProvider = entryProvider {
                 entry<Main> {
                     FeedScreen(
