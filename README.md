@@ -74,6 +74,11 @@ Tampilan ikon aplikasi di layar utama ponsel dapat disesuaikan langsung dengan s
 - **Transisi Mulus Tanpa Gangguan**: Pergantian ikon berlangsung seketika tanpa menutup paksa aplikasi atau memerlukan mulai ulang ponsel berkat pengalih komponen native Android.
 - **Pratinjau Visual & Haptic**: Dialog pemilihan dilengkapi pratinjau visual tajam berbasis vektor drawable dan umpan balik getaran haptik saat ikon dipilih.
 
+### Animasi Navigasi Sinematik (Stretch Left Transition)
+
+Perpindahan antar layar didesain mulus dan terintegrasi dengan gestur sistem:
+- **Transisi Balik Stretch Left (1 Detik)**: Saat menekan tombol kembali atau melakukan gestur usap tepi layar (predictive back), layar pemutar video menyusut dan bergeser secara alami ke arah kiri selama 1 detik, menyingkap halaman beranda di baliknya dengan transisi fade-in yang halus.
+
 ### Ilustrasi Status Kosong Cerdas (Theme-Adaptive Empty State)
 
 Saat halaman belum memiliki konten (seperti Video Tersimpan, Riwayat Tontonan, Detail Daftar Putar Kustom, atau Hasil Pencarian), tampilan status kosong otomatis menyesuaikan diri:

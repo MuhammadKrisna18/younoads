@@ -1,3 +1,14 @@
+### YounoAds v4.20 - Catatan Rilis & Pembaruan
+
+Pembaruan durasi animasi navigasi balik Stretch Left untuk pengalaman transisi layar yang lebih halus, sinematik, dan terukur:
+
+1. Penyetelan Durasi Animasi Stretch Left (1 Detik / 1000ms)
+- Optimalisasi Timing Transisi: Menyesuaikan durasi animasi navigasi balik dari pemutar video ke beranda menjadi 1.0 detik (1000 milidetik).
+- Visual Stretch Lebih Jelas: Efek penyusutan horizontal (shrink towards start) dan pergeseran ke tepi kiri (slide out to left) terlihat jauh lebih terukur, elastis, dan sinematik.
+- Kontinuitas Lapisan Halus: Menyelaraskan timing fade-in layar latar belakang (900ms) dan fade-out layar pemutar (850ms) agar perpindahan layar terasa menyatu tanpa kedipan mendadak.
+
+---
+
 ### YounoAds v4.19 - Catatan Rilis & Pembaruan
 
 Pembaruan mesin unduhan multi-resolusi dengan penggabungan audio-video native (Hardware MediaMuxer), konfigurasi tema default Matte Black untuk instalasi baru, dan transisi animasi navigasi balik Stretch Left:
