@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 object ThemeManager {
     private var preferences: PlayerPreferences? = null
-    private val _currentTheme = MutableStateFlow(AppTheme.CYBERPUNK)
+    private val _currentTheme = MutableStateFlow(AppTheme.MATTE_BLACK)
     val currentTheme: StateFlow<AppTheme> = _currentTheme.asStateFlow()
 
     fun init(context: Context) {

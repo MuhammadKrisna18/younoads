@@ -357,6 +357,6 @@ enum class AppTheme(
     );
 
     companion object {
-        fun fromId(id: String): AppTheme = entries.find { it.id.equals(id, ignoreCase = true) } ?: CYBERPUNK
+        fun fromId(id: String): AppTheme = entries.find { it.id.equals(id, ignoreCase = true) } ?: MATTE_BLACK
     }
 }

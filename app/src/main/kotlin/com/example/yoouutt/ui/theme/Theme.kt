@@ -464,8 +464,8 @@ private val DynamicLightFallbackColorScheme = lightColorScheme(
     outline = Color(0xFF79747E)
 )
 
-val LocalYoouuttGradient = staticCompositionLocalOf { CyberpunkGradient }
-val LocalYoouuttTheme = staticCompositionLocalOf { AppTheme.CYBERPUNK }
+val LocalYoouuttGradient = staticCompositionLocalOf { MatteBlackGradient }
+val LocalYoouuttTheme = staticCompositionLocalOf { AppTheme.MATTE_BLACK }
 
 fun AppTheme.gradientColors(context: Context? = null): List<Color> = when (this) {
     AppTheme.CYBERPUNK -> listOf(ElectricCyan, NeonMagenta)
@@ -707,7 +707,7 @@ fun AppTheme.colorScheme(context: Context? = null): ColorScheme = when (this) {
 
 @Composable
 fun YoouuttTheme(
-    appTheme: AppTheme = AppTheme.CYBERPUNK,
+    appTheme: AppTheme = AppTheme.MATTE_BLACK,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

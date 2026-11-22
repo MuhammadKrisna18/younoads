@@ -20,7 +20,7 @@ class PlayerPreferences(context: Context) {
         set(value) = prefs.edit().putInt(KEY_SEEK_INTERVAL, value).apply()
 
     var appTheme: String
-        get() = prefs.getString(KEY_APP_THEME, "CYBERPUNK") ?: "CYBERPUNK"
+        get() = prefs.getString(KEY_APP_THEME, "MATTE_BLACK") ?: "MATTE_BLACK"
         set(value) = prefs.edit().putString(KEY_APP_THEME, value).apply()
 
     var appLanguage: String
