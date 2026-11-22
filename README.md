@@ -32,12 +32,12 @@ Menonton video berdurasi panjang, tutorial, podcast, atau album musik kini jauh 
 - **Pemisah Bab Visual (Tick Marks)**: Bilah garis waktu (seekbar) memiliki celah penanda antar bab sehingga kamu tahu persis pergantian topik video.
 - **Badge Navigasi Scrubbing**: Saat menggeser slider, gelembung waktu menampilkan nama bab secara real-time dan judul bab aktif tertera langsung di samping penanda durasi pemutar.
 
-### Unduh & Putar Video Offline (100% Offline Mode)
+### Unduh & Putar Video Offline (100% Offline Mode & Native Muxer)
 
 Simpan video dan musik favorit langsung ke penyimpanan ponsel untuk ditonton kapan pun tanpa koneksi internet:
 - **Download Latar Belakang Mandiri**: Proses unduhan berjalan di latar belakang menggunakan mesin streaming OkHttp terisolasi dengan notifikasi progres interaktif di bilah status ponsel.
-- **Tiga Pilihan Format**: Pilih kualitas video 720p MP4 untuk ketajaman visual, 360p MP4 untuk hemat penyimpanan, atau audio M4A jika hanya ingin mendengarkan musik/podcast.
-- **Pemutaran Lokal Tanpa Kuota**: Buka halaman Media Unduhan di menu Pengaturan untuk memutar berkas yang telah diunduh seketika tanpa perlu sinyal seluler atau Wi-Fi.
+- **Pilihan Resolusi Lengkap & Native Muxing**: Pilih resolusi dari 1080p, 720p, 480p, 360p, hingga opsi Audio Saja (M4A). Sistem otomatis menggabungkan aliran video dan audio menggunakan MediaMuxer native Android menghasilkan berkas MP4 utuh.
+- **Pemutaran Lokal Tanpa Kuota**: Buka halaman Media Unduhan di menu Pengaturan untuk memutar berkas yang telah diunduh seketika via ExoPlayer lokal tanpa jeda loading dan tanpa memakan kuota data.
 
 ### Suara Tetap Jalan di Latar Belakang
 

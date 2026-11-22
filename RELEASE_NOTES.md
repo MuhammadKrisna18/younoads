@@ -1,3 +1,23 @@
+### YounoAds v4.19 - Catatan Rilis & Pembaruan
+
+Pembaruan mesin unduhan multi-resolusi dengan penggabungan audio-video native (Hardware MediaMuxer), konfigurasi tema default Matte Black untuk instalasi baru, dan transisi animasi navigasi balik Stretch Left:
+
+1. Unduhan Multi-Resolusi & Native Media Muxing
+- Pilihan Resolusi Lengkap: Dialog unduhan kini mendeteksi seluruh resolusi video yang tersedia (1080p, 720p, 480p, 360p, 240p, 144p) serta opsi Audio Saja (M4A).
+- Hardware MediaMuxer Integration: Mengunduh aliran video berkualitas tinggi dan aliran audio secara paralel, lalu menggabungkannya menjadi berkas MP4 utuh menggunakan MediaMuxer native Android tanpa aplikasi pihak ketiga.
+- Notifikasi Progres Terpadu: Bilah notifikasi unduhan menampilkan tahapan terukur (0-75% unduh video, 75-95% unduh audio, 96-100% penggabungan berkas).
+- Pemutaran 100% Offline Andal: Integrasi FileDataSource dan DefaultDataSource pada ExoPlayer memastikan berkas unduhan lokal dapat langsung diputar tanpa jeda loading dan tanpa memakan kuota data.
+
+2. Tema Default Instalasi Baru (Matte Black Stealth AMOLED)
+- Menetapkan tema Hitam Doff (Matte Black / Stealth AMOLED) sebagai tema bawaan standar pada saat aplikasi pertama kali dipasang di perangkat baru.
+- Menjaga integritas preferensi pengguna lama saat melakukan pembaruan aplikasi tanpa mereset tema yang telah digunakan.
+
+3. Animasi Navigasi Balik Stretch Left (Shrink to Left)
+- Menggantikan animasi default kartu mengecil di tengah (scale-out 70%) saat gestur usap kembali (predictive back) dengan efek Stretch Left.
+- Layar pemutar video menyusut dan bergeser secara alami ke arah kiri (shrink towards start & slide out to left), menyingkap halaman beranda di latar belakang secara mulus.
+
+---
+
 ### YounoAds v4.18 - Catatan Rilis & Pembaruan
 
 Pembaruan fitur Video Chapters (Segmen Bab Video) dan mesin Download Mode Offline mandiri dengan pemutaran 100% lokal tanpa koneksi internet:
