@@ -323,8 +323,8 @@ fun PlayerScreen(
     if (isDownloadDialogVisible) {
         DownloadSelectionDialog(
             streamData = currentPlayback?.streamData,
-            onSelectDownload = { qualityLabel, downloadUrl, isAudioOnly ->
-                viewModel.startDownload(qualityLabel, downloadUrl, isAudioOnly)
+            onSelectDownload = { qualityLabel, downloadUrl, audioDownloadUrl, isAudioOnly ->
+                viewModel.startDownload(qualityLabel, downloadUrl, audioDownloadUrl, isAudioOnly)
             },
             onDismiss = viewModel::dismissDownloadDialog
         )

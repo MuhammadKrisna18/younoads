@@ -20,6 +20,7 @@ data class DownloadRequest(
     val uploader: String,
     val thumbnailUrl: String,
     val downloadUrl: String,
+    val audioDownloadUrl: String? = null,
     val qualityLabel: String,
     val isAudioOnly: Boolean = false,
     val durationMs: Long = 0L

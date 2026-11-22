@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,6 +48,7 @@ data class DownloadQualityOption(
     val title: String,
     val subtitle: String,
     val downloadUrl: String,
+    val audioDownloadUrl: String? = null,
     val qualityLabel: String,
     val isAudioOnly: Boolean,
     val icon: ImageVector
@@ -55,7 +57,7 @@ data class DownloadQualityOption(
 @Composable
 fun DownloadSelectionDialog(
     streamData: StreamData?,
-    onSelectDownload: (qualityLabel: String, downloadUrl: String, isAudioOnly: Boolean) -> Unit,
+    onSelectDownload: (qualityLabel: String, downloadUrl: String, audioDownloadUrl: String?, isAudioOnly: Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     val view = LocalView.current
@@ -63,44 +65,54 @@ fun DownloadSelectionDialog(
 
     val options = buildList {
         if (streamData != null) {
-            val highVideo = streamData.availableResolutions.firstOrNull { it.height == 720 && !it.isVideoOnly }
-                ?: streamData.availableResolutions.firstOrNull { it.height >= 720 && !it.isVideoOnly }
-                ?: streamData.availableResolutions.firstOrNull { !it.isVideoOnly }
-            if (highVideo != null && highVideo.videoUrl.isNotBlank()) {
+            val bestAudioUrl = streamData.availableAudioTracks
+                .firstOrNull { it.format.equals("M4A", ignoreCase = true) }?.audioUrl
+                ?: streamData.availableAudioTracks.firstOrNull()?.audioUrl
+
+            val distinctResolutions = streamData.availableResolutions
+                .filter { it.videoUrl.isNotBlank() }
+                .distinctBy { it.height }
+                .sortedByDescending { it.height }
+
+            for (res in distinctResolutions) {
+                val title = when (res.height) {
+                    2160 -> "4K (2160p)"
+                    1440 -> "2K (1440p)"
+                    1080 -> "1080p (Full HD)"
+                    720 -> "720p (HD)"
+                    480 -> "480p (Standard)"
+                    360 -> "360p (Data Saver)"
+                    240 -> "240p (Low)"
+                    144 -> "144p (Lowest)"
+                    else -> "${res.height}p"
+                }
+
+                val audioUrlToUse = if (res.isVideoOnly) {
+                    res.audioUrl ?: bestAudioUrl
+                } else {
+                    null
+                }
+
                 add(
                     DownloadQualityOption(
-                        title = stringResource(R.string.download_option_high),
-                        subtitle = "720p MP4",
-                        downloadUrl = highVideo.videoUrl,
-                        qualityLabel = "720p",
+                        title = title,
+                        subtitle = "Video MP4",
+                        downloadUrl = res.videoUrl,
+                        audioDownloadUrl = audioUrlToUse,
+                        qualityLabel = "${res.height}p",
                         isAudioOnly = false,
-                        icon = Icons.Default.Hd
+                        icon = if (res.height >= 720) Icons.Default.Hd else Icons.Default.Sd
                     )
                 )
             }
 
-            val standardVideo = streamData.availableResolutions.firstOrNull { it.height in 360..480 && !it.isVideoOnly }
-            if (standardVideo != null && standardVideo.videoUrl.isNotBlank() && standardVideo.videoUrl != highVideo?.videoUrl) {
-                add(
-                    DownloadQualityOption(
-                        title = stringResource(R.string.download_option_standard),
-                        subtitle = "360p MP4",
-                        downloadUrl = standardVideo.videoUrl,
-                        qualityLabel = "360p",
-                        isAudioOnly = false,
-                        icon = Icons.Default.Sd
-                    )
-                )
-            }
-
-            val audioTrack = streamData.availableAudioTracks.firstOrNull { it.format.equals("M4A", ignoreCase = true) }
-                ?: streamData.availableAudioTracks.firstOrNull()
-            if (audioTrack != null && audioTrack.audioUrl.isNotBlank()) {
+            if (bestAudioUrl != null && bestAudioUrl.isNotBlank()) {
                 add(
                     DownloadQualityOption(
                         title = stringResource(R.string.download_option_audio),
                         subtitle = "Audio M4A",
-                        downloadUrl = audioTrack.audioUrl,
+                        downloadUrl = bestAudioUrl,
+                        audioDownloadUrl = null,
                         qualityLabel = "Audio M4A",
                         isAudioOnly = true,
                         icon = Icons.Default.Audiotrack
@@ -119,6 +131,7 @@ fun DownloadSelectionDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 420.dp)
+                .heightIn(max = 520.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -178,6 +191,7 @@ fun DownloadSelectionDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(options) { option ->
@@ -188,7 +202,12 @@ fun DownloadSelectionDialog(
                                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
                                 .clickable {
                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                                    onSelectDownload(option.qualityLabel, option.downloadUrl, option.isAudioOnly)
+                                    onSelectDownload(
+                                        option.qualityLabel,
+                                        option.downloadUrl,
+                                        option.audioDownloadUrl,
+                                        option.isAudioOnly
+                                    )
                                 }
                                 .padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically

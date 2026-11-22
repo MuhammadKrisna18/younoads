@@ -115,6 +115,51 @@ class VideoDownloadManager(
         repository.deleteDownload(videoId)
     }
 
+    private suspend fun reportProgress(videoId: String, title: String, percent: Int) {
+        val progressUpdate = _downloadProgressMap.value.toMutableMap()
+        progressUpdate[videoId] = percent
+        _downloadProgressMap.value = progressUpdate
+
+        repository.updateProgress(videoId, percent, DownloadStatus.DOWNLOADING)
+        showProgressNotification(videoId, title, percent)
+    }
+
+    private suspend fun downloadStreamToFile(
+        url: String,
+        destination: File,
+        onProgress: suspend (bytesRead: Long, totalBytes: Long) -> Unit
+    ): Boolean {
+        return try {
+            val httpRequest = Request.Builder()
+                .url(url)
+                .header("User-Agent", USER_AGENT)
+                .build()
+
+            httpClient.newCall(httpRequest).execute().use { response ->
+                if (!response.isSuccessful) return false
+                val body = response.body ?: return false
+                val contentLength = body.contentLength()
+                var totalBytesRead = 0L
+
+                body.byteStream().use { input ->
+                    FileOutputStream(destination).use { output ->
+                        val buffer = ByteArray(64 * 1024)
+                        var bytesRead: Int
+                        while (input.read(buffer).also { bytesRead = it } != -1) {
+                            output.write(buffer, 0, bytesRead)
+                            totalBytesRead += bytesRead
+                            onProgress(totalBytesRead, contentLength)
+                        }
+                        output.flush()
+                    }
+                }
+            }
+            destination.exists() && destination.length() > 0L
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     private suspend fun executeDownload(request: DownloadRequest) {
         val targetDir = getTargetDirectory(request.isAudioOnly)
         if (targetDir == null) {
@@ -125,61 +170,103 @@ class VideoDownloadManager(
         val extension = if (request.isAudioOnly) "m4a" else "mp4"
         val cleanTitle = sanitizeFilename(request.title)
         val targetFile = File(targetDir, "${request.videoId}_$cleanTitle.$extension")
-        val tempFile = File(targetDir, "${request.videoId}.tmp")
 
         showProgressNotification(request.videoId, request.title, 0)
 
-        try {
-            val httpRequest = Request.Builder()
-                .url(request.downloadUrl)
-                .header("User-Agent", USER_AGENT)
-                .build()
+        var lastNotifyTime = 0L
+        var lastPercent = 0
 
-            httpClient.newCall(httpRequest).execute().use { response ->
-                if (!response.isSuccessful) {
-                    repository.updateFailed(request.videoId)
-                    showFailedNotification(request.videoId, request.title)
-                    return
-                }
+        val isMuxRequired = !request.isAudioOnly && !request.audioDownloadUrl.isNullOrBlank()
 
-                val body = response.body ?: run {
-                    repository.updateFailed(request.videoId)
-                    showFailedNotification(request.videoId, request.title)
-                    return
-                }
+        if (isMuxRequired) {
+            val tempVideoFile = File(targetDir, "${request.videoId}_vid.tmp")
+            val tempAudioFile = File(targetDir, "${request.videoId}_aud.tmp")
 
-                val contentLength = body.contentLength()
-                var totalBytesRead = 0L
-                var lastProgressPercent = 0
-                var lastNotifyTime = 0L
-
-                body.byteStream().use { input ->
-                    FileOutputStream(tempFile).use { output ->
-                        val buffer = ByteArray(64 * 1024)
-                        var bytesRead: Int
-                        while (input.read(buffer).also { bytesRead = it } != -1) {
-                            output.write(buffer, 0, bytesRead)
-                            totalBytesRead += bytesRead
-
-                            if (contentLength > 0L) {
-                                val progressPercent = ((totalBytesRead * 100L) / contentLength).toInt().coerceIn(0, 100)
-                                val currentTime = System.currentTimeMillis()
-
-                                if (progressPercent != lastProgressPercent && (currentTime - lastNotifyTime >= 500L || progressPercent == 100)) {
-                                    lastProgressPercent = progressPercent
-                                    lastNotifyTime = currentTime
-
-                                    val progressUpdate = _downloadProgressMap.value.toMutableMap()
-                                    progressUpdate[request.videoId] = progressPercent
-                                    _downloadProgressMap.value = progressUpdate
-
-                                    repository.updateProgress(request.videoId, progressPercent, DownloadStatus.DOWNLOADING)
-                                    showProgressNotification(request.videoId, request.title, progressPercent)
-                                }
-                            }
+            try {
+                val videoDownloaded = downloadStreamToFile(request.downloadUrl, tempVideoFile) { bytesRead, totalBytes ->
+                    if (totalBytes > 0L) {
+                        val percent = ((bytesRead * 75L) / totalBytes).toInt().coerceIn(0, 75)
+                        val now = System.currentTimeMillis()
+                        if (percent != lastPercent && (now - lastNotifyTime >= 500L || percent == 75)) {
+                            lastPercent = percent
+                            lastNotifyTime = now
+                            reportProgress(request.videoId, request.title, percent)
                         }
-                        output.flush()
                     }
+                }
+
+                if (!videoDownloaded) {
+                    tempVideoFile.delete()
+                    tempAudioFile.delete()
+                    repository.updateFailed(request.videoId)
+                    showFailedNotification(request.videoId, request.title)
+                    return
+                }
+
+                val audioDownloaded = downloadStreamToFile(request.audioDownloadUrl, tempAudioFile) { bytesRead, totalBytes ->
+                    if (totalBytes > 0L) {
+                        val percent = (75 + ((bytesRead * 20L) / totalBytes)).toInt().coerceIn(75, 95)
+                        val now = System.currentTimeMillis()
+                        if (percent != lastPercent && (now - lastNotifyTime >= 500L || percent == 95)) {
+                            lastPercent = percent
+                            lastNotifyTime = now
+                            reportProgress(request.videoId, request.title, percent)
+                        }
+                    }
+                }
+
+                if (!audioDownloaded) {
+                    tempVideoFile.delete()
+                    tempAudioFile.delete()
+                    repository.updateFailed(request.videoId)
+                    showFailedNotification(request.videoId, request.title)
+                    return
+                }
+
+                reportProgress(request.videoId, request.title, 96)
+
+                if (targetFile.exists()) {
+                    targetFile.delete()
+                }
+
+                val muxSuccess = MediaMuxerHelper.mux(tempVideoFile, tempAudioFile, targetFile)
+                tempVideoFile.delete()
+                tempAudioFile.delete()
+
+                if (muxSuccess && targetFile.exists() && targetFile.length() > 0L) {
+                    reportProgress(request.videoId, request.title, 100)
+                    repository.updateCompleted(request.videoId, targetFile.absolutePath, targetFile.length())
+                    showCompletedNotification(request.videoId, request.title)
+                } else {
+                    repository.updateFailed(request.videoId)
+                    showFailedNotification(request.videoId, request.title)
+                }
+            } catch (_: Exception) {
+                tempVideoFile.delete()
+                tempAudioFile.delete()
+                repository.updateFailed(request.videoId)
+                showFailedNotification(request.videoId, request.title)
+            }
+        } else {
+            val tempFile = File(targetDir, "${request.videoId}.tmp")
+            try {
+                val downloaded = downloadStreamToFile(request.downloadUrl, tempFile) { bytesRead, totalBytes ->
+                    if (totalBytes > 0L) {
+                        val percent = ((bytesRead * 100L) / totalBytes).toInt().coerceIn(0, 100)
+                        val now = System.currentTimeMillis()
+                        if (percent != lastPercent && (now - lastNotifyTime >= 500L || percent == 100)) {
+                            lastPercent = percent
+                            lastNotifyTime = now
+                            reportProgress(request.videoId, request.title, percent)
+                        }
+                    }
+                }
+
+                if (!downloaded) {
+                    tempFile.delete()
+                    repository.updateFailed(request.videoId)
+                    showFailedNotification(request.videoId, request.title)
+                    return
                 }
 
                 if (targetFile.exists()) {
@@ -193,20 +280,18 @@ class VideoDownloadManager(
                 }
 
                 if (moveSuccess && targetFile.exists() && targetFile.length() > 0L) {
-                    val finalSize = targetFile.length()
-                    repository.updateCompleted(request.videoId, targetFile.absolutePath, finalSize)
+                    reportProgress(request.videoId, request.title, 100)
+                    repository.updateCompleted(request.videoId, targetFile.absolutePath, targetFile.length())
                     showCompletedNotification(request.videoId, request.title)
                 } else {
                     repository.updateFailed(request.videoId)
                     showFailedNotification(request.videoId, request.title)
                 }
-            }
-        } catch (_: Exception) {
-            if (tempFile.exists()) {
+            } catch (_: Exception) {
                 tempFile.delete()
+                repository.updateFailed(request.videoId)
+                showFailedNotification(request.videoId, request.title)
             }
-            repository.updateFailed(request.videoId)
-            showFailedNotification(request.videoId, request.title)
         }
     }
 
@@ -224,6 +309,8 @@ class VideoDownloadManager(
         val musicDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
         File(moviesDir, "$videoId.tmp").takeIf { it.exists() }?.delete()
         File(musicDir, "$videoId.tmp").takeIf { it.exists() }?.delete()
+        File(moviesDir, "${videoId}_vid.tmp").takeIf { it.exists() }?.delete()
+        File(moviesDir, "${videoId}_aud.tmp").takeIf { it.exists() }?.delete()
     }
 
     private fun sanitizeFilename(name: String): String {

@@ -191,7 +191,12 @@ class PlayerViewModel(
         _isDownloadDialogVisible.value = false
     }
 
-    fun startDownload(qualityLabel: String, downloadUrl: String, isAudioOnly: Boolean) {
+    fun startDownload(
+        qualityLabel: String,
+        downloadUrl: String,
+        audioDownloadUrl: String? = null,
+        isAudioOnly: Boolean
+    ) {
         val playback = currentPlayback.value ?: return
         val id = playback.videoId.ifBlank { PlayerUtils.extractVideoId(playback.videoUrl) }
         val thumbUrl = if (id.isNotBlank()) "https://i.ytimg.com/vi/$id/hqdefault.jpg" else ""
@@ -202,6 +207,7 @@ class PlayerViewModel(
             uploader = playback.uploaderName,
             thumbnailUrl = thumbUrl,
             downloadUrl = downloadUrl,
+            audioDownloadUrl = audioDownloadUrl,
             qualityLabel = qualityLabel,
             isAudioOnly = isAudioOnly,
             durationMs = _durationMs.value

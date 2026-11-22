@@ -335,7 +335,7 @@ class PlaybackManager(
                 listOf(
                     VideoResolutionOption(
                         label = download.qualityLabel,
-                        height = 720,
+                        height = download.qualityLabel.filter { it.isDigit() }.toIntOrNull() ?: 720,
                         videoUrl = fileUri.toString(),
                         isVideoOnly = false
                     )
