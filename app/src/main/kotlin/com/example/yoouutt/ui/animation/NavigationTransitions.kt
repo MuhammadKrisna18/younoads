@@ -28,16 +28,16 @@ object GlobalNavigationTransitions {
 
     val popTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>>.() -> ContentTransform = {
         (fadeIn(
-            animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 900, easing = FastOutSlowInEasing)
         ) togetherWith (
             slideOutHorizontally(
                 targetOffsetX = { -it },
-                animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing)
+                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
             ) + shrinkHorizontally(
                 shrinkTowards = Alignment.Start,
-                animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing)
+                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
             ) + fadeOut(
-                animationSpec = tween(durationMillis = 180, easing = FastOutLinearInEasing)
+                animationSpec = tween(durationMillis = 850, easing = FastOutLinearInEasing)
             )
         )).apply {
             targetContentZIndex = 0f
@@ -46,16 +46,16 @@ object GlobalNavigationTransitions {
 
     val predictivePopTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>>.(Int) -> ContentTransform = {
         (fadeIn(
-            animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 900, easing = FastOutSlowInEasing)
         ) togetherWith (
             slideOutHorizontally(
                 targetOffsetX = { -it },
-                animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing)
+                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
             ) + shrinkHorizontally(
                 shrinkTowards = Alignment.Start,
-                animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing)
+                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
             ) + fadeOut(
-                animationSpec = tween(durationMillis = 180, easing = FastOutLinearInEasing)
+                animationSpec = tween(durationMillis = 850, easing = FastOutLinearInEasing)
             )
         )).apply {
             targetContentZIndex = 0f
