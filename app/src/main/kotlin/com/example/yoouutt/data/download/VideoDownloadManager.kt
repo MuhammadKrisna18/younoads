@@ -186,7 +186,13 @@ class VideoDownloadManager(
                     targetFile.delete()
                 }
 
-                if (tempFile.renameTo(targetFile)) {
+                val moveSuccess = tempFile.renameTo(targetFile) || run {
+                    tempFile.copyTo(targetFile, overwrite = true)
+                    tempFile.delete()
+                    true
+                }
+
+                if (moveSuccess && targetFile.exists() && targetFile.length() > 0L) {
                     val finalSize = targetFile.length()
                     repository.updateCompleted(request.videoId, targetFile.absolutePath, finalSize)
                     showCompletedNotification(request.videoId, request.title)

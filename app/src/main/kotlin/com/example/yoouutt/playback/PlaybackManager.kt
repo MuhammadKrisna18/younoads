@@ -183,7 +183,7 @@ class PlaybackManager(
                     override fun onPlayerError(error: PlaybackException) {
                         _isBuffering.value = false
                         _isPlaying.value = false
-                        prepare()
+                        _errorMessage.value = error.localizedMessage ?: "Gagal memutar media"
                     }
                 })
             }
@@ -296,6 +296,18 @@ class PlaybackManager(
     }
 
     fun playOfflineVideo(download: DownloadedVideo) {
+        val localFile = java.io.File(download.filePath)
+        if (!localFile.exists()) {
+            _isLoading.value = false
+            _errorMessage.value = "Berkas unduhan tidak ditemukan"
+            return
+        }
+
+        try {
+            context.startService(Intent(context, PlaybackService::class.java))
+        } catch (_: Exception) {
+        }
+
         saveProgress()
         exoPlayer.stop()
         exoPlayer.clearMediaItems()
@@ -304,7 +316,7 @@ class PlaybackManager(
         queueManager.clear()
         _upcomingRecommendations.value = emptyList()
 
-        val fileUri = Uri.fromFile(java.io.File(download.filePath))
+        val fileUri = Uri.fromFile(localFile)
         val metadata = buildMetadata(
             title = download.title,
             uploaderName = download.uploader,
@@ -317,14 +329,31 @@ class PlaybackManager(
             uploaderName = download.uploader,
             streamUrl = fileUri.toString(),
             isHls = false,
-            availableResolutions = listOf(
-                VideoResolutionOption(
-                    label = download.qualityLabel,
-                    height = 720,
-                    videoUrl = fileUri.toString(),
-                    isVideoOnly = false
+            availableResolutions = if (download.isAudioOnly) {
+                emptyList()
+            } else {
+                listOf(
+                    VideoResolutionOption(
+                        label = download.qualityLabel,
+                        height = 720,
+                        videoUrl = fileUri.toString(),
+                        isVideoOnly = false
+                    )
                 )
-            )
+            },
+            availableAudioTracks = if (download.isAudioOnly) {
+                listOf(
+                    AudioTrackOption(
+                        id = "offline_audio",
+                        displayName = download.qualityLabel,
+                        audioUrl = fileUri.toString(),
+                        isOriginal = true,
+                        format = "M4A"
+                    )
+                )
+            } else {
+                emptyList()
+            }
         )
 
         _currentPlayback.value = ActivePlayback(
@@ -337,16 +366,12 @@ class PlaybackManager(
 
         _availableResolutions.value = offlineStreamData.availableResolutions
         _currentResolution.value = offlineStreamData.availableResolutions.firstOrNull()
-        _availableAudioTracks.value = emptyList()
-        _currentAudioTrack.value = null
+        _availableAudioTracks.value = offlineStreamData.availableAudioTracks
+        _currentAudioTrack.value = offlineStreamData.availableAudioTracks.firstOrNull()
         _isLoading.value = false
 
-        val mediaItem = MediaItem.Builder()
-            .setUri(fileUri)
-            .setMediaMetadata(metadata)
-            .build()
-
-        exoPlayer.setMediaItem(mediaItem)
+        val mediaSource = mediaSourceBuilder.buildOfflineMediaSource(fileUri, metadata)
+        exoPlayer.setMediaSource(mediaSource)
         exoPlayer.prepare()
         exoPlayer.play()
     }
