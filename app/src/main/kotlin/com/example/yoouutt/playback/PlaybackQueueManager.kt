@@ -42,6 +42,33 @@ class PlaybackQueueManager {
         return Pair(updatedContext, updatedContext.videos[prevIndex])
     }
 
+    fun enqueue(video: VideoItem, currentPlayingVideo: VideoItem? = null): Int {
+        val current = _playlistContext.value
+        if (current != null && current.videos.isNotEmpty()) {
+            val updatedVideos = current.videos.toMutableList().apply { add(video) }
+            _playlistContext.value = current.copy(videos = updatedVideos)
+            return updatedVideos.size
+        } else if (currentPlayingVideo != null) {
+            val newVideos = listOf(currentPlayingVideo, video)
+            _playlistContext.value = PlaylistContext(
+                playlistId = "queue",
+                playlistTitle = "Antrean",
+                videos = newVideos,
+                currentIndex = 0
+            )
+            return newVideos.size
+        } else {
+            val newVideos = listOf(video)
+            _playlistContext.value = PlaylistContext(
+                playlistId = "queue",
+                playlistTitle = "Antrean",
+                videos = newVideos,
+                currentIndex = 0
+            )
+            return 1
+        }
+    }
+
     fun clear() {
         _playlistContext.value = null
     }

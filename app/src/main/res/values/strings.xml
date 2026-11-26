@@ -349,4 +349,17 @@
     <string name="download_status_failed">Download failed</string>
     <string name="settings_downloads_title">Offline Downloads</string>
     <string name="settings_downloads_desc">Manage offline saved videos and music</string>
+    <string name="options_add_to_queue">Add to queue</string>
+    <string name="options_add_to_queue_desc">Play after current queue</string>
+    <string name="options_video_enqueued">Added to queue</string>
+    <string name="options_save_video">Save</string>
+    <string name="options_remove_saved">Remove from Saved</string>
+    <string name="options_save_video_desc">Save to watch later</string>
+    <string name="options_saved_toast">Saved to Saved Videos</string>
+    <string name="options_removed_toast">Removed from Saved Videos</string>
+    <string name="options_save_to_playlist">Save to playlist</string>
+    <string name="options_save_to_playlist_desc">Add to custom playlists</string>
+    <string name="options_download_video">Download</string>
+    <string name="options_download_video_desc">Watch offline anytime</string>
+    <string name="options_download_starting">Preparing download...</string>
 </resources>

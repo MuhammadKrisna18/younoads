@@ -346,6 +346,20 @@
     <string name="download_option_audio">Audio Saja (M4A)</string>
     <string name="download_delete_confirm_title">Hapus Unduhan?</string>
     <string name="download_delete_confirm_msg">File media ini akan dihapus secara permanen dari penyimpanan perangkat kamu.</string>
+    <string name="download_status_failed">Gagal diunduh</string>
     <string name="settings_downloads_title">Media Unduhan</string>
     <string name="settings_downloads_desc">Kelola video dan audio yang tersimpan secara offline</string>
+    <string name="options_add_to_queue">Masuk antrean</string>
+    <string name="options_add_to_queue_desc">Putar setelah antrean selesai</string>
+    <string name="options_video_enqueued">Ditambahkan ke antrean</string>
+    <string name="options_save_video">Simpan</string>
+    <string name="options_remove_saved">Hapus dari tersimpan</string>
+    <string name="options_save_video_desc">Simpan untuk ditonton nanti</string>
+    <string name="options_saved_toast">Disimpan ke Video Tersimpan</string>
+    <string name="options_removed_toast">Dihapus dari Video Tersimpan</string>
+    <string name="options_save_to_playlist">Simpan ke playlist</string>
+    <string name="options_save_to_playlist_desc">Tambahkan ke playlist</string>
+    <string name="options_download_video">Download</string>
+    <string name="options_download_video_desc">Tonton offline tanpa kuota</string>
+    <string name="options_download_starting">Menyiapkan unduhan...</string>
 </resources>

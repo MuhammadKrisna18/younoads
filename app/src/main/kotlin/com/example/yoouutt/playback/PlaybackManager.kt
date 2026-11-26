@@ -476,6 +476,29 @@ class PlaybackManager(
         queueManager.clear()
     }
 
+    fun enqueueVideo(video: VideoItem): Boolean {
+        val current = _currentPlayback.value
+        val isCurrentlyPlaying = current != null
+        val currentVideoItem = if (current != null) {
+            VideoItem(
+                id = current.videoId,
+                title = current.title,
+                uploaderName = current.uploaderName,
+                thumbnailUrl = if (current.videoId.isNotBlank()) "https://i.ytimg.com/vi/${current.videoId}/hqdefault.jpg" else "",
+                url = current.videoUrl
+            )
+        } else {
+            null
+        }
+
+        queueManager.enqueue(video, currentVideoItem)
+
+        if (current == null) {
+            playVideo(video.url, video.title, video.uploaderName)
+        }
+        return current != null
+    }
+
     fun stop() {
         queueManager.clear()
         _upcomingRecommendations.value = emptyList()
