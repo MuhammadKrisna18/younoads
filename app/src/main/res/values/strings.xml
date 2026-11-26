@@ -346,6 +346,7 @@
     <string name="download_option_audio">Audio Only (M4A)</string>
     <string name="download_delete_confirm_title">Delete Download?</string>
     <string name="download_delete_confirm_msg">This media file will be permanently removed from your device storage.</string>
+    <string name="download_status_failed">Download failed</string>
     <string name="settings_downloads_title">Offline Downloads</string>
     <string name="settings_downloads_desc">Manage offline saved videos and music</string>
 </resources>

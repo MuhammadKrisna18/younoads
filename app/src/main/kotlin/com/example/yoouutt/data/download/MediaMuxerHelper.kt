@@ -60,32 +60,55 @@ object MediaMuxerHelper {
             muxer.start()
             muxerStarted = true
 
-            val maxBufferSize = 1024 * 1024
-            val buffer = ByteBuffer.allocate(maxBufferSize)
+            val videoMaxInput = if (videoFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                videoFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE)
+            } else {
+                1024 * 1024
+            }
+            val audioMaxInput = if (audioFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                audioFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE)
+            } else {
+                256 * 1024
+            }
+            val bufferSize = maxOf(videoMaxInput, audioMaxInput, 1024 * 1024)
+            val buffer = ByteBuffer.allocate(bufferSize)
             val bufferInfo = MediaCodec.BufferInfo()
 
-            while (true) {
-                bufferInfo.offset = 0
-                bufferInfo.size = videoExtractor.readSampleData(buffer, 0)
-                if (bufferInfo.size < 0) {
-                    break
+            var videoEos = false
+            var audioEos = false
+
+            while (!videoEos || !audioEos) {
+                val videoTime = if (!videoEos) videoExtractor.sampleTime else Long.MAX_VALUE
+                val audioTime = if (!audioEos) audioExtractor.sampleTime else Long.MAX_VALUE
+
+                if (!videoEos && (audioEos || videoTime <= audioTime)) {
+                    bufferInfo.offset = 0
+                    bufferInfo.size = videoExtractor.readSampleData(buffer, 0)
+                    if (bufferInfo.size < 0) {
+                        videoEos = true
+                    } else {
+                        bufferInfo.presentationTimeUs = videoExtractor.sampleTime
+                        bufferInfo.flags = videoExtractor.sampleFlags
+                        muxer.writeSampleData(muxerVideoTrack, buffer, bufferInfo)
+                        videoExtractor.advance()
+                    }
+                } else if (!audioEos) {
+                    bufferInfo.offset = 0
+                    bufferInfo.size = audioExtractor.readSampleData(buffer, 0)
+                    if (bufferInfo.size < 0) {
+                        audioEos = true
+                    } else {
+                        bufferInfo.presentationTimeUs = audioExtractor.sampleTime
+                        bufferInfo.flags = audioExtractor.sampleFlags
+                        muxer.writeSampleData(muxerAudioTrack, buffer, bufferInfo)
+                        audioExtractor.advance()
+                    }
                 }
-                bufferInfo.presentationTimeUs = videoExtractor.sampleTime
-                bufferInfo.flags = videoExtractor.sampleFlags
-                muxer.writeSampleData(muxerVideoTrack, buffer, bufferInfo)
-                videoExtractor.advance()
             }
 
-            while (true) {
-                bufferInfo.offset = 0
-                bufferInfo.size = audioExtractor.readSampleData(buffer, 0)
-                if (bufferInfo.size < 0) {
-                    break
-                }
-                bufferInfo.presentationTimeUs = audioExtractor.sampleTime
-                bufferInfo.flags = audioExtractor.sampleFlags
-                muxer.writeSampleData(muxerAudioTrack, buffer, bufferInfo)
-                audioExtractor.advance()
+            if (muxerStarted) {
+                muxer.stop()
+                muxerStarted = false
             }
 
             return true
@@ -107,6 +130,9 @@ object MediaMuxerHelper {
                 if (muxerStarted) {
                     muxer?.stop()
                 }
+            } catch (_: Exception) {
+            }
+            try {
                 muxer?.release()
             } catch (_: Exception) {
             }

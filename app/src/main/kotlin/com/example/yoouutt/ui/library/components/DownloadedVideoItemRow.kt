@@ -52,13 +52,14 @@ fun DownloadedVideoItemRow(
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val isDownloading = item.status == DownloadStatus.DOWNLOADING
+    val isFailed = item.status == DownloadStatus.FAILED || (!isDownloading && item.filePath.isBlank())
     val currentProgress = progress ?: item.progress
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable(enabled = !isDownloading, onClick = onClick)
+            .clickable(enabled = !isDownloading && !isFailed, onClick = onClick)
             .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -158,6 +159,13 @@ fun DownloadedVideoItemRow(
                         trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                     )
                 }
+            } else if (isFailed) {
+                Text(
+                    text = stringResource(R.string.download_status_failed),
+                    fontSize = 11.5.sp,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Medium
+                )
             } else {
                 val sizeText = formatFileSize(item.fileSizeBytes)
                 if (sizeText.isNotBlank()) {

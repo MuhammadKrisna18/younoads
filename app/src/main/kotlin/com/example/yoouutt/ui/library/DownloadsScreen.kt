@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.R
+import com.example.yoouutt.data.model.DownloadStatus
 import com.example.yoouutt.data.model.DownloadedVideo
 import com.example.yoouutt.ui.common.AppConfirmDialog
 import com.example.yoouutt.ui.common.AppThemeBackdrop
@@ -137,7 +138,11 @@ fun DownloadsScreen(
                         DownloadedVideoItemRow(
                             item = item,
                             progress = progressMap[item.videoId],
-                            onClick = { onVideoClick(item) },
+                            onClick = {
+                                if (item.status == DownloadStatus.COMPLETED && item.filePath.isNotBlank()) {
+                                    onVideoClick(item)
+                                }
+                            },
                             onDelete = { videoToDelete = item }
                         )
                     }

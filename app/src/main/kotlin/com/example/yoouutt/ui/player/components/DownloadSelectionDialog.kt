@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Hd
@@ -102,20 +101,6 @@ fun DownloadSelectionDialog(
                         qualityLabel = "${res.height}p",
                         isAudioOnly = false,
                         icon = if (res.height >= 720) Icons.Default.Hd else Icons.Default.Sd
-                    )
-                )
-            }
-
-            if (bestAudioUrl != null && bestAudioUrl.isNotBlank()) {
-                add(
-                    DownloadQualityOption(
-                        title = stringResource(R.string.download_option_audio),
-                        subtitle = "Audio M4A",
-                        downloadUrl = bestAudioUrl,
-                        audioDownloadUrl = null,
-                        qualityLabel = "Audio M4A",
-                        isAudioOnly = true,
-                        icon = Icons.Default.Audiotrack
                     )
                 )
             }
