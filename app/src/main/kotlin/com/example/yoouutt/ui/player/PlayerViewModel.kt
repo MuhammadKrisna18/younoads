@@ -130,6 +130,9 @@ class PlayerViewModel(
     private val _speedIndex = MutableStateFlow(2)
     val speedIndex: StateFlow<Int> = _speedIndex.asStateFlow()
 
+    private val _isFastForwarding = MutableStateFlow(false)
+    val isFastForwarding: StateFlow<Boolean> = _isFastForwarding.asStateFlow()
+
     private val _isSettingsSheetVisible = MutableStateFlow(false)
     val isSettingsSheetVisible: StateFlow<Boolean> = _isSettingsSheetVisible.asStateFlow()
 
@@ -529,6 +532,21 @@ class PlayerViewModel(
         if (index in speeds.indices) {
             _speedIndex.value = index
             exoPlayer.setPlaybackSpeed(speeds[index])
+        }
+    }
+
+    fun startFastForward() {
+        if (!_isFastForwarding.value && exoPlayer.isPlaying) {
+            _isFastForwarding.value = true
+            exoPlayer.setPlaybackSpeed(2.0f)
+        }
+    }
+
+    fun stopFastForward() {
+        if (_isFastForwarding.value) {
+            _isFastForwarding.value = false
+            val normalSpeed = speeds.getOrElse(_speedIndex.value) { 1.0f }
+            exoPlayer.setPlaybackSpeed(normalSpeed)
         }
     }
 
