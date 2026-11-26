@@ -74,10 +74,20 @@ Tampilan ikon aplikasi di layar utama ponsel dapat disesuaikan langsung dengan s
 - **Transisi Mulus Tanpa Gangguan**: Pergantian ikon berlangsung seketika tanpa menutup paksa aplikasi atau memerlukan mulai ulang ponsel berkat pengalih komponen native Android.
 - **Pratinjau Visual & Haptic**: Dialog pemilihan dilengkapi pratinjau visual tajam berbasis vektor drawable dan umpan balik getaran haptik saat ikon dipilih.
 
-### Animasi Navigasi Sinematik (Stretch Left Transition)
+### Animasi Navigasi Sinematik & Gestur Interaktif (Stretch Left, 2X Speed & Swipe Down)
 
-Perpindahan antar layar didesain mulus dan terintegrasi dengan gestur sistem:
+Perpindahan antar layar dan interaksi pemutar didesain mulus, alami, dan intuitif:
 - **Transisi Balik Stretch Left (1 Detik)**: Saat menekan tombol kembali atau melakukan gestur usap tepi layar (predictive back), layar pemutar video menyusut dan bergeser secara alami ke arah kiri selama 1 detik, menyingkap halaman beranda di baliknya dengan transisi fade-in yang halus.
+- **Hold to 2x Speed**: Cukup sentuh dan tahan permukaan video untuk mempercepat pemutaran menjadi 2.0x secara instan. Lepaskan sentuhan untuk kembali ke kecepatan normal.
+- **Swipe Down to Minimize**: Usap pemutar video ke bawah untuk menutup layar pemutar secara alami dengan animasi lentur.
+
+### Menu Opsi Video Terpadu (Titik Tiga pada Feed)
+
+Kemudahan aksi cepat langsung dari kartu video tanpa harus membuka video:
+- **Masuk Antrean (FIFO Queue)**: Tambahkan video ke antrean pemutaran berurutan yang akan diputar otomatis setelah video aktif selesai.
+- **Simpan & Playlist Instan**: Simpan ke Video Tersimpan atau kelola playlist kustom langsung dari daftar video.
+- **Download Langsung**: Unduh video langsung dari menu opsi kartu dengan pilihan resolusi video MP4 murni.
+- **Bagikan Terpadu**: Satu tombol berbagi yang mengintegrasikan salin tautan instan dan bagikan ke media sosial.
 
 ### Ilustrasi Status Kosong Cerdas (Theme-Adaptive Empty State)
 

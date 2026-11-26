@@ -1,3 +1,25 @@
+### YounoAds v4.21 - Catatan Rilis & Pembaruan
+
+Pembaruan besar untuk fitur usability pemutar video, keandalan penggabungan media unduhan offline, dan menu opsi video lengkap:
+
+1. Gestur Pemutar Interaktif (Hold to 2x Speed & Swipe Down to Minimize)
+- Hold to 2x Speed: Tekan dan tahan permukaan pemutar video untuk mempercepat putaran video menjadi 2.0x secara instan, lengkap dengan badge indikator "2X" dan umpan balik haptik. Melepaskan sentuhan langsung mengembalikan kecepatan ke normal.
+- Swipe Down to Minimize: Geser pemutar ke bawah untuk menutup layar pemutar secara alami dengan animasi lentur (spring & dismiss threshold), kembali ke layar penjelajahan dengan mulus.
+
+2. Peningkatan Mesin Unduhan Offline & Native Muxing
+- Interleaved PTS Sample Writing: Penggabungan video MP4 dan audio AAC menggunakan MediaMuxer native Android kini berjalan secara interleaved berdasarkan waktu presentasi sampel, mencegah error buffer meluap atau timestamp out-of-order.
+- Format Murni Video MP4: Opsi unduhan difokuskan pada pilihan video berkualitas tinggi (1080p, 720p, 480p, 360p, dll) dalam kontainer MP4 standar.
+- Penanganan Status Gagal: Item unduhan yang gagal mendapatkan label visual "Download failed" dan dinonaktifkan dari pemutaran untuk mencegah error berkas hilang.
+
+3. Menu Opsi Video Terpadu (Titik Tiga pada Kartu Video)
+- Masuk Antrean (FIFO Queue): Tambahkan video ke antrean pemutaran langsung dari kartu video/feed. Video yang ditambahkan akan berada di antrean paling bawah dan diputar berurutan setelah video aktif selesai.
+- Simpan Video Cepat: Simpan atau hapus video dari daftar Video Tersimpan secara langsung dari feed dengan notifikasi visual instan.
+- Tambah ke Playlist: Kelola penambahan video ke koleksi playlist kustom atau buat playlist baru tanpa harus membuka video.
+- Download Langsung: Unduh video langsung dari menu titik tiga dengan deteksi resolusi otomatis di latar belakang.
+- Penyatuan Bagikan & Salin Tautan: Menggabungkan opsi bagikan dan salin link ke dalam satu antarmuka ShareBottomSheet terpadu.
+
+---
+
 ### YounoAds v4.20 - Catatan Rilis & Pembaruan
 
 Pembaruan durasi animasi navigasi balik Stretch Left untuk pengalaman transisi layar yang lebih halus, sinematik, dan terukur:
