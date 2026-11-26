@@ -4,12 +4,18 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Rect
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -17,14 +23,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yoouutt.LocalActivity
@@ -43,6 +54,8 @@ import com.example.yoouutt.ui.player.components.ResolutionSelectionDialog
 import com.example.yoouutt.ui.player.components.SeekIntervalSelectionDialog
 import com.example.yoouutt.ui.player.components.ShareBottomSheet
 import com.example.yoouutt.ui.player.components.VideoPlayerSection
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
 fun PlayerScreen(
@@ -90,6 +103,11 @@ fun PlayerScreen(
     val isInPipMode = LocalInPipMode.current
     var videoBounds by remember { mutableStateOf<Rect?>(null) }
     var isShareSheetVisible by remember { mutableStateOf(false) }
+
+    val swipeOffsetY = remember { Animatable(0f) }
+    val coroutineScope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val dismissThreshold = with(density) { 90.dp.toPx() }
 
     LaunchedEffect(isPlaying, videoBounds) {
         (activity as? MainActivity)?.setPlayerActive(true, videoBounds)
@@ -155,15 +173,63 @@ fun PlayerScreen(
                     .aspectRatio(16f / 9f)
                     .background(Color.Black)
             }
-            val videoBoxModifier = baseModifier.onGloballyPositioned { coordinates ->
-                val bounds = coordinates.boundsInWindow()
-                videoBounds = Rect(
-                    bounds.left.toInt(),
-                    bounds.top.toInt(),
-                    bounds.right.toInt(),
-                    bounds.bottom.toInt()
-                )
-            }
+            val videoBoxModifier = baseModifier
+                .onGloballyPositioned { coordinates ->
+                    val bounds = coordinates.boundsInWindow()
+                    videoBounds = Rect(
+                        bounds.left.toInt(),
+                        bounds.top.toInt(),
+                        bounds.right.toInt(),
+                        bounds.bottom.toInt()
+                    )
+                }
+                .pointerInput(isEffectiveFullscreen) {
+                    if (!isEffectiveFullscreen) {
+                        detectVerticalDragGestures(
+                            onDragEnd = {
+                                if (swipeOffsetY.value >= dismissThreshold) {
+                                    coroutineScope.launch {
+                                        swipeOffsetY.animateTo(
+                                            targetValue = 1800f,
+                                            animationSpec = tween(durationMillis = 180)
+                                        )
+                                        onBack()
+                                    }
+                                } else {
+                                    coroutineScope.launch {
+                                        swipeOffsetY.animateTo(
+                                            targetValue = 0f,
+                                            animationSpec = spring(
+                                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                stiffness = Spring.StiffnessLow
+                                            )
+                                        )
+                                    }
+                                }
+                            },
+                            onDragCancel = {
+                                coroutineScope.launch {
+                                    swipeOffsetY.animateTo(
+                                        targetValue = 0f,
+                                        animationSpec = spring(
+                                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                                            stiffness = Spring.StiffnessLow
+                                        )
+                                    )
+                                }
+                            },
+                            onVerticalDrag = { change, dragAmount ->
+                                if (dragAmount > 0 || swipeOffsetY.value > 0) {
+                                    change.consume()
+                                    coroutineScope.launch {
+                                        val newOffset = (swipeOffsetY.value + dragAmount).coerceAtLeast(0f)
+                                        swipeOffsetY.snapTo(newOffset)
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
 
             VideoPlayerSection(
                 viewModel = viewModel,
@@ -228,7 +294,11 @@ fun PlayerScreen(
             playerBody()
         }
     } else {
-        AppThemeBackdrop(modifier = modifier) {
+        AppThemeBackdrop(
+            modifier = modifier
+                .fillMaxSize()
+                .offset { IntOffset(0, swipeOffsetY.value.roundToInt()) }
+        ) {
             playerBody()
         }
     }
